@@ -43,3 +43,4 @@ F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.dll
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\refint\MDUA.Entities.dll
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.pdb
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\ref\MDUA.Entities.dll
+F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.sourcelink.json

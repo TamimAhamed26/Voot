@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MDUA.Entities.Bases;
+using NPOI.POIFS.Crypt;
 
 namespace MDUA.Facade
 {
@@ -63,9 +64,7 @@ namespace MDUA.Facade
         {
             UserLoginResult result = new UserLoginResult();
 
-            string hashpass = MD5Encryption.GetMD5HashData(password);
-            UserLogin obUser = _UserLoginDataAccess.GetUserLogin(email, hashpass);
-
+            UserLogin obUser = _UserLoginDataAccess.GetUserLogin(email, password); 
             if (obUser != null)
             {
                 result.IsSuccess = true;

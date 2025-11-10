@@ -55,3 +55,5 @@ F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.dll
 F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\refint\MDUA.Facade.dll
 F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.pdb
 F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.sourcelink.json
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\NOTICE.TXT

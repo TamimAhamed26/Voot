@@ -49,3 +49,4 @@ F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.dll
 F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\refint\MDUA.DataAccess.dll
 F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.pdb
 F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.sourcelink.json
