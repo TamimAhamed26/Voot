@@ -15,63 +15,72 @@ namespace MDUA.Entities.Bases
 		public enum Columns
 		{
 			Id = 0,
-			CustomerId = 1,
-			SalesChannelId = 2,
-			AddressId = 3,
-			OrderDate = 4,
-			TotalAmount = 5,
-			DiscountAmount = 6,
-			NetAmount = 7,
-			Status = 8,
-			RegisterNumber = 9,
-			SessionId = 10,
-			IPAddress = 11,
-			PaymentGateway = 12,
-			GatewayTxnId = 13,
-			SalesOrderId = 14,
-			OnlineOrderId = 15,
-			DirectOrderId = 16
+			CompanyCustomerId = 1,
+			AddressId = 2,
+			SalesChannelId = 3,
+			SalesOrderId = 4,
+			OnlineOrderId = 5,
+			DirectOrderId = 6,
+			OrderDate = 7,
+			TotalAmount = 8,
+			DiscountAmount = 9,
+			NetAmount = 10,
+			SessionId = 11,
+			IPAddress = 12,
+			Status = 13,
+			IsActive = 14,
+			Confirmed = 15,
+			CreatedBy = 16,
+			CreatedAt = 17,
+			UpdatedBy = 18,
+			UpdatedAt = 19
 		}
 		#endregion
 	
 		#region Constants
 		public const string Property_Id = "Id";		            
-		public const string Property_CustomerId = "CustomerId";		            
-		public const string Property_SalesChannelId = "SalesChannelId";		            
+		public const string Property_CompanyCustomerId = "CompanyCustomerId";		            
 		public const string Property_AddressId = "AddressId";		            
+		public const string Property_SalesChannelId = "SalesChannelId";		            
+		public const string Property_SalesOrderId = "SalesOrderId";		            
+		public const string Property_OnlineOrderId = "OnlineOrderId";		            
+		public const string Property_DirectOrderId = "DirectOrderId";		            
 		public const string Property_OrderDate = "OrderDate";		            
 		public const string Property_TotalAmount = "TotalAmount";		            
 		public const string Property_DiscountAmount = "DiscountAmount";		            
 		public const string Property_NetAmount = "NetAmount";		            
-		public const string Property_Status = "Status";		            
-		public const string Property_RegisterNumber = "RegisterNumber";		            
 		public const string Property_SessionId = "SessionId";		            
 		public const string Property_IPAddress = "IPAddress";		            
-		public const string Property_PaymentGateway = "PaymentGateway";		            
-		public const string Property_GatewayTxnId = "GatewayTxnId";		            
-		public const string Property_SalesOrderId = "SalesOrderId";		            
-		public const string Property_OnlineOrderId = "OnlineOrderId";		            
-		public const string Property_DirectOrderId = "DirectOrderId";		            
+		public const string Property_Status = "Status";		            
+		public const string Property_IsActive = "IsActive";		            
+		public const string Property_Confirmed = "Confirmed";		            
+		public const string Property_CreatedBy = "CreatedBy";		            
+		public const string Property_CreatedAt = "CreatedAt";		            
+		public const string Property_UpdatedBy = "UpdatedBy";		            
+		public const string Property_UpdatedAt = "UpdatedAt";		            
 		#endregion
 		
 		#region Private Data Types
 		private Int32 _Id;	            
-		private Int32 _CustomerId;	            
-		private Int32 _SalesChannelId;	            
+		private Int32 _CompanyCustomerId;	            
 		private Int32 _AddressId;	            
+		private Int32 _SalesChannelId;	            
+		private String _SalesOrderId;	            
+		private String _OnlineOrderId;	            
+		private String _DirectOrderId;	            
 		private DateTime _OrderDate;	            
 		private Decimal _TotalAmount;	            
 		private Decimal _DiscountAmount;	            
 		private Nullable<Decimal> _NetAmount;	            
-		private String _Status;	            
-		private String _RegisterNumber;	            
 		private String _SessionId;	            
 		private String _IPAddress;	            
-		private String _PaymentGateway;	            
-		private String _GatewayTxnId;	            
-		private String _SalesOrderId;	            
-		private String _OnlineOrderId;	            
-		private String _DirectOrderId;	            
+		private String _Status;	            
+		private Boolean _IsActive;	            
+		private Boolean _Confirmed;	            
+		private String _CreatedBy;	            
+		private DateTime _CreatedAt;	            
+		private String _UpdatedBy;	            
+		private Nullable<DateTime> _UpdatedAt;	            
 		#endregion
 		
 		#region Properties		
@@ -91,15 +100,30 @@ namespace MDUA.Entities.Bases
         }
 
 		[DataMember]
-		public Int32 CustomerId
+		public Int32 CompanyCustomerId
 		{	
-			get{ return _CustomerId; }			
+			get{ return _CompanyCustomerId; }			
 			set
 			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CustomerId, value, _CustomerId);
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CompanyCustomerId, value, _CompanyCustomerId);
 				if (PropertyChanging(args))
 				{
-					_CustomerId = value;
+					_CompanyCustomerId = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public Int32 AddressId
+		{	
+			get{ return _AddressId; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_AddressId, value, _AddressId);
+				if (PropertyChanging(args))
+				{
+					_AddressId = value;
 					PropertyChanged(args);					
 				}	
 			}
@@ -121,15 +145,45 @@ namespace MDUA.Entities.Bases
         }
 
 		[DataMember]
-		public Int32 AddressId
+		public String SalesOrderId
 		{	
-			get{ return _AddressId; }			
+			get{ return _SalesOrderId; }			
 			set
 			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_AddressId, value, _AddressId);
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_SalesOrderId, value, _SalesOrderId);
 				if (PropertyChanging(args))
 				{
-					_AddressId = value;
+					_SalesOrderId = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String OnlineOrderId
+		{	
+			get{ return _OnlineOrderId; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_OnlineOrderId, value, _OnlineOrderId);
+				if (PropertyChanging(args))
+				{
+					_OnlineOrderId = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String DirectOrderId
+		{	
+			get{ return _DirectOrderId; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_DirectOrderId, value, _DirectOrderId);
+				if (PropertyChanging(args))
+				{
+					_DirectOrderId = value;
 					PropertyChanged(args);					
 				}	
 			}
@@ -196,36 +250,6 @@ namespace MDUA.Entities.Bases
         }
 
 		[DataMember]
-		public String Status
-		{	
-			get{ return _Status; }			
-			set
-			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_Status, value, _Status);
-				if (PropertyChanging(args))
-				{
-					_Status = value;
-					PropertyChanged(args);					
-				}	
-			}
-        }
-
-		[DataMember]
-		public String RegisterNumber
-		{	
-			get{ return _RegisterNumber; }			
-			set
-			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_RegisterNumber, value, _RegisterNumber);
-				if (PropertyChanging(args))
-				{
-					_RegisterNumber = value;
-					PropertyChanged(args);					
-				}	
-			}
-        }
-
-		[DataMember]
 		public String SessionId
 		{	
 			get{ return _SessionId; }			
@@ -256,75 +280,105 @@ namespace MDUA.Entities.Bases
         }
 
 		[DataMember]
-		public String PaymentGateway
+		public String Status
 		{	
-			get{ return _PaymentGateway; }			
+			get{ return _Status; }			
 			set
 			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_PaymentGateway, value, _PaymentGateway);
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_Status, value, _Status);
 				if (PropertyChanging(args))
 				{
-					_PaymentGateway = value;
+					_Status = value;
 					PropertyChanged(args);					
 				}	
 			}
         }
 
 		[DataMember]
-		public String GatewayTxnId
+		public Boolean IsActive
 		{	
-			get{ return _GatewayTxnId; }			
+			get{ return _IsActive; }			
 			set
 			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_GatewayTxnId, value, _GatewayTxnId);
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_IsActive, value, _IsActive);
 				if (PropertyChanging(args))
 				{
-					_GatewayTxnId = value;
+					_IsActive = value;
 					PropertyChanged(args);					
 				}	
 			}
         }
 
 		[DataMember]
-		public String SalesOrderId
+		public Boolean Confirmed
 		{	
-			get{ return _SalesOrderId; }			
+			get{ return _Confirmed; }			
 			set
 			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_SalesOrderId, value, _SalesOrderId);
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_Confirmed, value, _Confirmed);
 				if (PropertyChanging(args))
 				{
-					_SalesOrderId = value;
+					_Confirmed = value;
 					PropertyChanged(args);					
 				}	
 			}
         }
 
 		[DataMember]
-		public String OnlineOrderId
+		public String CreatedBy
 		{	
-			get{ return _OnlineOrderId; }			
+			get{ return _CreatedBy; }			
 			set
 			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_OnlineOrderId, value, _OnlineOrderId);
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedBy, value, _CreatedBy);
 				if (PropertyChanging(args))
 				{
-					_OnlineOrderId = value;
+					_CreatedBy = value;
 					PropertyChanged(args);					
 				}	
 			}
         }
 
 		[DataMember]
-		public String DirectOrderId
+		public DateTime CreatedAt
 		{	
-			get{ return _DirectOrderId; }			
+			get{ return _CreatedAt; }			
 			set
 			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_DirectOrderId, value, _DirectOrderId);
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedAt, value, _CreatedAt);
 				if (PropertyChanging(args))
 				{
-					_DirectOrderId = value;
+					_CreatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String UpdatedBy
+		{	
+			get{ return _UpdatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedBy, value, _UpdatedBy);
+				if (PropertyChanging(args))
+				{
+					_UpdatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public Nullable<DateTime> UpdatedAt
+		{	
+			get{ return _UpdatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedAt, value, _UpdatedAt);
+				if (PropertyChanging(args))
+				{
+					_UpdatedAt = value;
 					PropertyChanged(args);					
 				}	
 			}
@@ -338,22 +392,25 @@ namespace MDUA.Entities.Bases
 			SalesOrderHeaderBase newObj = new  SalesOrderHeaderBase();
 			base.CloneBase(newObj);
 			newObj.Id = this.Id;						
-			newObj.CustomerId = this.CustomerId;						
-			newObj.SalesChannelId = this.SalesChannelId;						
+			newObj.CompanyCustomerId = this.CompanyCustomerId;						
 			newObj.AddressId = this.AddressId;						
+			newObj.SalesChannelId = this.SalesChannelId;						
+			newObj.SalesOrderId = this.SalesOrderId;						
+			newObj.OnlineOrderId = this.OnlineOrderId;						
+			newObj.DirectOrderId = this.DirectOrderId;						
 			newObj.OrderDate = this.OrderDate;						
 			newObj.TotalAmount = this.TotalAmount;						
 			newObj.DiscountAmount = this.DiscountAmount;						
 			newObj.NetAmount = this.NetAmount;						
-			newObj.Status = this.Status;						
-			newObj.RegisterNumber = this.RegisterNumber;						
 			newObj.SessionId = this.SessionId;						
 			newObj.IPAddress = this.IPAddress;						
-			newObj.PaymentGateway = this.PaymentGateway;						
-			newObj.GatewayTxnId = this.GatewayTxnId;						
-			newObj.SalesOrderId = this.SalesOrderId;						
-			newObj.OnlineOrderId = this.OnlineOrderId;						
-			newObj.DirectOrderId = this.DirectOrderId;						
+			newObj.Status = this.Status;						
+			newObj.IsActive = this.IsActive;						
+			newObj.Confirmed = this.Confirmed;						
+			newObj.CreatedBy = this.CreatedBy;						
+			newObj.CreatedAt = this.CreatedAt;						
+			newObj.UpdatedBy = this.UpdatedBy;						
+			newObj.UpdatedAt = this.UpdatedAt;						
 			
 			return newObj;
 		}
@@ -364,22 +421,25 @@ namespace MDUA.Entities.Bases
 		{
 			base.GetObjectData(info, context);
 			info.AddValue(SalesOrderHeaderBase.Property_Id, Id);				
-			info.AddValue(SalesOrderHeaderBase.Property_CustomerId, CustomerId);				
-			info.AddValue(SalesOrderHeaderBase.Property_SalesChannelId, SalesChannelId);				
+			info.AddValue(SalesOrderHeaderBase.Property_CompanyCustomerId, CompanyCustomerId);				
 			info.AddValue(SalesOrderHeaderBase.Property_AddressId, AddressId);				
+			info.AddValue(SalesOrderHeaderBase.Property_SalesChannelId, SalesChannelId);				
+			info.AddValue(SalesOrderHeaderBase.Property_SalesOrderId, SalesOrderId);				
+			info.AddValue(SalesOrderHeaderBase.Property_OnlineOrderId, OnlineOrderId);				
+			info.AddValue(SalesOrderHeaderBase.Property_DirectOrderId, DirectOrderId);				
 			info.AddValue(SalesOrderHeaderBase.Property_OrderDate, OrderDate);				
 			info.AddValue(SalesOrderHeaderBase.Property_TotalAmount, TotalAmount);				
 			info.AddValue(SalesOrderHeaderBase.Property_DiscountAmount, DiscountAmount);				
 			info.AddValue(SalesOrderHeaderBase.Property_NetAmount, NetAmount);				
-			info.AddValue(SalesOrderHeaderBase.Property_Status, Status);				
-			info.AddValue(SalesOrderHeaderBase.Property_RegisterNumber, RegisterNumber);				
 			info.AddValue(SalesOrderHeaderBase.Property_SessionId, SessionId);				
 			info.AddValue(SalesOrderHeaderBase.Property_IPAddress, IPAddress);				
-			info.AddValue(SalesOrderHeaderBase.Property_PaymentGateway, PaymentGateway);				
-			info.AddValue(SalesOrderHeaderBase.Property_GatewayTxnId, GatewayTxnId);				
-			info.AddValue(SalesOrderHeaderBase.Property_SalesOrderId, SalesOrderId);				
-			info.AddValue(SalesOrderHeaderBase.Property_OnlineOrderId, OnlineOrderId);				
-			info.AddValue(SalesOrderHeaderBase.Property_DirectOrderId, DirectOrderId);				
+			info.AddValue(SalesOrderHeaderBase.Property_Status, Status);				
+			info.AddValue(SalesOrderHeaderBase.Property_IsActive, IsActive);				
+			info.AddValue(SalesOrderHeaderBase.Property_Confirmed, Confirmed);				
+			info.AddValue(SalesOrderHeaderBase.Property_CreatedBy, CreatedBy);				
+			info.AddValue(SalesOrderHeaderBase.Property_CreatedAt, CreatedAt);				
+			info.AddValue(SalesOrderHeaderBase.Property_UpdatedBy, UpdatedBy);				
+			info.AddValue(SalesOrderHeaderBase.Property_UpdatedAt, UpdatedAt);				
 		}
 		#endregion
 

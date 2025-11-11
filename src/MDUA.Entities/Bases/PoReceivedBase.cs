@@ -18,7 +18,13 @@ namespace MDUA.Entities.Bases
 			PoRequestedId = 1,
 			ReceivedQuantity = 2,
 			BuyingPrice = 3,
-			ReceivedDate = 4
+			ReceivedDate = 4,
+			CreatedBy = 5,
+			CreatedAt = 6,
+			UpdatedBy = 7,
+			UpdatedAt = 8,
+			Remarks = 9,
+			InvoiceNo = 10
 		}
 		#endregion
 	
@@ -28,6 +34,12 @@ namespace MDUA.Entities.Bases
 		public const string Property_ReceivedQuantity = "ReceivedQuantity";		            
 		public const string Property_BuyingPrice = "BuyingPrice";		            
 		public const string Property_ReceivedDate = "ReceivedDate";		            
+		public const string Property_CreatedBy = "CreatedBy";		            
+		public const string Property_CreatedAt = "CreatedAt";		            
+		public const string Property_UpdatedBy = "UpdatedBy";		            
+		public const string Property_UpdatedAt = "UpdatedAt";		            
+		public const string Property_Remarks = "Remarks";		            
+		public const string Property_InvoiceNo = "InvoiceNo";		            
 		#endregion
 		
 		#region Private Data Types
@@ -36,6 +48,12 @@ namespace MDUA.Entities.Bases
 		private Int32 _ReceivedQuantity;	            
 		private Decimal _BuyingPrice;	            
 		private DateTime _ReceivedDate;	            
+		private String _CreatedBy;	            
+		private DateTime _CreatedAt;	            
+		private String _UpdatedBy;	            
+		private Nullable<DateTime> _UpdatedAt;	            
+		private String _Remarks;	            
+		private String _InvoiceNo;	            
 		#endregion
 		
 		#region Properties		
@@ -114,6 +132,96 @@ namespace MDUA.Entities.Bases
 			}
         }
 
+		[DataMember]
+		public String CreatedBy
+		{	
+			get{ return _CreatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedBy, value, _CreatedBy);
+				if (PropertyChanging(args))
+				{
+					_CreatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public DateTime CreatedAt
+		{	
+			get{ return _CreatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedAt, value, _CreatedAt);
+				if (PropertyChanging(args))
+				{
+					_CreatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String UpdatedBy
+		{	
+			get{ return _UpdatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedBy, value, _UpdatedBy);
+				if (PropertyChanging(args))
+				{
+					_UpdatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public Nullable<DateTime> UpdatedAt
+		{	
+			get{ return _UpdatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedAt, value, _UpdatedAt);
+				if (PropertyChanging(args))
+				{
+					_UpdatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String Remarks
+		{	
+			get{ return _Remarks; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_Remarks, value, _Remarks);
+				if (PropertyChanging(args))
+				{
+					_Remarks = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String InvoiceNo
+		{	
+			get{ return _InvoiceNo; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_InvoiceNo, value, _InvoiceNo);
+				if (PropertyChanging(args))
+				{
+					_InvoiceNo = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
 		#endregion
 		
 		#region Cloning Base Objects
@@ -126,6 +234,12 @@ namespace MDUA.Entities.Bases
 			newObj.ReceivedQuantity = this.ReceivedQuantity;						
 			newObj.BuyingPrice = this.BuyingPrice;						
 			newObj.ReceivedDate = this.ReceivedDate;						
+			newObj.CreatedBy = this.CreatedBy;						
+			newObj.CreatedAt = this.CreatedAt;						
+			newObj.UpdatedBy = this.UpdatedBy;						
+			newObj.UpdatedAt = this.UpdatedAt;						
+			newObj.Remarks = this.Remarks;						
+			newObj.InvoiceNo = this.InvoiceNo;						
 			
 			return newObj;
 		}
@@ -140,6 +254,12 @@ namespace MDUA.Entities.Bases
 			info.AddValue(PoReceivedBase.Property_ReceivedQuantity, ReceivedQuantity);				
 			info.AddValue(PoReceivedBase.Property_BuyingPrice, BuyingPrice);				
 			info.AddValue(PoReceivedBase.Property_ReceivedDate, ReceivedDate);				
+			info.AddValue(PoReceivedBase.Property_CreatedBy, CreatedBy);				
+			info.AddValue(PoReceivedBase.Property_CreatedAt, CreatedAt);				
+			info.AddValue(PoReceivedBase.Property_UpdatedBy, UpdatedBy);				
+			info.AddValue(PoReceivedBase.Property_UpdatedAt, UpdatedAt);				
+			info.AddValue(PoReceivedBase.Property_Remarks, Remarks);				
+			info.AddValue(PoReceivedBase.Property_InvoiceNo, InvoiceNo);				
 		}
 		#endregion
 

@@ -28,6 +28,36 @@ D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\M
 D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\refint\MDUA.Entities.dll
 D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.pdb
 D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\ref\MDUA.Entities.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.deps.json
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Framework.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Framework.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.csproj.AssemblyReference.cache
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.AssemblyInfoInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.AssemblyInfo.cs
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.csproj.CoreCompileInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Ent.D0A5BCB7.Up2Date
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\refint\MDUA.Entities.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\ref\MDUA.Entities.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.deps.json
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Framework.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Framework.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.csproj.AssemblyReference.cache
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.GeneratedMSBuildEditorConfig.editorconfig
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.AssemblyInfoInputs.cache
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.AssemblyInfo.cs
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.csproj.CoreCompileInputs.cache
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Ent.D0A5BCB7.Up2Date
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\refint\MDUA.Entities.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\ref\MDUA.Entities.dll
 F:\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.deps.json
 F:\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.dll
 F:\bd-mayer-dua\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.pdb
@@ -38,9 +68,9 @@ F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.GeneratedMSBuil
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.AssemblyInfoInputs.cache
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.AssemblyInfo.cs
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.csproj.CoreCompileInputs.cache
+F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.sourcelink.json
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Ent.D0A5BCB7.Up2Date
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.dll
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\refint\MDUA.Entities.dll
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.pdb
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\ref\MDUA.Entities.dll
-F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.sourcelink.json

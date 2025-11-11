@@ -47,6 +47,14 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pNVarChar(AccountBase.Property_AccountName, 100, accountObject.AccountName));
 			AddParameter(cmd, pInt32(AccountBase.Property_AccountTypeId, accountObject.AccountTypeId));
 			AddParameter(cmd, pBool(AccountBase.Property_IsActive, accountObject.IsActive));
+			AddParameter(cmd, pNVarChar(AccountBase.Property_Description, 255, accountObject.Description));
+			AddParameter(cmd, pDecimal(AccountBase.Property_Balance, 9, accountObject.Balance));
+			AddParameter(cmd, pNVarChar(AccountBase.Property_CurrencyCode, 10, accountObject.CurrencyCode));
+			AddParameter(cmd, pInt32(AccountBase.Property_ParentAccountId, accountObject.ParentAccountId));
+			AddParameter(cmd, pNVarChar(AccountBase.Property_CreatedBy, 100, accountObject.CreatedBy));
+			AddParameter(cmd, pDateTime(AccountBase.Property_CreatedAt, accountObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(AccountBase.Property_UpdatedBy, 100, accountObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(AccountBase.Property_UpdatedAt, accountObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -268,7 +276,15 @@ namespace MDUA.DataAccess
 				accountObject.AccountName = reader.GetString( start + 2 );			
 				accountObject.AccountTypeId = reader.GetInt32( start + 3 );			
 				accountObject.IsActive = reader.GetBoolean( start + 4 );			
-			FillBaseObject(accountObject, reader, (start + 5));
+				if(!reader.IsDBNull(5)) accountObject.Description = reader.GetString( start + 5 );			
+				if(!reader.IsDBNull(6)) accountObject.Balance = reader.GetDecimal( start + 6 );			
+				if(!reader.IsDBNull(7)) accountObject.CurrencyCode = reader.GetString( start + 7 );			
+				if(!reader.IsDBNull(8)) accountObject.ParentAccountId = reader.GetInt32( start + 8 );			
+				accountObject.CreatedBy = reader.GetString( start + 9 );			
+				accountObject.CreatedAt = reader.GetDateTime( start + 10 );			
+				if(!reader.IsDBNull(11)) accountObject.UpdatedBy = reader.GetString( start + 11 );			
+				if(!reader.IsDBNull(12)) accountObject.UpdatedAt = reader.GetDateTime( start + 12 );			
+			FillBaseObject(accountObject, reader, (start + 13));
 
 			
 			accountObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

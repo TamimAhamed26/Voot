@@ -1,0 +1,118 @@
+﻿@model MDUA.Entities.ProductDetailsModel
+@{
+    ViewData["Title"] = Model.Product?.ProductName;
+    
+    // Get the first primary image, or just the first image as a fallback
+    var primaryImage = Model.ProductImages.FirstOrDefault(img => img.IsPrimary) 
+                       ?? Model.ProductImages.FirstOrDefault();
+}
+
+<div class="product-container" style="display: flex; gap: 20px;">
+
+    <div class="product-images" style="flex: 1;">
+        <img id="main-product-image" 
+             src="@(primaryImage?.ImageUrl ?? "/images/placeholder.jpg")" 
+             alt="@(primaryImage?.AltText ?? "Product image")" 
+             style="width: 100%;" />
+        
+        <div class="thumbnails" style="display: flex; gap: 10px; margin-top: 10px;">
+            @foreach (var img in Model.ProductImages)
+            {
+                <img src="@img.ImageUrl" alt="@img.AltText" class="thumbnail" style="width: 80px; cursor: pointer;" />
+            }
+        </div>
+    </div>
+
+    <div class="product-details" style="flex: 1;">
+        <h1>@Model.Product.ProductName</h1>
+        
+        <div id="product-price" class="price" style="font-size: 24px; color: #B12704; margin-bottom: 15px;">
+            @Model.Product.BasePrice?.ToString("C")
+        </div>
+        
+        <div class="description" style="margin-bottom: 20px;">
+            @Html.Raw(Model.Product.Description)
+        </div>
+
+        <div class="variant-options">
+            @foreach(var option in Model.Options)
+            {
+                <div class="option-group" style="margin-bottom: 15px;">
+                    <strong style="display: block; margin-bottom: 5px;">@option.AttributeName:</strong>
+                    <div class="option-values" style="display: flex; gap: 10px;">
+                        @foreach(var val in option.Values)
+                        {
+                            <div>
+                                <input type="radio" 
+                                       class="variant-radio"
+                                       name="option-@option.AttributeId" 
+                                       value="@val.Id" 
+                                       id="opt-val-@val.Id"
+                                       data-attribute-id="@option.AttributeId" />
+                                <label for="opt-val-@val.Id">@val.Value</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <hr />
+
+        <div id="sku-display" style="margin-bottom: 10px;">
+            SKU: <span id="selected-sku">---</span>
+        </div>
+        <div id="stock-display" style="margin-bottom: 20px;">
+            Stock: <span id="selected-stock">---</span>
+        </div>
+        
+        <button id="add-to-cart-btn" class="btn btn-primary" disabled>Select Options</button>
+    </div>
+</div>
+
+
+<script>
+    // Serialize the variant data into a global JS object
+    const productData = @Html.Raw(Json.Serialize(new 
+    {
+        // A list of all available variants with their IDs, SKU, and Name
+        variants = Model.Variants.Select(v => new {
+            v.Id,
+            v.SKU,
+            v.VariantName
+        }),
+        
+        // A map of VariantID -> Price/Stock info
+        // Example: { 101: { price: 1299.99, stockQty: 50 }, 102: { ... } }
+        priceStock = Model.VariantPriceStocks.ToDictionary(
+            kvp => kvp.Key, // VariantId
+            kvp => new {
+                kvp.Value.Price,
+                kvp.Value.StockQty,
+                kvp.Value.CompareAtPrice
+            }
+        ),
+        
+        // A map of VariantID -> List of Images
+        // Example: { 101: [ "/img/silver.jpg" ], 102: [ "/img/black.jpg" ] }
+        images = Model.VariantImages.ToDictionary(
+            kvp => kvp.Key, // VariantId
+            kvp => kvp.Value.Select(img => img.ImageUrl)
+        ),
+        
+        // The "map" that connects variants to their attribute values
+        // Example: [ { variantId: 101, attributeValueId: 1 }, { variantId: 101, attributeValueId: 10 }, ... ]
+        mappings = Model.VariantAttributeValues.Select(m => new {
+            m.VariantId,
+            m.AttributeId,
+            m.AttributeValueId
+        })
+    }));
+
+    // Your external product-page.js file can now access 'productData'
+    // to build all its interactive logic.
+    //
+    // e.g., document.addEventListener('DOMContentLoaded', () => {
+    //           initializeProductVariants(productData);
+    //       });
+</script>

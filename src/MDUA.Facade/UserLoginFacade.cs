@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MDUA.Entities.Bases;
-using NPOI.POIFS.Crypt;
 
 namespace MDUA.Facade
 {
@@ -47,7 +46,7 @@ namespace MDUA.Facade
         {
             return _UserLoginDataAccess.GetByQuery(query);
         }
-         
+
         public long Insert(UserLoginBase Object)
         {
             return _UserLoginDataAccess.Insert(Object);
@@ -64,7 +63,7 @@ namespace MDUA.Facade
         {
             UserLoginResult result = new UserLoginResult();
 
-            UserLogin obUser = _UserLoginDataAccess.GetUserLogin(email, password); 
+            UserLogin obUser = _UserLoginDataAccess.GetUserLogin(email, password);
             if (obUser != null)
             {
                 result.IsSuccess = true;

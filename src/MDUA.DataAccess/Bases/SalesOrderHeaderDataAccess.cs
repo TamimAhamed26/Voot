@@ -22,9 +22,9 @@ namespace MDUA.DataAccess
 		private const string GETSALESORDERHEADERBYID = "GetSalesOrderHeaderById";
 		private const string GETALLSALESORDERHEADER = "GetAllSalesOrderHeader";
 		private const string GETPAGEDSALESORDERHEADER = "GetPagedSalesOrderHeader";
-		private const string GETSALESORDERHEADERBYCUSTOMERID = "GetSalesOrderHeaderByCustomerId";
-		private const string GETSALESORDERHEADERBYSALESCHANNELID = "GetSalesOrderHeaderBySalesChannelId";
+		private const string GETSALESORDERHEADERBYCOMPANYCUSTOMERID = "GetSalesOrderHeaderByCompanyCustomerId";
 		private const string GETSALESORDERHEADERBYADDRESSID = "GetSalesOrderHeaderByAddressId";
+		private const string GETSALESORDERHEADERBYSALESCHANNELID = "GetSalesOrderHeaderBySalesChannelId";
 		private const string GETSALESORDERHEADERMAXIMUMID = "GetSalesOrderHeaderMaximumId";
 		private const string GETSALESORDERHEADERROWCOUNT = "GetSalesOrderHeaderRowCount";	
 		private const string GETSALESORDERHEADERBYQUERY = "GetSalesOrderHeaderByQuery";
@@ -45,22 +45,25 @@ namespace MDUA.DataAccess
         /// <param name="salesOrderHeaderObject"></param>
 		private void AddCommonParams(SqlCommand cmd, SalesOrderHeaderBase salesOrderHeaderObject)
 		{	
-			AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_CustomerId, salesOrderHeaderObject.CustomerId));
-			AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_SalesChannelId, salesOrderHeaderObject.SalesChannelId));
+			AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_CompanyCustomerId, salesOrderHeaderObject.CompanyCustomerId));
 			AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_AddressId, salesOrderHeaderObject.AddressId));
+			AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_SalesChannelId, salesOrderHeaderObject.SalesChannelId));
+			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_SalesOrderId, 10, salesOrderHeaderObject.SalesOrderId));
+			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_OnlineOrderId, 10, salesOrderHeaderObject.OnlineOrderId));
+			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_DirectOrderId, 10, salesOrderHeaderObject.DirectOrderId));
 			AddParameter(cmd, pDateTime(SalesOrderHeaderBase.Property_OrderDate, salesOrderHeaderObject.OrderDate));
 			AddParameter(cmd, pDecimal(SalesOrderHeaderBase.Property_TotalAmount, 9, salesOrderHeaderObject.TotalAmount));
 			AddParameter(cmd, pDecimal(SalesOrderHeaderBase.Property_DiscountAmount, 9, salesOrderHeaderObject.DiscountAmount));
 			AddParameter(cmd, pDecimal(SalesOrderHeaderBase.Property_NetAmount, 9, salesOrderHeaderObject.NetAmount));
-			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_Status, 30, salesOrderHeaderObject.Status));
-			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_RegisterNumber, 20, salesOrderHeaderObject.RegisterNumber));
 			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_SessionId, 100, salesOrderHeaderObject.SessionId));
 			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_IPAddress, 45, salesOrderHeaderObject.IPAddress));
-			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_PaymentGateway, 50, salesOrderHeaderObject.PaymentGateway));
-			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_GatewayTxnId, 100, salesOrderHeaderObject.GatewayTxnId));
-			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_SalesOrderId, 10, salesOrderHeaderObject.SalesOrderId));
-			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_OnlineOrderId, 10, salesOrderHeaderObject.OnlineOrderId));
-			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_DirectOrderId, 10, salesOrderHeaderObject.DirectOrderId));
+			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_Status, 30, salesOrderHeaderObject.Status));
+			AddParameter(cmd, pBool(SalesOrderHeaderBase.Property_IsActive, salesOrderHeaderObject.IsActive));
+			AddParameter(cmd, pBool(SalesOrderHeaderBase.Property_Confirmed, salesOrderHeaderObject.Confirmed));
+			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_CreatedBy, 100, salesOrderHeaderObject.CreatedBy));
+			AddParameter(cmd, pDateTime(SalesOrderHeaderBase.Property_CreatedAt, salesOrderHeaderObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_UpdatedBy, 100, salesOrderHeaderObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(SalesOrderHeaderBase.Property_UpdatedAt, salesOrderHeaderObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -176,29 +179,15 @@ namespace MDUA.DataAccess
 		}
 		
 		/// <summary>
-        /// Retrieves all SalesOrderHeader objects by CustomerId
+        /// Retrieves all SalesOrderHeader objects by CompanyCustomerId
         /// </summary>
         /// <returns>A list of SalesOrderHeader objects</returns>
-		public SalesOrderHeaderList GetByCustomerId(Int32 _CustomerId)
+		public SalesOrderHeaderList GetByCompanyCustomerId(Int32 _CompanyCustomerId)
 		{
-			using( SqlCommand cmd = GetSPCommand(GETSALESORDERHEADERBYCUSTOMERID))
+			using( SqlCommand cmd = GetSPCommand(GETSALESORDERHEADERBYCOMPANYCUSTOMERID))
 			{
 				
-				AddParameter( cmd, pInt32(SalesOrderHeaderBase.Property_CustomerId, _CustomerId));
-				return GetList(cmd, ALL_AVAILABLE_RECORDS);
-			}
-		}
-		
-		/// <summary>
-        /// Retrieves all SalesOrderHeader objects by SalesChannelId
-        /// </summary>
-        /// <returns>A list of SalesOrderHeader objects</returns>
-		public SalesOrderHeaderList GetBySalesChannelId(Int32 _SalesChannelId)
-		{
-			using( SqlCommand cmd = GetSPCommand(GETSALESORDERHEADERBYSALESCHANNELID))
-			{
-				
-				AddParameter( cmd, pInt32(SalesOrderHeaderBase.Property_SalesChannelId, _SalesChannelId));
+				AddParameter( cmd, pInt32(SalesOrderHeaderBase.Property_CompanyCustomerId, _CompanyCustomerId));
 				return GetList(cmd, ALL_AVAILABLE_RECORDS);
 			}
 		}
@@ -213,6 +202,20 @@ namespace MDUA.DataAccess
 			{
 				
 				AddParameter( cmd, pInt32(SalesOrderHeaderBase.Property_AddressId, _AddressId));
+				return GetList(cmd, ALL_AVAILABLE_RECORDS);
+			}
+		}
+		
+		/// <summary>
+        /// Retrieves all SalesOrderHeader objects by SalesChannelId
+        /// </summary>
+        /// <returns>A list of SalesOrderHeader objects</returns>
+		public SalesOrderHeaderList GetBySalesChannelId(Int32 _SalesChannelId)
+		{
+			using( SqlCommand cmd = GetSPCommand(GETSALESORDERHEADERBYSALESCHANNELID))
+			{
+				
+				AddParameter( cmd, pInt32(SalesOrderHeaderBase.Property_SalesChannelId, _SalesChannelId));
 				return GetList(cmd, ALL_AVAILABLE_RECORDS);
 			}
 		}
@@ -306,23 +309,26 @@ namespace MDUA.DataAccess
 		{
 			
 				salesOrderHeaderObject.Id = reader.GetInt32( start + 0 );			
-				salesOrderHeaderObject.CustomerId = reader.GetInt32( start + 1 );			
-				salesOrderHeaderObject.SalesChannelId = reader.GetInt32( start + 2 );			
-				salesOrderHeaderObject.AddressId = reader.GetInt32( start + 3 );			
-				salesOrderHeaderObject.OrderDate = reader.GetDateTime( start + 4 );			
-				salesOrderHeaderObject.TotalAmount = reader.GetDecimal( start + 5 );			
-				salesOrderHeaderObject.DiscountAmount = reader.GetDecimal( start + 6 );			
-				if(!reader.IsDBNull(7)) salesOrderHeaderObject.NetAmount = reader.GetDecimal( start + 7 );			
-				salesOrderHeaderObject.Status = reader.GetString( start + 8 );			
-				if(!reader.IsDBNull(9)) salesOrderHeaderObject.RegisterNumber = reader.GetString( start + 9 );			
-				if(!reader.IsDBNull(10)) salesOrderHeaderObject.SessionId = reader.GetString( start + 10 );			
-				if(!reader.IsDBNull(11)) salesOrderHeaderObject.IPAddress = reader.GetString( start + 11 );			
-				if(!reader.IsDBNull(12)) salesOrderHeaderObject.PaymentGateway = reader.GetString( start + 12 );			
-				if(!reader.IsDBNull(13)) salesOrderHeaderObject.GatewayTxnId = reader.GetString( start + 13 );			
-				if(!reader.IsDBNull(14)) salesOrderHeaderObject.SalesOrderId = reader.GetString( start + 14 );			
-				if(!reader.IsDBNull(15)) salesOrderHeaderObject.OnlineOrderId = reader.GetString( start + 15 );			
-				if(!reader.IsDBNull(16)) salesOrderHeaderObject.DirectOrderId = reader.GetString( start + 16 );			
-			FillBaseObject(salesOrderHeaderObject, reader, (start + 17));
+				salesOrderHeaderObject.CompanyCustomerId = reader.GetInt32( start + 1 );			
+				salesOrderHeaderObject.AddressId = reader.GetInt32( start + 2 );			
+				salesOrderHeaderObject.SalesChannelId = reader.GetInt32( start + 3 );			
+				if(!reader.IsDBNull(4)) salesOrderHeaderObject.SalesOrderId = reader.GetString( start + 4 );			
+				if(!reader.IsDBNull(5)) salesOrderHeaderObject.OnlineOrderId = reader.GetString( start + 5 );			
+				if(!reader.IsDBNull(6)) salesOrderHeaderObject.DirectOrderId = reader.GetString( start + 6 );			
+				salesOrderHeaderObject.OrderDate = reader.GetDateTime( start + 7 );			
+				salesOrderHeaderObject.TotalAmount = reader.GetDecimal( start + 8 );			
+				salesOrderHeaderObject.DiscountAmount = reader.GetDecimal( start + 9 );			
+				if(!reader.IsDBNull(10)) salesOrderHeaderObject.NetAmount = reader.GetDecimal( start + 10 );			
+				if(!reader.IsDBNull(11)) salesOrderHeaderObject.SessionId = reader.GetString( start + 11 );			
+				if(!reader.IsDBNull(12)) salesOrderHeaderObject.IPAddress = reader.GetString( start + 12 );			
+				salesOrderHeaderObject.Status = reader.GetString( start + 13 );			
+				salesOrderHeaderObject.IsActive = reader.GetBoolean( start + 14 );			
+				salesOrderHeaderObject.Confirmed = reader.GetBoolean( start + 15 );			
+				if(!reader.IsDBNull(16)) salesOrderHeaderObject.CreatedBy = reader.GetString( start + 16 );			
+				salesOrderHeaderObject.CreatedAt = reader.GetDateTime( start + 17 );			
+				if(!reader.IsDBNull(18)) salesOrderHeaderObject.UpdatedBy = reader.GetString( start + 18 );			
+				if(!reader.IsDBNull(19)) salesOrderHeaderObject.UpdatedAt = reader.GetDateTime( start + 19 );			
+			FillBaseObject(salesOrderHeaderObject, reader, (start + 20));
 
 			
 			salesOrderHeaderObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

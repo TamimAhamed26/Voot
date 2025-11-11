@@ -22,8 +22,8 @@ namespace MDUA.DataAccess
 		private const string GETLANGUAGERESOURCEBYID = "GetLanguageResourceById";
 		private const string GETALLLANGUAGERESOURCE = "GetAllLanguageResource";
 		private const string GETPAGEDLANGUAGERESOURCE = "GetPagedLanguageResource";
-		private const string GETLANGUAGERESOURCEBYLANGUAGEID = "GetLanguageResourceByLanguageId";
 		private const string GETLANGUAGERESOURCEBYCOMPANYID = "GetLanguageResourceByCompanyId";
+		private const string GETLANGUAGERESOURCEBYLANGUAGEID = "GetLanguageResourceByLanguageId";
 		private const string GETLANGUAGERESOURCEMAXIMUMID = "GetLanguageResourceMaximumId";
 		private const string GETLANGUAGERESOURCEROWCOUNT = "GetLanguageResourceRowCount";	
 		private const string GETLANGUAGERESOURCEBYQUERY = "GetLanguageResourceByQuery";
@@ -44,10 +44,16 @@ namespace MDUA.DataAccess
         /// <param name="languageResourceObject"></param>
 		private void AddCommonParams(SqlCommand cmd, LanguageResourceBase languageResourceObject)
 		{	
+			AddParameter(cmd, pInt32(LanguageResourceBase.Property_CompanyId, languageResourceObject.CompanyId));
+			AddParameter(cmd, pInt32(LanguageResourceBase.Property_LanguageId, languageResourceObject.LanguageId));
 			AddParameter(cmd, pNVarChar(LanguageResourceBase.Property_LKey, 255, languageResourceObject.LKey));
 			AddParameter(cmd, pNVarChar(LanguageResourceBase.Property_LValue, languageResourceObject.LValue));
-			AddParameter(cmd, pInt32(LanguageResourceBase.Property_LanguageId, languageResourceObject.LanguageId));
-			AddParameter(cmd, pInt32(LanguageResourceBase.Property_CompanyId, languageResourceObject.CompanyId));
+			AddParameter(cmd, pNVarChar(LanguageResourceBase.Property_Description, 255, languageResourceObject.Description));
+			AddParameter(cmd, pBool(LanguageResourceBase.Property_IsActive, languageResourceObject.IsActive));
+			AddParameter(cmd, pNVarChar(LanguageResourceBase.Property_CreatedBy, 100, languageResourceObject.CreatedBy));
+			AddParameter(cmd, pDateTime(LanguageResourceBase.Property_CreatedAt, languageResourceObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(LanguageResourceBase.Property_UpdatedBy, 100, languageResourceObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(LanguageResourceBase.Property_UpdatedAt, languageResourceObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -163,20 +169,6 @@ namespace MDUA.DataAccess
 		}
 		
 		/// <summary>
-        /// Retrieves all LanguageResource objects by LanguageId
-        /// </summary>
-        /// <returns>A list of LanguageResource objects</returns>
-		public LanguageResourceList GetByLanguageId(Int32 _LanguageId)
-		{
-			using( SqlCommand cmd = GetSPCommand(GETLANGUAGERESOURCEBYLANGUAGEID))
-			{
-				
-				AddParameter( cmd, pInt32(LanguageResourceBase.Property_LanguageId, _LanguageId));
-				return GetList(cmd, ALL_AVAILABLE_RECORDS);
-			}
-		}
-		
-		/// <summary>
         /// Retrieves all LanguageResource objects by CompanyId
         /// </summary>
         /// <returns>A list of LanguageResource objects</returns>
@@ -186,6 +178,20 @@ namespace MDUA.DataAccess
 			{
 				
 				AddParameter( cmd, pInt32(LanguageResourceBase.Property_CompanyId, _CompanyId));
+				return GetList(cmd, ALL_AVAILABLE_RECORDS);
+			}
+		}
+		
+		/// <summary>
+        /// Retrieves all LanguageResource objects by LanguageId
+        /// </summary>
+        /// <returns>A list of LanguageResource objects</returns>
+		public LanguageResourceList GetByLanguageId(Int32 _LanguageId)
+		{
+			using( SqlCommand cmd = GetSPCommand(GETLANGUAGERESOURCEBYLANGUAGEID))
+			{
+				
+				AddParameter( cmd, pInt32(LanguageResourceBase.Property_LanguageId, _LanguageId));
 				return GetList(cmd, ALL_AVAILABLE_RECORDS);
 			}
 		}
@@ -279,11 +285,17 @@ namespace MDUA.DataAccess
 		{
 			
 				languageResourceObject.Id = reader.GetInt32( start + 0 );			
-				languageResourceObject.LKey = reader.GetString( start + 1 );			
-				languageResourceObject.LValue = reader.GetString( start + 2 );			
-				languageResourceObject.LanguageId = reader.GetInt32( start + 3 );			
-				if(!reader.IsDBNull(4)) languageResourceObject.CompanyId = reader.GetInt32( start + 4 );			
-			FillBaseObject(languageResourceObject, reader, (start + 5));
+				if(!reader.IsDBNull(1)) languageResourceObject.CompanyId = reader.GetInt32( start + 1 );			
+				languageResourceObject.LanguageId = reader.GetInt32( start + 2 );			
+				languageResourceObject.LKey = reader.GetString( start + 3 );			
+				languageResourceObject.LValue = reader.GetString( start + 4 );			
+				if(!reader.IsDBNull(5)) languageResourceObject.Description = reader.GetString( start + 5 );			
+				languageResourceObject.IsActive = reader.GetBoolean( start + 6 );			
+				if(!reader.IsDBNull(7)) languageResourceObject.CreatedBy = reader.GetString( start + 7 );			
+				languageResourceObject.CreatedAt = reader.GetDateTime( start + 8 );			
+				if(!reader.IsDBNull(9)) languageResourceObject.UpdatedBy = reader.GetString( start + 9 );			
+				if(!reader.IsDBNull(10)) languageResourceObject.UpdatedAt = reader.GetDateTime( start + 10 );			
+			FillBaseObject(languageResourceObject, reader, (start + 11));
 
 			
 			languageResourceObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

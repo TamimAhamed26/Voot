@@ -43,6 +43,16 @@ namespace MDUA.DataAccess
 		private void AddCommonParams(SqlCommand cmd, CompanyBase companyObject)
 		{	
 			AddParameter(cmd, pNVarChar(CompanyBase.Property_CompanyName, 150, companyObject.CompanyName));
+			AddParameter(cmd, pNVarChar(CompanyBase.Property_CompanyCode, 50, companyObject.CompanyCode));
+			AddParameter(cmd, pNVarChar(CompanyBase.Property_Email, 255, companyObject.Email));
+			AddParameter(cmd, pNVarChar(CompanyBase.Property_Phone, 50, companyObject.Phone));
+			AddParameter(cmd, pNVarChar(CompanyBase.Property_Website, 255, companyObject.Website));
+			AddParameter(cmd, pNVarChar(CompanyBase.Property_Address, 255, companyObject.Address));
+			AddParameter(cmd, pBool(CompanyBase.Property_IsActive, companyObject.IsActive));
+			AddParameter(cmd, pNVarChar(CompanyBase.Property_CreatedBy, 100, companyObject.CreatedBy));
+			AddParameter(cmd, pDateTime(CompanyBase.Property_CreatedAt, companyObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(CompanyBase.Property_UpdatedBy, 100, companyObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(CompanyBase.Property_UpdatedAt, companyObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -247,7 +257,17 @@ namespace MDUA.DataAccess
 			
 				companyObject.Id = reader.GetInt32( start + 0 );			
 				companyObject.CompanyName = reader.GetString( start + 1 );			
-			FillBaseObject(companyObject, reader, (start + 2));
+				if(!reader.IsDBNull(2)) companyObject.CompanyCode = reader.GetString( start + 2 );			
+				if(!reader.IsDBNull(3)) companyObject.Email = reader.GetString( start + 3 );			
+				if(!reader.IsDBNull(4)) companyObject.Phone = reader.GetString( start + 4 );			
+				if(!reader.IsDBNull(5)) companyObject.Website = reader.GetString( start + 5 );			
+				if(!reader.IsDBNull(6)) companyObject.Address = reader.GetString( start + 6 );			
+				companyObject.IsActive = reader.GetBoolean( start + 7 );			
+				companyObject.CreatedBy = reader.GetString( start + 8 );			
+				companyObject.CreatedAt = reader.GetDateTime( start + 9 );			
+				if(!reader.IsDBNull(10)) companyObject.UpdatedBy = reader.GetString( start + 10 );			
+				if(!reader.IsDBNull(11)) companyObject.UpdatedAt = reader.GetDateTime( start + 11 );			
+			FillBaseObject(companyObject, reader, (start + 12));
 
 			
 			companyObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

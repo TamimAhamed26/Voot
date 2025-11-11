@@ -48,6 +48,12 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pNVarChar(AddressBase.Property_City, 100, addressObject.City));
 			AddParameter(cmd, pNVarChar(AddressBase.Property_Divison, 100, addressObject.Divison));
 			AddParameter(cmd, pVarChar(AddressBase.Property_PostalCode, 20, addressObject.PostalCode));
+			AddParameter(cmd, pNVarChar(AddressBase.Property_Country, 100, addressObject.Country));
+			AddParameter(cmd, pNVarChar(AddressBase.Property_AddressType, 50, addressObject.AddressType));
+			AddParameter(cmd, pNVarChar(AddressBase.Property_CreatedBy, 100, addressObject.CreatedBy));
+			AddParameter(cmd, pDateTime(AddressBase.Property_CreatedAt, addressObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(AddressBase.Property_UpdatedBy, 100, addressObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(AddressBase.Property_UpdatedAt, addressObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -270,7 +276,13 @@ namespace MDUA.DataAccess
 				addressObject.City = reader.GetString( start + 3 );			
 				if(!reader.IsDBNull(4)) addressObject.Divison = reader.GetString( start + 4 );			
 				addressObject.PostalCode = reader.GetString( start + 5 );			
-			FillBaseObject(addressObject, reader, (start + 6));
+				if(!reader.IsDBNull(6)) addressObject.Country = reader.GetString( start + 6 );			
+				if(!reader.IsDBNull(7)) addressObject.AddressType = reader.GetString( start + 7 );			
+				addressObject.CreatedBy = reader.GetString( start + 8 );			
+				addressObject.CreatedAt = reader.GetDateTime( start + 9 );			
+				if(!reader.IsDBNull(10)) addressObject.UpdatedBy = reader.GetString( start + 10 );			
+				if(!reader.IsDBNull(11)) addressObject.UpdatedAt = reader.GetDateTime( start + 11 );			
+			FillBaseObject(addressObject, reader, (start + 12));
 
 			
 			addressObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

@@ -8,10 +8,10 @@ using MDUA.Entities.List;
 
 namespace MDUA.Entities
 {
-	public partial class UserLogin 
-	{
-		
-	}
+    public partial class UserLogin
+    {
+
+    }
 
     public class UserLoginResult
     {

@@ -47,6 +47,12 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pInt32(PoReceivedBase.Property_ReceivedQuantity, poReceivedObject.ReceivedQuantity));
 			AddParameter(cmd, pDecimal(PoReceivedBase.Property_BuyingPrice, 9, poReceivedObject.BuyingPrice));
 			AddParameter(cmd, pDateTime(PoReceivedBase.Property_ReceivedDate, poReceivedObject.ReceivedDate));
+			AddParameter(cmd, pNVarChar(PoReceivedBase.Property_CreatedBy, 100, poReceivedObject.CreatedBy));
+			AddParameter(cmd, pDateTime(PoReceivedBase.Property_CreatedAt, poReceivedObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(PoReceivedBase.Property_UpdatedBy, 100, poReceivedObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(PoReceivedBase.Property_UpdatedAt, poReceivedObject.UpdatedAt));
+			AddParameter(cmd, pNVarChar(PoReceivedBase.Property_Remarks, 500, poReceivedObject.Remarks));
+			AddParameter(cmd, pNVarChar(PoReceivedBase.Property_InvoiceNo, 100, poReceivedObject.InvoiceNo));
 		}
 		#endregion
 		
@@ -268,7 +274,13 @@ namespace MDUA.DataAccess
 				poReceivedObject.ReceivedQuantity = reader.GetInt32( start + 2 );			
 				poReceivedObject.BuyingPrice = reader.GetDecimal( start + 3 );			
 				poReceivedObject.ReceivedDate = reader.GetDateTime( start + 4 );			
-			FillBaseObject(poReceivedObject, reader, (start + 5));
+				if(!reader.IsDBNull(5)) poReceivedObject.CreatedBy = reader.GetString( start + 5 );			
+				poReceivedObject.CreatedAt = reader.GetDateTime( start + 6 );			
+				if(!reader.IsDBNull(7)) poReceivedObject.UpdatedBy = reader.GetString( start + 7 );			
+				if(!reader.IsDBNull(8)) poReceivedObject.UpdatedAt = reader.GetDateTime( start + 8 );			
+				if(!reader.IsDBNull(9)) poReceivedObject.Remarks = reader.GetString( start + 9 );			
+				if(!reader.IsDBNull(10)) poReceivedObject.InvoiceNo = reader.GetString( start + 10 );			
+			FillBaseObject(poReceivedObject, reader, (start + 11));
 
 			
 			poReceivedObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

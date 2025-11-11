@@ -43,6 +43,11 @@ namespace MDUA.DataAccess
 		private void AddCommonParams(SqlCommand cmd, AccountTypeBase accountTypeObject)
 		{	
 			AddParameter(cmd, pNVarChar(AccountTypeBase.Property_Name, 50, accountTypeObject.Name));
+			AddParameter(cmd, pNVarChar(AccountTypeBase.Property_Description, 200, accountTypeObject.Description));
+			AddParameter(cmd, pNVarChar(AccountTypeBase.Property_CreatedBy, 100, accountTypeObject.CreatedBy));
+			AddParameter(cmd, pDateTime(AccountTypeBase.Property_CreatedAt, accountTypeObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(AccountTypeBase.Property_UpdatedBy, 100, accountTypeObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(AccountTypeBase.Property_UpdatedAt, accountTypeObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -247,7 +252,12 @@ namespace MDUA.DataAccess
 			
 				accountTypeObject.Id = reader.GetInt32( start + 0 );			
 				accountTypeObject.Name = reader.GetString( start + 1 );			
-			FillBaseObject(accountTypeObject, reader, (start + 2));
+				if(!reader.IsDBNull(2)) accountTypeObject.Description = reader.GetString( start + 2 );			
+				accountTypeObject.CreatedBy = reader.GetString( start + 3 );			
+				accountTypeObject.CreatedAt = reader.GetDateTime( start + 4 );			
+				if(!reader.IsDBNull(5)) accountTypeObject.UpdatedBy = reader.GetString( start + 5 );			
+				if(!reader.IsDBNull(6)) accountTypeObject.UpdatedAt = reader.GetDateTime( start + 6 );			
+			FillBaseObject(accountTypeObject, reader, (start + 7));
 
 			
 			accountTypeObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

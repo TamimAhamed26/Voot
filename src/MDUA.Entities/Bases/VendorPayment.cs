@@ -39,14 +39,14 @@ namespace MDUA.Entities
             set { this._PaymentMethodIdObject = value; }
       	}
 		
-		private Vendor _VendorIdObject = null;
+		private CompanyVendor _VendorIdObject = null;
 		
 		/// <summary>
-		/// Gets or sets the source <see cref="Vendor"/>.
+		/// Gets or sets the source <see cref="CompanyVendor"/>.
 		/// </summary>
-		/// <value>The source Vendor for _VendorIdObject.</value>
+		/// <value>The source CompanyVendor for _VendorIdObject.</value>
 		[DataMember]
-		public Vendor VendorIdObject
+		public CompanyVendor VendorIdObject
       	{
             get { return this._VendorIdObject; }
             set { this._VendorIdObject = value; }

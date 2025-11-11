@@ -48,12 +48,15 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pInt32(CustomerPaymentBase.Property_CustomerId, customerPaymentObject.CustomerId));
 			AddParameter(cmd, pInt32(CustomerPaymentBase.Property_PaymentMethodId, customerPaymentObject.PaymentMethodId));
 			AddParameter(cmd, pInt32(CustomerPaymentBase.Property_InventoryTransactionId, customerPaymentObject.InventoryTransactionId));
-			AddParameter(cmd, pNVarChar(CustomerPaymentBase.Property_ReferenceNumber, 100, customerPaymentObject.ReferenceNumber));
 			AddParameter(cmd, pNVarChar(CustomerPaymentBase.Property_PaymentType, 20, customerPaymentObject.PaymentType));
 			AddParameter(cmd, pDecimal(CustomerPaymentBase.Property_Amount, 9, customerPaymentObject.Amount));
 			AddParameter(cmd, pDateTime(CustomerPaymentBase.Property_PaymentDate, customerPaymentObject.PaymentDate));
 			AddParameter(cmd, pNVarChar(CustomerPaymentBase.Property_Status, 20, customerPaymentObject.Status));
 			AddParameter(cmd, pNVarChar(CustomerPaymentBase.Property_Notes, 500, customerPaymentObject.Notes));
+			AddParameter(cmd, pNVarChar(CustomerPaymentBase.Property_CreatedBy, 100, customerPaymentObject.CreatedBy));
+			AddParameter(cmd, pDateTime(CustomerPaymentBase.Property_CreatedAt, customerPaymentObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(CustomerPaymentBase.Property_UpdatedBy, 100, customerPaymentObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(CustomerPaymentBase.Property_UpdatedAt, customerPaymentObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -302,13 +305,16 @@ namespace MDUA.DataAccess
 				customerPaymentObject.CustomerId = reader.GetInt32( start + 1 );			
 				customerPaymentObject.PaymentMethodId = reader.GetInt32( start + 2 );			
 				if(!reader.IsDBNull(3)) customerPaymentObject.InventoryTransactionId = reader.GetInt32( start + 3 );			
-				if(!reader.IsDBNull(4)) customerPaymentObject.ReferenceNumber = reader.GetString( start + 4 );			
-				customerPaymentObject.PaymentType = reader.GetString( start + 5 );			
-				customerPaymentObject.Amount = reader.GetDecimal( start + 6 );			
-				customerPaymentObject.PaymentDate = reader.GetDateTime( start + 7 );			
-				customerPaymentObject.Status = reader.GetString( start + 8 );			
-				if(!reader.IsDBNull(9)) customerPaymentObject.Notes = reader.GetString( start + 9 );			
-			FillBaseObject(customerPaymentObject, reader, (start + 10));
+				customerPaymentObject.PaymentType = reader.GetString( start + 4 );			
+				customerPaymentObject.Amount = reader.GetDecimal( start + 5 );			
+				customerPaymentObject.PaymentDate = reader.GetDateTime( start + 6 );			
+				customerPaymentObject.Status = reader.GetString( start + 7 );			
+				if(!reader.IsDBNull(8)) customerPaymentObject.Notes = reader.GetString( start + 8 );			
+				customerPaymentObject.CreatedBy = reader.GetString( start + 9 );			
+				customerPaymentObject.CreatedAt = reader.GetDateTime( start + 10 );			
+				if(!reader.IsDBNull(11)) customerPaymentObject.UpdatedBy = reader.GetString( start + 11 );			
+				if(!reader.IsDBNull(12)) customerPaymentObject.UpdatedAt = reader.GetDateTime( start + 12 );			
+			FillBaseObject(customerPaymentObject, reader, (start + 13));
 
 			
 			customerPaymentObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

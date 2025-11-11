@@ -22,9 +22,9 @@ namespace MDUA.DataAccess
 		private const string GETINVENTORYTRANSACTIONBYID = "GetInventoryTransactionById";
 		private const string GETALLINVENTORYTRANSACTION = "GetAllInventoryTransaction";
 		private const string GETPAGEDINVENTORYTRANSACTION = "GetPagedInventoryTransaction";
+		private const string GETINVENTORYTRANSACTIONBYSALESORDERDETAILID = "GetInventoryTransactionBySalesOrderDetailId";
 		private const string GETINVENTORYTRANSACTIONBYPORECEIVEDID = "GetInventoryTransactionByPoReceivedId";
 		private const string GETINVENTORYTRANSACTIONBYPRODUCTID = "GetInventoryTransactionByProductId";
-		private const string GETINVENTORYTRANSACTIONBYSALESORDERDETAILID = "GetInventoryTransactionBySalesOrderDetailId";
 		private const string GETINVENTORYTRANSACTIONMAXIMUMID = "GetInventoryTransactionMaximumId";
 		private const string GETINVENTORYTRANSACTIONROWCOUNT = "GetInventoryTransactionRowCount";	
 		private const string GETINVENTORYTRANSACTIONBYQUERY = "GetInventoryTransactionByQuery";
@@ -45,13 +45,18 @@ namespace MDUA.DataAccess
         /// <param name="inventoryTransactionObject"></param>
 		private void AddCommonParams(SqlCommand cmd, InventoryTransactionBase inventoryTransactionObject)
 		{	
+			AddParameter(cmd, pInt32(InventoryTransactionBase.Property_SalesOrderDetailId, inventoryTransactionObject.SalesOrderDetailId));
 			AddParameter(cmd, pInt32(InventoryTransactionBase.Property_PoReceivedId, inventoryTransactionObject.PoReceivedId));
 			AddParameter(cmd, pInt32(InventoryTransactionBase.Property_ProductId, inventoryTransactionObject.ProductId));
 			AddParameter(cmd, pNVarChar(InventoryTransactionBase.Property_InOut, 3, inventoryTransactionObject.InOut));
 			AddParameter(cmd, pDateTime(InventoryTransactionBase.Property_Date, inventoryTransactionObject.Date));
 			AddParameter(cmd, pDecimal(InventoryTransactionBase.Property_Price, 9, inventoryTransactionObject.Price));
 			AddParameter(cmd, pInt32(InventoryTransactionBase.Property_Quantity, inventoryTransactionObject.Quantity));
-			AddParameter(cmd, pInt32(InventoryTransactionBase.Property_SalesOrderDetailId, inventoryTransactionObject.SalesOrderDetailId));
+			AddParameter(cmd, pNVarChar(InventoryTransactionBase.Property_CreatedBy, 100, inventoryTransactionObject.CreatedBy));
+			AddParameter(cmd, pDateTime(InventoryTransactionBase.Property_CreatedAt, inventoryTransactionObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(InventoryTransactionBase.Property_UpdatedBy, 100, inventoryTransactionObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(InventoryTransactionBase.Property_UpdatedAt, inventoryTransactionObject.UpdatedAt));
+			AddParameter(cmd, pNVarChar(InventoryTransactionBase.Property_Remarks, 255, inventoryTransactionObject.Remarks));
 		}
 		#endregion
 		
@@ -167,6 +172,20 @@ namespace MDUA.DataAccess
 		}
 		
 		/// <summary>
+        /// Retrieves all InventoryTransaction objects by SalesOrderDetailId
+        /// </summary>
+        /// <returns>A list of InventoryTransaction objects</returns>
+		public InventoryTransactionList GetBySalesOrderDetailId(Nullable<Int32> _SalesOrderDetailId)
+		{
+			using( SqlCommand cmd = GetSPCommand(GETINVENTORYTRANSACTIONBYSALESORDERDETAILID))
+			{
+				
+				AddParameter( cmd, pInt32(InventoryTransactionBase.Property_SalesOrderDetailId, _SalesOrderDetailId));
+				return GetList(cmd, ALL_AVAILABLE_RECORDS);
+			}
+		}
+		
+		/// <summary>
         /// Retrieves all InventoryTransaction objects by PoReceivedId
         /// </summary>
         /// <returns>A list of InventoryTransaction objects</returns>
@@ -190,20 +209,6 @@ namespace MDUA.DataAccess
 			{
 				
 				AddParameter( cmd, pInt32(InventoryTransactionBase.Property_ProductId, _ProductId));
-				return GetList(cmd, ALL_AVAILABLE_RECORDS);
-			}
-		}
-		
-		/// <summary>
-        /// Retrieves all InventoryTransaction objects by SalesOrderDetailId
-        /// </summary>
-        /// <returns>A list of InventoryTransaction objects</returns>
-		public InventoryTransactionList GetBySalesOrderDetailId(Nullable<Int32> _SalesOrderDetailId)
-		{
-			using( SqlCommand cmd = GetSPCommand(GETINVENTORYTRANSACTIONBYSALESORDERDETAILID))
-			{
-				
-				AddParameter( cmd, pInt32(InventoryTransactionBase.Property_SalesOrderDetailId, _SalesOrderDetailId));
 				return GetList(cmd, ALL_AVAILABLE_RECORDS);
 			}
 		}
@@ -297,14 +302,19 @@ namespace MDUA.DataAccess
 		{
 			
 				inventoryTransactionObject.Id = reader.GetInt32( start + 0 );			
-				if(!reader.IsDBNull(1)) inventoryTransactionObject.PoReceivedId = reader.GetInt32( start + 1 );			
-				inventoryTransactionObject.ProductId = reader.GetInt32( start + 2 );			
-				inventoryTransactionObject.InOut = reader.GetString( start + 3 );			
-				if(!reader.IsDBNull(4)) inventoryTransactionObject.Date = reader.GetDateTime( start + 4 );			
-				inventoryTransactionObject.Price = reader.GetDecimal( start + 5 );			
-				inventoryTransactionObject.Quantity = reader.GetInt32( start + 6 );			
-				if(!reader.IsDBNull(7)) inventoryTransactionObject.SalesOrderDetailId = reader.GetInt32( start + 7 );			
-			FillBaseObject(inventoryTransactionObject, reader, (start + 8));
+				if(!reader.IsDBNull(1)) inventoryTransactionObject.SalesOrderDetailId = reader.GetInt32( start + 1 );			
+				if(!reader.IsDBNull(2)) inventoryTransactionObject.PoReceivedId = reader.GetInt32( start + 2 );			
+				inventoryTransactionObject.ProductId = reader.GetInt32( start + 3 );			
+				inventoryTransactionObject.InOut = reader.GetString( start + 4 );			
+				inventoryTransactionObject.Date = reader.GetDateTime( start + 5 );			
+				if(!reader.IsDBNull(6)) inventoryTransactionObject.Price = reader.GetDecimal( start + 6 );			
+				inventoryTransactionObject.Quantity = reader.GetInt32( start + 7 );			
+				inventoryTransactionObject.CreatedBy = reader.GetString( start + 8 );			
+				inventoryTransactionObject.CreatedAt = reader.GetDateTime( start + 9 );			
+				if(!reader.IsDBNull(10)) inventoryTransactionObject.UpdatedBy = reader.GetString( start + 10 );			
+				if(!reader.IsDBNull(11)) inventoryTransactionObject.UpdatedAt = reader.GetDateTime( start + 11 );			
+				if(!reader.IsDBNull(12)) inventoryTransactionObject.Remarks = reader.GetString( start + 12 );			
+			FillBaseObject(inventoryTransactionObject, reader, (start + 13));
 
 			
 			inventoryTransactionObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

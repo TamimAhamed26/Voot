@@ -47,6 +47,10 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pDateTime(DeliveryBase.Property_DeliveryDate, deliveryObject.DeliveryDate));
 			AddParameter(cmd, pNVarChar(DeliveryBase.Property_TrackingNumber, 100, deliveryObject.TrackingNumber));
 			AddParameter(cmd, pNVarChar(DeliveryBase.Property_Status, 50, deliveryObject.Status));
+			AddParameter(cmd, pNVarChar(DeliveryBase.Property_CreatedBy, 100, deliveryObject.CreatedBy));
+			AddParameter(cmd, pDateTime(DeliveryBase.Property_CreatedAt, deliveryObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(DeliveryBase.Property_UpdatedBy, 100, deliveryObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(DeliveryBase.Property_UpdatedAt, deliveryObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -268,7 +272,11 @@ namespace MDUA.DataAccess
 				deliveryObject.DeliveryDate = reader.GetDateTime( start + 2 );			
 				if(!reader.IsDBNull(3)) deliveryObject.TrackingNumber = reader.GetString( start + 3 );			
 				deliveryObject.Status = reader.GetString( start + 4 );			
-			FillBaseObject(deliveryObject, reader, (start + 5));
+				deliveryObject.CreatedBy = reader.GetString( start + 5 );			
+				deliveryObject.CreatedAt = reader.GetDateTime( start + 6 );			
+				if(!reader.IsDBNull(7)) deliveryObject.UpdatedBy = reader.GetString( start + 7 );			
+				if(!reader.IsDBNull(8)) deliveryObject.UpdatedAt = reader.GetDateTime( start + 8 );			
+			FillBaseObject(deliveryObject, reader, (start + 9));
 
 			
 			deliveryObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

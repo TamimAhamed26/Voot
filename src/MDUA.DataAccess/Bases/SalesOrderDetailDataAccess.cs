@@ -50,6 +50,10 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pDecimal(SalesOrderDetailBase.Property_UnitPrice, 9, salesOrderDetailObject.UnitPrice));
 			AddParameter(cmd, pDecimal(SalesOrderDetailBase.Property_LineTotal, 17, salesOrderDetailObject.LineTotal));
 			AddParameter(cmd, pDecimal(SalesOrderDetailBase.Property_ProfitAmount, 9, salesOrderDetailObject.ProfitAmount));
+			AddParameter(cmd, pNVarChar(SalesOrderDetailBase.Property_CreatedBy, 100, salesOrderDetailObject.CreatedBy));
+			AddParameter(cmd, pDateTime(SalesOrderDetailBase.Property_CreatedAt, salesOrderDetailObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(SalesOrderDetailBase.Property_UpdatedBy, 100, salesOrderDetailObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(SalesOrderDetailBase.Property_UpdatedAt, salesOrderDetailObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -287,7 +291,11 @@ namespace MDUA.DataAccess
 				salesOrderDetailObject.UnitPrice = reader.GetDecimal( start + 4 );			
 				if(!reader.IsDBNull(5)) salesOrderDetailObject.LineTotal = reader.GetDecimal( start + 5 );			
 				if(!reader.IsDBNull(6)) salesOrderDetailObject.ProfitAmount = reader.GetDecimal( start + 6 );			
-			FillBaseObject(salesOrderDetailObject, reader, (start + 7));
+				if(!reader.IsDBNull(7)) salesOrderDetailObject.CreatedBy = reader.GetString( start + 7 );			
+				salesOrderDetailObject.CreatedAt = reader.GetDateTime( start + 8 );			
+				if(!reader.IsDBNull(9)) salesOrderDetailObject.UpdatedBy = reader.GetString( start + 9 );			
+				if(!reader.IsDBNull(10)) salesOrderDetailObject.UpdatedAt = reader.GetDateTime( start + 10 );			
+			FillBaseObject(salesOrderDetailObject, reader, (start + 11));
 
 			
 			salesOrderDetailObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

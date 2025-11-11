@@ -18,7 +18,14 @@ namespace MDUA.Entities.Bases
 			CustomerName = 1,
 			Email = 2,
 			Phone = 3,
-			IsActive = 4
+			IsActive = 4,
+			DateOfBirth = 5,
+			Gender = 6,
+			Notes = 7,
+			CreatedBy = 8,
+			CreatedAt = 9,
+			UpdatedBy = 10,
+			UpdatedAt = 11
 		}
 		#endregion
 	
@@ -28,6 +35,13 @@ namespace MDUA.Entities.Bases
 		public const string Property_Email = "Email";		            
 		public const string Property_Phone = "Phone";		            
 		public const string Property_IsActive = "IsActive";		            
+		public const string Property_DateOfBirth = "DateOfBirth";		            
+		public const string Property_Gender = "Gender";		            
+		public const string Property_Notes = "Notes";		            
+		public const string Property_CreatedBy = "CreatedBy";		            
+		public const string Property_CreatedAt = "CreatedAt";		            
+		public const string Property_UpdatedBy = "UpdatedBy";		            
+		public const string Property_UpdatedAt = "UpdatedAt";		            
 		#endregion
 		
 		#region Private Data Types
@@ -36,6 +50,13 @@ namespace MDUA.Entities.Bases
 		private String _Email;	            
 		private String _Phone;	            
 		private Boolean _IsActive;	            
+		private Nullable<DateTime> _DateOfBirth;	            
+		private String _Gender;	            
+		private String _Notes;	            
+		private String _CreatedBy;	            
+		private DateTime _CreatedAt;	            
+		private String _UpdatedBy;	            
+		private Nullable<DateTime> _UpdatedAt;	            
 		#endregion
 		
 		#region Properties		
@@ -114,6 +135,111 @@ namespace MDUA.Entities.Bases
 			}
         }
 
+		[DataMember]
+		public Nullable<DateTime> DateOfBirth
+		{	
+			get{ return _DateOfBirth; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_DateOfBirth, value, _DateOfBirth);
+				if (PropertyChanging(args))
+				{
+					_DateOfBirth = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String Gender
+		{	
+			get{ return _Gender; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_Gender, value, _Gender);
+				if (PropertyChanging(args))
+				{
+					_Gender = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String Notes
+		{	
+			get{ return _Notes; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_Notes, value, _Notes);
+				if (PropertyChanging(args))
+				{
+					_Notes = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String CreatedBy
+		{	
+			get{ return _CreatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedBy, value, _CreatedBy);
+				if (PropertyChanging(args))
+				{
+					_CreatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public DateTime CreatedAt
+		{	
+			get{ return _CreatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedAt, value, _CreatedAt);
+				if (PropertyChanging(args))
+				{
+					_CreatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String UpdatedBy
+		{	
+			get{ return _UpdatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedBy, value, _UpdatedBy);
+				if (PropertyChanging(args))
+				{
+					_UpdatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public Nullable<DateTime> UpdatedAt
+		{	
+			get{ return _UpdatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedAt, value, _UpdatedAt);
+				if (PropertyChanging(args))
+				{
+					_UpdatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
 		#endregion
 		
 		#region Cloning Base Objects
@@ -126,6 +252,13 @@ namespace MDUA.Entities.Bases
 			newObj.Email = this.Email;						
 			newObj.Phone = this.Phone;						
 			newObj.IsActive = this.IsActive;						
+			newObj.DateOfBirth = this.DateOfBirth;						
+			newObj.Gender = this.Gender;						
+			newObj.Notes = this.Notes;						
+			newObj.CreatedBy = this.CreatedBy;						
+			newObj.CreatedAt = this.CreatedAt;						
+			newObj.UpdatedBy = this.UpdatedBy;						
+			newObj.UpdatedAt = this.UpdatedAt;						
 			
 			return newObj;
 		}
@@ -140,6 +273,13 @@ namespace MDUA.Entities.Bases
 			info.AddValue(CustomerBase.Property_Email, Email);				
 			info.AddValue(CustomerBase.Property_Phone, Phone);				
 			info.AddValue(CustomerBase.Property_IsActive, IsActive);				
+			info.AddValue(CustomerBase.Property_DateOfBirth, DateOfBirth);				
+			info.AddValue(CustomerBase.Property_Gender, Gender);				
+			info.AddValue(CustomerBase.Property_Notes, Notes);				
+			info.AddValue(CustomerBase.Property_CreatedBy, CreatedBy);				
+			info.AddValue(CustomerBase.Property_CreatedAt, CreatedAt);				
+			info.AddValue(CustomerBase.Property_UpdatedBy, UpdatedBy);				
+			info.AddValue(CustomerBase.Property_UpdatedAt, UpdatedAt);				
 		}
 		#endregion
 

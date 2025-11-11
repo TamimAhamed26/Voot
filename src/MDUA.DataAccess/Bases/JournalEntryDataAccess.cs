@@ -47,6 +47,9 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pDateTime(JournalEntryBase.Property_EntryDate, journalEntryObject.EntryDate));
 			AddParameter(cmd, pNVarChar(JournalEntryBase.Property_Description, 255, journalEntryObject.Description));
 			AddParameter(cmd, pNVarChar(JournalEntryBase.Property_CreatedBy, 100, journalEntryObject.CreatedBy));
+			AddParameter(cmd, pDateTime(JournalEntryBase.Property_CreatedAt, journalEntryObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(JournalEntryBase.Property_UpdatedBy, 100, journalEntryObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(JournalEntryBase.Property_UpdatedAt, journalEntryObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -255,7 +258,10 @@ namespace MDUA.DataAccess
 				journalEntryObject.EntryDate = reader.GetDateTime( start + 3 );			
 				if(!reader.IsDBNull(4)) journalEntryObject.Description = reader.GetString( start + 4 );			
 				if(!reader.IsDBNull(5)) journalEntryObject.CreatedBy = reader.GetString( start + 5 );			
-			FillBaseObject(journalEntryObject, reader, (start + 6));
+				journalEntryObject.CreatedAt = reader.GetDateTime( start + 6 );			
+				if(!reader.IsDBNull(7)) journalEntryObject.UpdatedBy = reader.GetString( start + 7 );			
+				if(!reader.IsDBNull(8)) journalEntryObject.UpdatedAt = reader.GetDateTime( start + 8 );			
+			FillBaseObject(journalEntryObject, reader, (start + 9));
 
 			
 			journalEntryObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

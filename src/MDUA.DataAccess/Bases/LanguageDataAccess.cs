@@ -44,6 +44,11 @@ namespace MDUA.DataAccess
 		{	
 			AddParameter(cmd, pNVarChar(LanguageBase.Property_Name, 100, languageObject.Name));
 			AddParameter(cmd, pVarChar(LanguageBase.Property_Code, 10, languageObject.Code));
+			AddParameter(cmd, pBool(LanguageBase.Property_IsActive, languageObject.IsActive));
+			AddParameter(cmd, pNVarChar(LanguageBase.Property_CreatedBy, 100, languageObject.CreatedBy));
+			AddParameter(cmd, pDateTime(LanguageBase.Property_CreatedAt, languageObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(LanguageBase.Property_UpdatedBy, 100, languageObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(LanguageBase.Property_UpdatedAt, languageObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -249,7 +254,12 @@ namespace MDUA.DataAccess
 				languageObject.Id = reader.GetInt32( start + 0 );			
 				languageObject.Name = reader.GetString( start + 1 );			
 				languageObject.Code = reader.GetString( start + 2 );			
-			FillBaseObject(languageObject, reader, (start + 3));
+				languageObject.IsActive = reader.GetBoolean( start + 3 );			
+				if(!reader.IsDBNull(4)) languageObject.CreatedBy = reader.GetString( start + 4 );			
+				languageObject.CreatedAt = reader.GetDateTime( start + 5 );			
+				if(!reader.IsDBNull(6)) languageObject.UpdatedBy = reader.GetString( start + 6 );			
+				if(!reader.IsDBNull(7)) languageObject.UpdatedAt = reader.GetDateTime( start + 7 );			
+			FillBaseObject(languageObject, reader, (start + 8));
 
 			
 			languageObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

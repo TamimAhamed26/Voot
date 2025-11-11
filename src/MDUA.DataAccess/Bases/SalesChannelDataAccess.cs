@@ -43,6 +43,10 @@ namespace MDUA.DataAccess
 		private void AddCommonParams(SqlCommand cmd, SalesChannelBase salesChannelObject)
 		{	
 			AddParameter(cmd, pNVarChar(SalesChannelBase.Property_Name, 50, salesChannelObject.Name));
+			AddParameter(cmd, pNVarChar(SalesChannelBase.Property_CreatedBy, 100, salesChannelObject.CreatedBy));
+			AddParameter(cmd, pDateTime(SalesChannelBase.Property_CreatedAt, salesChannelObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(SalesChannelBase.Property_UpdatedBy, 100, salesChannelObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(SalesChannelBase.Property_UpdatedAt, salesChannelObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -247,7 +251,11 @@ namespace MDUA.DataAccess
 			
 				salesChannelObject.Id = reader.GetInt32( start + 0 );			
 				salesChannelObject.Name = reader.GetString( start + 1 );			
-			FillBaseObject(salesChannelObject, reader, (start + 2));
+				if(!reader.IsDBNull(2)) salesChannelObject.CreatedBy = reader.GetString( start + 2 );			
+				if(!reader.IsDBNull(3)) salesChannelObject.CreatedAt = reader.GetDateTime( start + 3 );			
+				if(!reader.IsDBNull(4)) salesChannelObject.UpdatedBy = reader.GetString( start + 4 );			
+				if(!reader.IsDBNull(5)) salesChannelObject.UpdatedAt = reader.GetDateTime( start + 5 );			
+			FillBaseObject(salesChannelObject, reader, (start + 6));
 
 			
 			salesChannelObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

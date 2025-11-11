@@ -39,17 +39,17 @@ namespace MDUA.Entities
             set { this._SalesChannelIdObject = value; }
       	}
 		
-		private Customer _CustomerIdObject = null;
+		private CompanyCustomer _CompanyCustomerIdObject = null;
 		
 		/// <summary>
-		/// Gets or sets the source <see cref="Customer"/>.
+		/// Gets or sets the source <see cref="CompanyCustomer"/>.
 		/// </summary>
-		/// <value>The source Customer for _CustomerIdObject.</value>
+		/// <value>The source CompanyCustomer for _CompanyCustomerIdObject.</value>
 		[DataMember]
-		public Customer CustomerIdObject
+		public CompanyCustomer CompanyCustomerIdObject
       	{
-            get { return this._CustomerIdObject; }
-            set { this._CustomerIdObject = value; }
+            get { return this._CompanyCustomerIdObject; }
+            set { this._CompanyCustomerIdObject = value; }
       	}
 		
 		#endregion

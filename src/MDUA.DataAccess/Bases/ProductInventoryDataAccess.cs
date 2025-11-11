@@ -48,6 +48,11 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pDecimal(ProductInventoryBase.Property_AverageCost, 9, productInventoryObject.AverageCost));
 			AddParameter(cmd, pDateTime(ProductInventoryBase.Property_UpdatedAt, productInventoryObject.UpdatedAt));
 			AddParameter(cmd, pDecimal(ProductInventoryBase.Property_SuggestedSellingPrice, 9, productInventoryObject.SuggestedSellingPrice));
+			AddParameter(cmd, pDateTime(ProductInventoryBase.Property_LastRestockedAt, productInventoryObject.LastRestockedAt));
+			AddParameter(cmd, pBool(ProductInventoryBase.Property_ReorderNeeded, productInventoryObject.ReorderNeeded));
+			AddParameter(cmd, pNVarChar(ProductInventoryBase.Property_CreatedBy, 100, productInventoryObject.CreatedBy));
+			AddParameter(cmd, pDateTime(ProductInventoryBase.Property_CreatedAt, productInventoryObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(ProductInventoryBase.Property_UpdatedBy, 100, productInventoryObject.UpdatedBy));
 		}
 		#endregion
 		
@@ -270,7 +275,12 @@ namespace MDUA.DataAccess
 				productInventoryObject.AverageCost = reader.GetDecimal( start + 3 );			
 				productInventoryObject.UpdatedAt = reader.GetDateTime( start + 4 );			
 				productInventoryObject.SuggestedSellingPrice = reader.GetDecimal( start + 5 );			
-			FillBaseObject(productInventoryObject, reader, (start + 6));
+				if(!reader.IsDBNull(6)) productInventoryObject.LastRestockedAt = reader.GetDateTime( start + 6 );			
+				productInventoryObject.ReorderNeeded = reader.GetBoolean( start + 7 );			
+				if(!reader.IsDBNull(8)) productInventoryObject.CreatedBy = reader.GetString( start + 8 );			
+				if(!reader.IsDBNull(9)) productInventoryObject.CreatedAt = reader.GetDateTime( start + 9 );			
+				if(!reader.IsDBNull(10)) productInventoryObject.UpdatedBy = reader.GetString( start + 10 );			
+			FillBaseObject(productInventoryObject, reader, (start + 11));
 
 			
 			productInventoryObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

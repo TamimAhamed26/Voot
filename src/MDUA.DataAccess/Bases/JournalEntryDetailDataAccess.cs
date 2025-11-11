@@ -48,6 +48,13 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pInt32(JournalEntryDetailBase.Property_AccountId, journalEntryDetailObject.AccountId));
 			AddParameter(cmd, pDecimal(JournalEntryDetailBase.Property_Debit, 9, journalEntryDetailObject.Debit));
 			AddParameter(cmd, pDecimal(JournalEntryDetailBase.Property_Credit, 9, journalEntryDetailObject.Credit));
+			AddParameter(cmd, pNVarChar(JournalEntryDetailBase.Property_CreatedBy, 100, journalEntryDetailObject.CreatedBy));
+			AddParameter(cmd, pDateTime(JournalEntryDetailBase.Property_CreatedAt, journalEntryDetailObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(JournalEntryDetailBase.Property_UpdatedBy, 100, journalEntryDetailObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(JournalEntryDetailBase.Property_UpdatedAt, journalEntryDetailObject.UpdatedAt));
+			AddParameter(cmd, pNVarChar(JournalEntryDetailBase.Property_LineDescription, 255, journalEntryDetailObject.LineDescription));
+			AddParameter(cmd, pNVarChar(JournalEntryDetailBase.Property_CurrencyCode, 10, journalEntryDetailObject.CurrencyCode));
+			AddParameter(cmd, pDecimal(JournalEntryDetailBase.Property_ExchangeRate, 9, journalEntryDetailObject.ExchangeRate));
 		}
 		#endregion
 		
@@ -283,7 +290,14 @@ namespace MDUA.DataAccess
 				journalEntryDetailObject.AccountId = reader.GetInt32( start + 2 );			
 				journalEntryDetailObject.Debit = reader.GetDecimal( start + 3 );			
 				journalEntryDetailObject.Credit = reader.GetDecimal( start + 4 );			
-			FillBaseObject(journalEntryDetailObject, reader, (start + 5));
+				if(!reader.IsDBNull(5)) journalEntryDetailObject.CreatedBy = reader.GetString( start + 5 );			
+				journalEntryDetailObject.CreatedAt = reader.GetDateTime( start + 6 );			
+				if(!reader.IsDBNull(7)) journalEntryDetailObject.UpdatedBy = reader.GetString( start + 7 );			
+				if(!reader.IsDBNull(8)) journalEntryDetailObject.UpdatedAt = reader.GetDateTime( start + 8 );			
+				if(!reader.IsDBNull(9)) journalEntryDetailObject.LineDescription = reader.GetString( start + 9 );			
+				if(!reader.IsDBNull(10)) journalEntryDetailObject.CurrencyCode = reader.GetString( start + 10 );			
+				if(!reader.IsDBNull(11)) journalEntryDetailObject.ExchangeRate = reader.GetDecimal( start + 11 );			
+			FillBaseObject(journalEntryDetailObject, reader, (start + 12));
 
 			
 			journalEntryDetailObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

@@ -10,6 +10,6 @@ namespace MDUA.Entities
 {
 	public partial class Account 
 	{
-		public string AccountTitle { get; set; }
+		
 	}
 }

@@ -46,6 +46,13 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pNVarChar(CustomerBase.Property_Email, 255, customerObject.Email));
 			AddParameter(cmd, pVarChar(CustomerBase.Property_Phone, 20, customerObject.Phone));
 			AddParameter(cmd, pBool(CustomerBase.Property_IsActive, customerObject.IsActive));
+			AddParameter(cmd, pDateTime(CustomerBase.Property_DateOfBirth, customerObject.DateOfBirth));
+			AddParameter(cmd, pNVarChar(CustomerBase.Property_Gender, 10, customerObject.Gender));
+			AddParameter(cmd, pNVarChar(CustomerBase.Property_Notes, 500, customerObject.Notes));
+			AddParameter(cmd, pNVarChar(CustomerBase.Property_CreatedBy, 100, customerObject.CreatedBy));
+			AddParameter(cmd, pDateTime(CustomerBase.Property_CreatedAt, customerObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(CustomerBase.Property_UpdatedBy, 100, customerObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(CustomerBase.Property_UpdatedAt, customerObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -253,7 +260,14 @@ namespace MDUA.DataAccess
 				customerObject.Email = reader.GetString( start + 2 );			
 				customerObject.Phone = reader.GetString( start + 3 );			
 				customerObject.IsActive = reader.GetBoolean( start + 4 );			
-			FillBaseObject(customerObject, reader, (start + 5));
+				if(!reader.IsDBNull(5)) customerObject.DateOfBirth = reader.GetDateTime( start + 5 );			
+				if(!reader.IsDBNull(6)) customerObject.Gender = reader.GetString( start + 6 );			
+				if(!reader.IsDBNull(7)) customerObject.Notes = reader.GetString( start + 7 );			
+				customerObject.CreatedBy = reader.GetString( start + 8 );			
+				customerObject.CreatedAt = reader.GetDateTime( start + 9 );			
+				if(!reader.IsDBNull(10)) customerObject.UpdatedBy = reader.GetString( start + 10 );			
+				if(!reader.IsDBNull(11)) customerObject.UpdatedAt = reader.GetDateTime( start + 11 );			
+			FillBaseObject(customerObject, reader, (start + 12));
 
 			
 			customerObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

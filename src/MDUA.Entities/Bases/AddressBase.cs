@@ -19,7 +19,13 @@ namespace MDUA.Entities.Bases
 			Street = 2,
 			City = 3,
 			Divison = 4,
-			PostalCode = 5
+			PostalCode = 5,
+			Country = 6,
+			AddressType = 7,
+			CreatedBy = 8,
+			CreatedAt = 9,
+			UpdatedBy = 10,
+			UpdatedAt = 11
 		}
 		#endregion
 	
@@ -30,6 +36,12 @@ namespace MDUA.Entities.Bases
 		public const string Property_City = "City";		            
 		public const string Property_Divison = "Divison";		            
 		public const string Property_PostalCode = "PostalCode";		            
+		public const string Property_Country = "Country";		            
+		public const string Property_AddressType = "AddressType";		            
+		public const string Property_CreatedBy = "CreatedBy";		            
+		public const string Property_CreatedAt = "CreatedAt";		            
+		public const string Property_UpdatedBy = "UpdatedBy";		            
+		public const string Property_UpdatedAt = "UpdatedAt";		            
 		#endregion
 		
 		#region Private Data Types
@@ -39,6 +51,12 @@ namespace MDUA.Entities.Bases
 		private String _City;	            
 		private String _Divison;	            
 		private String _PostalCode;	            
+		private String _Country;	            
+		private String _AddressType;	            
+		private String _CreatedBy;	            
+		private DateTime _CreatedAt;	            
+		private String _UpdatedBy;	            
+		private Nullable<DateTime> _UpdatedAt;	            
 		#endregion
 		
 		#region Properties		
@@ -132,6 +150,96 @@ namespace MDUA.Entities.Bases
 			}
         }
 
+		[DataMember]
+		public String Country
+		{	
+			get{ return _Country; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_Country, value, _Country);
+				if (PropertyChanging(args))
+				{
+					_Country = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String AddressType
+		{	
+			get{ return _AddressType; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_AddressType, value, _AddressType);
+				if (PropertyChanging(args))
+				{
+					_AddressType = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String CreatedBy
+		{	
+			get{ return _CreatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedBy, value, _CreatedBy);
+				if (PropertyChanging(args))
+				{
+					_CreatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public DateTime CreatedAt
+		{	
+			get{ return _CreatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedAt, value, _CreatedAt);
+				if (PropertyChanging(args))
+				{
+					_CreatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String UpdatedBy
+		{	
+			get{ return _UpdatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedBy, value, _UpdatedBy);
+				if (PropertyChanging(args))
+				{
+					_UpdatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public Nullable<DateTime> UpdatedAt
+		{	
+			get{ return _UpdatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedAt, value, _UpdatedAt);
+				if (PropertyChanging(args))
+				{
+					_UpdatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
 		#endregion
 		
 		#region Cloning Base Objects
@@ -145,6 +253,12 @@ namespace MDUA.Entities.Bases
 			newObj.City = this.City;						
 			newObj.Divison = this.Divison;						
 			newObj.PostalCode = this.PostalCode;						
+			newObj.Country = this.Country;						
+			newObj.AddressType = this.AddressType;						
+			newObj.CreatedBy = this.CreatedBy;						
+			newObj.CreatedAt = this.CreatedAt;						
+			newObj.UpdatedBy = this.UpdatedBy;						
+			newObj.UpdatedAt = this.UpdatedAt;						
 			
 			return newObj;
 		}
@@ -160,6 +274,12 @@ namespace MDUA.Entities.Bases
 			info.AddValue(AddressBase.Property_City, City);				
 			info.AddValue(AddressBase.Property_Divison, Divison);				
 			info.AddValue(AddressBase.Property_PostalCode, PostalCode);				
+			info.AddValue(AddressBase.Property_Country, Country);				
+			info.AddValue(AddressBase.Property_AddressType, AddressType);				
+			info.AddValue(AddressBase.Property_CreatedBy, CreatedBy);				
+			info.AddValue(AddressBase.Property_CreatedAt, CreatedAt);				
+			info.AddValue(AddressBase.Property_UpdatedBy, UpdatedBy);				
+			info.AddValue(AddressBase.Property_UpdatedAt, UpdatedAt);				
 		}
 		#endregion
 

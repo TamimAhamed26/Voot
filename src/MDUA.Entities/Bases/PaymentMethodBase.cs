@@ -16,7 +16,11 @@ namespace MDUA.Entities.Bases
 		{
 			Id = 0,
 			Name = 1,
-			IsActive = 2
+			IsActive = 2,
+			CreatedBy = 3,
+			CreatedAt = 4,
+			UpdatedBy = 5,
+			UpdatedAt = 6
 		}
 		#endregion
 	
@@ -24,12 +28,20 @@ namespace MDUA.Entities.Bases
 		public const string Property_Id = "Id";		            
 		public const string Property_Name = "Name";		            
 		public const string Property_IsActive = "IsActive";		            
+		public const string Property_CreatedBy = "CreatedBy";		            
+		public const string Property_CreatedAt = "CreatedAt";		            
+		public const string Property_UpdatedBy = "UpdatedBy";		            
+		public const string Property_UpdatedAt = "UpdatedAt";		            
 		#endregion
 		
 		#region Private Data Types
 		private Int32 _Id;	            
 		private String _Name;	            
 		private Boolean _IsActive;	            
+		private String _CreatedBy;	            
+		private Nullable<DateTime> _CreatedAt;	            
+		private String _UpdatedBy;	            
+		private Nullable<DateTime> _UpdatedAt;	            
 		#endregion
 		
 		#region Properties		
@@ -78,6 +90,66 @@ namespace MDUA.Entities.Bases
 			}
         }
 
+		[DataMember]
+		public String CreatedBy
+		{	
+			get{ return _CreatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedBy, value, _CreatedBy);
+				if (PropertyChanging(args))
+				{
+					_CreatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public Nullable<DateTime> CreatedAt
+		{	
+			get{ return _CreatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedAt, value, _CreatedAt);
+				if (PropertyChanging(args))
+				{
+					_CreatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String UpdatedBy
+		{	
+			get{ return _UpdatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedBy, value, _UpdatedBy);
+				if (PropertyChanging(args))
+				{
+					_UpdatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public Nullable<DateTime> UpdatedAt
+		{	
+			get{ return _UpdatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedAt, value, _UpdatedAt);
+				if (PropertyChanging(args))
+				{
+					_UpdatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
 		#endregion
 		
 		#region Cloning Base Objects
@@ -88,6 +160,10 @@ namespace MDUA.Entities.Bases
 			newObj.Id = this.Id;						
 			newObj.Name = this.Name;						
 			newObj.IsActive = this.IsActive;						
+			newObj.CreatedBy = this.CreatedBy;						
+			newObj.CreatedAt = this.CreatedAt;						
+			newObj.UpdatedBy = this.UpdatedBy;						
+			newObj.UpdatedAt = this.UpdatedAt;						
 			
 			return newObj;
 		}
@@ -100,6 +176,10 @@ namespace MDUA.Entities.Bases
 			info.AddValue(PaymentMethodBase.Property_Id, Id);				
 			info.AddValue(PaymentMethodBase.Property_Name, Name);				
 			info.AddValue(PaymentMethodBase.Property_IsActive, IsActive);				
+			info.AddValue(PaymentMethodBase.Property_CreatedBy, CreatedBy);				
+			info.AddValue(PaymentMethodBase.Property_CreatedAt, CreatedAt);				
+			info.AddValue(PaymentMethodBase.Property_UpdatedBy, UpdatedBy);				
+			info.AddValue(PaymentMethodBase.Property_UpdatedAt, UpdatedAt);				
 		}
 		#endregion
 

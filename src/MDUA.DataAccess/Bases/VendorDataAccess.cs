@@ -45,6 +45,10 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pNVarChar(VendorBase.Property_VendorName, 150, vendorObject.VendorName));
 			AddParameter(cmd, pNVarChar(VendorBase.Property_Email, 255, vendorObject.Email));
 			AddParameter(cmd, pVarChar(VendorBase.Property_Phone, 20, vendorObject.Phone));
+			AddParameter(cmd, pNVarChar(VendorBase.Property_CreatedBy, 100, vendorObject.CreatedBy));
+			AddParameter(cmd, pDateTime(VendorBase.Property_CreatedAt, vendorObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(VendorBase.Property_UpdatedBy, 100, vendorObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(VendorBase.Property_UpdatedAt, vendorObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -251,7 +255,11 @@ namespace MDUA.DataAccess
 				vendorObject.VendorName = reader.GetString( start + 1 );			
 				if(!reader.IsDBNull(2)) vendorObject.Email = reader.GetString( start + 2 );			
 				if(!reader.IsDBNull(3)) vendorObject.Phone = reader.GetString( start + 3 );			
-			FillBaseObject(vendorObject, reader, (start + 4));
+				if(!reader.IsDBNull(4)) vendorObject.CreatedBy = reader.GetString( start + 4 );			
+				if(!reader.IsDBNull(5)) vendorObject.CreatedAt = reader.GetDateTime( start + 5 );			
+				if(!reader.IsDBNull(6)) vendorObject.UpdatedBy = reader.GetString( start + 6 );			
+				if(!reader.IsDBNull(7)) vendorObject.UpdatedAt = reader.GetDateTime( start + 7 );			
+			FillBaseObject(vendorObject, reader, (start + 8));
 
 			
 			vendorObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

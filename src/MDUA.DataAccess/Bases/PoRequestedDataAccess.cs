@@ -49,6 +49,12 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pInt32(PoRequestedBase.Property_Quantity, poRequestedObject.Quantity));
 			AddParameter(cmd, pDateTime(PoRequestedBase.Property_RequestDate, poRequestedObject.RequestDate));
 			AddParameter(cmd, pNVarChar(PoRequestedBase.Property_Status, 50, poRequestedObject.Status));
+			AddParameter(cmd, pNVarChar(PoRequestedBase.Property_CreatedBy, 100, poRequestedObject.CreatedBy));
+			AddParameter(cmd, pDateTime(PoRequestedBase.Property_CreatedAt, poRequestedObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(PoRequestedBase.Property_UpdatedBy, 100, poRequestedObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(PoRequestedBase.Property_UpdatedAt, poRequestedObject.UpdatedAt));
+			AddParameter(cmd, pNVarChar(PoRequestedBase.Property_Remarks, 500, poRequestedObject.Remarks));
+			AddParameter(cmd, pNVarChar(PoRequestedBase.Property_ReferenceNo, 100, poRequestedObject.ReferenceNo));
 		}
 		#endregion
 		
@@ -283,9 +289,15 @@ namespace MDUA.DataAccess
 				poRequestedObject.VendorId = reader.GetInt32( start + 1 );			
 				poRequestedObject.ProductId = reader.GetInt32( start + 2 );			
 				poRequestedObject.Quantity = reader.GetInt32( start + 3 );			
-				if(!reader.IsDBNull(4)) poRequestedObject.RequestDate = reader.GetDateTime( start + 4 );			
+				poRequestedObject.RequestDate = reader.GetDateTime( start + 4 );			
 				poRequestedObject.Status = reader.GetString( start + 5 );			
-			FillBaseObject(poRequestedObject, reader, (start + 6));
+				if(!reader.IsDBNull(6)) poRequestedObject.CreatedBy = reader.GetString( start + 6 );			
+				poRequestedObject.CreatedAt = reader.GetDateTime( start + 7 );			
+				if(!reader.IsDBNull(8)) poRequestedObject.UpdatedBy = reader.GetString( start + 8 );			
+				if(!reader.IsDBNull(9)) poRequestedObject.UpdatedAt = reader.GetDateTime( start + 9 );			
+				if(!reader.IsDBNull(10)) poRequestedObject.Remarks = reader.GetString( start + 10 );			
+				if(!reader.IsDBNull(11)) poRequestedObject.ReferenceNo = reader.GetString( start + 11 );			
+			FillBaseObject(poRequestedObject, reader, (start + 12));
 
 			
 			poRequestedObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

@@ -18,12 +18,15 @@ namespace MDUA.Entities.Bases
 			CustomerId = 1,
 			PaymentMethodId = 2,
 			InventoryTransactionId = 3,
-			ReferenceNumber = 4,
-			PaymentType = 5,
-			Amount = 6,
-			PaymentDate = 7,
-			Status = 8,
-			Notes = 9
+			PaymentType = 4,
+			Amount = 5,
+			PaymentDate = 6,
+			Status = 7,
+			Notes = 8,
+			CreatedBy = 9,
+			CreatedAt = 10,
+			UpdatedBy = 11,
+			UpdatedAt = 12
 		}
 		#endregion
 	
@@ -32,12 +35,15 @@ namespace MDUA.Entities.Bases
 		public const string Property_CustomerId = "CustomerId";		            
 		public const string Property_PaymentMethodId = "PaymentMethodId";		            
 		public const string Property_InventoryTransactionId = "InventoryTransactionId";		            
-		public const string Property_ReferenceNumber = "ReferenceNumber";		            
 		public const string Property_PaymentType = "PaymentType";		            
 		public const string Property_Amount = "Amount";		            
 		public const string Property_PaymentDate = "PaymentDate";		            
 		public const string Property_Status = "Status";		            
 		public const string Property_Notes = "Notes";		            
+		public const string Property_CreatedBy = "CreatedBy";		            
+		public const string Property_CreatedAt = "CreatedAt";		            
+		public const string Property_UpdatedBy = "UpdatedBy";		            
+		public const string Property_UpdatedAt = "UpdatedAt";		            
 		#endregion
 		
 		#region Private Data Types
@@ -45,12 +51,15 @@ namespace MDUA.Entities.Bases
 		private Int32 _CustomerId;	            
 		private Int32 _PaymentMethodId;	            
 		private Nullable<Int32> _InventoryTransactionId;	            
-		private String _ReferenceNumber;	            
 		private String _PaymentType;	            
 		private Decimal _Amount;	            
 		private DateTime _PaymentDate;	            
 		private String _Status;	            
 		private String _Notes;	            
+		private String _CreatedBy;	            
+		private DateTime _CreatedAt;	            
+		private String _UpdatedBy;	            
+		private Nullable<DateTime> _UpdatedAt;	            
 		#endregion
 		
 		#region Properties		
@@ -109,21 +118,6 @@ namespace MDUA.Entities.Bases
 				if (PropertyChanging(args))
 				{
 					_InventoryTransactionId = value;
-					PropertyChanged(args);					
-				}	
-			}
-        }
-
-		[DataMember]
-		public String ReferenceNumber
-		{	
-			get{ return _ReferenceNumber; }			
-			set
-			{
-				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_ReferenceNumber, value, _ReferenceNumber);
-				if (PropertyChanging(args))
-				{
-					_ReferenceNumber = value;
 					PropertyChanged(args);					
 				}	
 			}
@@ -204,6 +198,66 @@ namespace MDUA.Entities.Bases
 			}
         }
 
+		[DataMember]
+		public String CreatedBy
+		{	
+			get{ return _CreatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedBy, value, _CreatedBy);
+				if (PropertyChanging(args))
+				{
+					_CreatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public DateTime CreatedAt
+		{	
+			get{ return _CreatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_CreatedAt, value, _CreatedAt);
+				if (PropertyChanging(args))
+				{
+					_CreatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public String UpdatedBy
+		{	
+			get{ return _UpdatedBy; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedBy, value, _UpdatedBy);
+				if (PropertyChanging(args))
+				{
+					_UpdatedBy = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
+		[DataMember]
+		public Nullable<DateTime> UpdatedAt
+		{	
+			get{ return _UpdatedAt; }			
+			set
+			{
+				PropertyChangingEventArgs args = new PropertyChangingEventArgs(Property_UpdatedAt, value, _UpdatedAt);
+				if (PropertyChanging(args))
+				{
+					_UpdatedAt = value;
+					PropertyChanged(args);					
+				}	
+			}
+        }
+
 		#endregion
 		
 		#region Cloning Base Objects
@@ -215,12 +269,15 @@ namespace MDUA.Entities.Bases
 			newObj.CustomerId = this.CustomerId;						
 			newObj.PaymentMethodId = this.PaymentMethodId;						
 			newObj.InventoryTransactionId = this.InventoryTransactionId;						
-			newObj.ReferenceNumber = this.ReferenceNumber;						
 			newObj.PaymentType = this.PaymentType;						
 			newObj.Amount = this.Amount;						
 			newObj.PaymentDate = this.PaymentDate;						
 			newObj.Status = this.Status;						
 			newObj.Notes = this.Notes;						
+			newObj.CreatedBy = this.CreatedBy;						
+			newObj.CreatedAt = this.CreatedAt;						
+			newObj.UpdatedBy = this.UpdatedBy;						
+			newObj.UpdatedAt = this.UpdatedAt;						
 			
 			return newObj;
 		}
@@ -234,12 +291,15 @@ namespace MDUA.Entities.Bases
 			info.AddValue(CustomerPaymentBase.Property_CustomerId, CustomerId);				
 			info.AddValue(CustomerPaymentBase.Property_PaymentMethodId, PaymentMethodId);				
 			info.AddValue(CustomerPaymentBase.Property_InventoryTransactionId, InventoryTransactionId);				
-			info.AddValue(CustomerPaymentBase.Property_ReferenceNumber, ReferenceNumber);				
 			info.AddValue(CustomerPaymentBase.Property_PaymentType, PaymentType);				
 			info.AddValue(CustomerPaymentBase.Property_Amount, Amount);				
 			info.AddValue(CustomerPaymentBase.Property_PaymentDate, PaymentDate);				
 			info.AddValue(CustomerPaymentBase.Property_Status, Status);				
 			info.AddValue(CustomerPaymentBase.Property_Notes, Notes);				
+			info.AddValue(CustomerPaymentBase.Property_CreatedBy, CreatedBy);				
+			info.AddValue(CustomerPaymentBase.Property_CreatedAt, CreatedAt);				
+			info.AddValue(CustomerPaymentBase.Property_UpdatedBy, UpdatedBy);				
+			info.AddValue(CustomerPaymentBase.Property_UpdatedAt, UpdatedAt);				
 		}
 		#endregion
 

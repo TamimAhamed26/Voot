@@ -44,6 +44,10 @@ namespace MDUA.DataAccess
 		{	
 			AddParameter(cmd, pNVarChar(PaymentMethodBase.Property_Name, 50, paymentMethodObject.Name));
 			AddParameter(cmd, pBool(PaymentMethodBase.Property_IsActive, paymentMethodObject.IsActive));
+			AddParameter(cmd, pNVarChar(PaymentMethodBase.Property_CreatedBy, 100, paymentMethodObject.CreatedBy));
+			AddParameter(cmd, pDateTime(PaymentMethodBase.Property_CreatedAt, paymentMethodObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(PaymentMethodBase.Property_UpdatedBy, 100, paymentMethodObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(PaymentMethodBase.Property_UpdatedAt, paymentMethodObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -249,7 +253,11 @@ namespace MDUA.DataAccess
 				paymentMethodObject.Id = reader.GetInt32( start + 0 );			
 				paymentMethodObject.Name = reader.GetString( start + 1 );			
 				paymentMethodObject.IsActive = reader.GetBoolean( start + 2 );			
-			FillBaseObject(paymentMethodObject, reader, (start + 3));
+				if(!reader.IsDBNull(3)) paymentMethodObject.CreatedBy = reader.GetString( start + 3 );			
+				if(!reader.IsDBNull(4)) paymentMethodObject.CreatedAt = reader.GetDateTime( start + 4 );			
+				if(!reader.IsDBNull(5)) paymentMethodObject.UpdatedBy = reader.GetString( start + 5 );			
+				if(!reader.IsDBNull(6)) paymentMethodObject.UpdatedAt = reader.GetDateTime( start + 6 );			
+			FillBaseObject(paymentMethodObject, reader, (start + 7));
 
 			
 			paymentMethodObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

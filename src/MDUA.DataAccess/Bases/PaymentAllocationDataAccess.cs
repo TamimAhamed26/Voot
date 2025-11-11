@@ -49,6 +49,10 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pDecimal(PaymentAllocationBase.Property_AllocatedAmount, 9, paymentAllocationObject.AllocatedAmount));
 			AddParameter(cmd, pDateTime(PaymentAllocationBase.Property_AllocatedDate, paymentAllocationObject.AllocatedDate));
 			AddParameter(cmd, pNVarChar(PaymentAllocationBase.Property_Notes, 500, paymentAllocationObject.Notes));
+			AddParameter(cmd, pNVarChar(PaymentAllocationBase.Property_CreatedBy, 100, paymentAllocationObject.CreatedBy));
+			AddParameter(cmd, pDateTime(PaymentAllocationBase.Property_CreatedAt, paymentAllocationObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(PaymentAllocationBase.Property_UpdatedBy, 100, paymentAllocationObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(PaymentAllocationBase.Property_UpdatedAt, paymentAllocationObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -285,7 +289,11 @@ namespace MDUA.DataAccess
 				paymentAllocationObject.AllocatedAmount = reader.GetDecimal( start + 3 );			
 				paymentAllocationObject.AllocatedDate = reader.GetDateTime( start + 4 );			
 				if(!reader.IsDBNull(5)) paymentAllocationObject.Notes = reader.GetString( start + 5 );			
-			FillBaseObject(paymentAllocationObject, reader, (start + 6));
+				if(!reader.IsDBNull(6)) paymentAllocationObject.CreatedBy = reader.GetString( start + 6 );			
+				if(!reader.IsDBNull(7)) paymentAllocationObject.CreatedAt = reader.GetDateTime( start + 7 );			
+				if(!reader.IsDBNull(8)) paymentAllocationObject.UpdatedBy = reader.GetString( start + 8 );			
+				if(!reader.IsDBNull(9)) paymentAllocationObject.UpdatedAt = reader.GetDateTime( start + 9 );			
+			FillBaseObject(paymentAllocationObject, reader, (start + 10));
 
 			
 			paymentAllocationObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	

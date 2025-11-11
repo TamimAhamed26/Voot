@@ -54,6 +54,10 @@ namespace MDUA.DataAccess
 			AddParameter(cmd, pDateTime(VendorPaymentBase.Property_PaymentDate, vendorPaymentObject.PaymentDate));
 			AddParameter(cmd, pNVarChar(VendorPaymentBase.Property_Status, 20, vendorPaymentObject.Status));
 			AddParameter(cmd, pNVarChar(VendorPaymentBase.Property_Notes, 500, vendorPaymentObject.Notes));
+			AddParameter(cmd, pNVarChar(VendorPaymentBase.Property_CreatedBy, 100, vendorPaymentObject.CreatedBy));
+			AddParameter(cmd, pDateTime(VendorPaymentBase.Property_CreatedAt, vendorPaymentObject.CreatedAt));
+			AddParameter(cmd, pNVarChar(VendorPaymentBase.Property_UpdatedBy, 100, vendorPaymentObject.UpdatedBy));
+			AddParameter(cmd, pDateTime(VendorPaymentBase.Property_UpdatedAt, vendorPaymentObject.UpdatedAt));
 		}
 		#endregion
 		
@@ -308,7 +312,11 @@ namespace MDUA.DataAccess
 				vendorPaymentObject.PaymentDate = reader.GetDateTime( start + 7 );			
 				vendorPaymentObject.Status = reader.GetString( start + 8 );			
 				if(!reader.IsDBNull(9)) vendorPaymentObject.Notes = reader.GetString( start + 9 );			
-			FillBaseObject(vendorPaymentObject, reader, (start + 10));
+				if(!reader.IsDBNull(10)) vendorPaymentObject.CreatedBy = reader.GetString( start + 10 );			
+				if(!reader.IsDBNull(11)) vendorPaymentObject.CreatedAt = reader.GetDateTime( start + 11 );			
+				if(!reader.IsDBNull(12)) vendorPaymentObject.UpdatedBy = reader.GetString( start + 12 );			
+				if(!reader.IsDBNull(13)) vendorPaymentObject.UpdatedAt = reader.GetDateTime( start + 13 );			
+			FillBaseObject(vendorPaymentObject, reader, (start + 14));
 
 			
 			vendorPaymentObject.RowState = BaseBusinessEntity.RowStateEnum.NormalRow;	
