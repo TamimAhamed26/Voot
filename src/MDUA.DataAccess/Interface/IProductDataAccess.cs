@@ -9,6 +9,7 @@ namespace MDUA.DataAccess.Interface
     // 2. Add your custom method signature for GetProductDetails
     public interface IProductDataAccess : ICommonDataAccess<Product, ProductList, ProductBase>
     {
-        ProductDetailsModel GetProductDetails(int productId);
+        ProductDetailsModel GetProductDetails(string slug);
     }
+
 }

@@ -2223,23 +2223,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\DELL\\.nuget\\packages\\": {},
-    "E:\\VsShared\\NuGetPackages": {}
+    "C:\\Users\\Piistech\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\bd-mayer-dua\\src\\MDUA.Facade\\MDUA.Facade.csproj",
+      "projectUniqueName": "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Facade\\MDUA.Facade.csproj",
       "projectName": "MDUA.Facade",
-      "projectPath": "F:\\bd-mayer-dua\\src\\MDUA.Facade\\MDUA.Facade.csproj",
-      "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-      "outputPath": "F:\\bd-mayer-dua\\src\\MDUA.Facade\\obj\\",
+      "projectPath": "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Facade\\MDUA.Facade.csproj",
+      "packagesPath": "C:\\Users\\Piistech\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Facade\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "E:\\VsShared\\NuGetPackages"
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Piistech\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2254,14 +2254,14 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "F:\\bd-mayer-dua\\src\\MDUA.DataAccess\\MDUA.DataAccess.csproj": {
-              "projectPath": "F:\\bd-mayer-dua\\src\\MDUA.DataAccess\\MDUA.DataAccess.csproj"
+            "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.DataAccess\\MDUA.DataAccess.csproj": {
+              "projectPath": "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.DataAccess\\MDUA.DataAccess.csproj"
             },
-            "F:\\bd-mayer-dua\\src\\MDUA.Entities\\MDUA.Entities.csproj": {
-              "projectPath": "F:\\bd-mayer-dua\\src\\MDUA.Entities\\MDUA.Entities.csproj"
+            "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Entities\\MDUA.Entities.csproj": {
+              "projectPath": "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Entities\\MDUA.Entities.csproj"
             },
-            "F:\\bd-mayer-dua\\src\\MDUA.Framework\\MDUA.Framework.csproj": {
-              "projectPath": "F:\\bd-mayer-dua\\src\\MDUA.Framework\\MDUA.Framework.csproj"
+            "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Framework\\MDUA.Framework.csproj": {
+              "projectPath": "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Framework\\MDUA.Framework.csproj"
             }
           }
         }
@@ -2276,7 +2276,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net9.0": {
@@ -2297,7 +2297,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

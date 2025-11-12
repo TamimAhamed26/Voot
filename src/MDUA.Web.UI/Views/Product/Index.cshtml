@@ -1,118 +1,238 @@
 ﻿@model MDUA.Entities.ProductDetailsModel
+
 @{
-    ViewData["Title"] = Model.Product?.ProductName;
-    
-    // Get the first primary image, or just the first image as a fallback
-    var primaryImage = Model.ProductImages.FirstOrDefault(img => img.IsPrimary) 
-                       ?? Model.ProductImages.FirstOrDefault();
+    Layout = null; 
+    var basePrice = Model.Product?.BasePrice ?? 0;
+
+    var sizeAttr = Model.Options.FirstOrDefault(o => o.AttributeName.ToLower().Contains("size") || o.AttributeName == "সাইজ");
+    var colorAttr = Model.Options.FirstOrDefault(o => o.AttributeName.ToLower().Contains("color") || o.AttributeName == "রং");
 }
 
-<div class="product-container" style="display: flex; gap: 20px;">
-
-    <div class="product-images" style="flex: 1;">
-        <img id="main-product-image" 
-             src="@(primaryImage?.ImageUrl ?? "/images/placeholder.jpg")" 
-             alt="@(primaryImage?.AltText ?? "Product image")" 
-             style="width: 100%;" />
-        
-        <div class="thumbnails" style="display: flex; gap: 10px; margin-top: 10px;">
-            @foreach (var img in Model.ProductImages)
-            {
-                <img src="@img.ImageUrl" alt="@img.AltText" class="thumbnail" style="width: 80px; cursor: pointer;" />
-            }
-        </div>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Hoodie House</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/product-page.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="whatsapp-float"
+         onclick="window.open('https://wa.me/8801780620311', '_blank')" title="WhatsApp Chat">
+        <i class="fa-brands fa-whatsapp"></i>
     </div>
+    <div class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</div>
 
-    <div class="product-details" style="flex: 1;">
-        <h1>@Model.Product.ProductName</h1>
-        
-        <div id="product-price" class="price" style="font-size: 24px; color: #B12704; margin-bottom: 15px;">
-            @Model.Product.BasePrice?.ToString("C")
-        </div>
-        
-        <div class="description" style="margin-bottom: 20px;">
-            @Html.Raw(Model.Product.Description)
-        </div>
+    <header class="header">
+        <img src="~/images/products/logo.png" alt="Hoodie House Logo" class="logo">
+    </header>
 
-        <div class="variant-options">
-            @foreach(var option in Model.Options)
-            {
-                <div class="option-group" style="margin-bottom: 15px;">
-                    <strong style="display: block; margin-bottom: 5px;">@option.AttributeName:</strong>
-                    <div class="option-values" style="display: flex; gap: 10px;">
-                        @foreach(var val in option.Values)
-                        {
-                            <div>
-                                <input type="radio" 
-                                       class="variant-radio"
-                                       name="option-@option.AttributeId" 
-                                       value="@val.Id" 
-                                       id="opt-val-@val.Id"
-                                       data-attribute-id="@option.AttributeId" />
-                                <label for="opt-val-@val.Id">@val.Value</label>
-                            </div>
-                        }
+    <main class="container">
+        <!-- Intro -->
+        <section class="description-section">
+            <div class="description-card">
+                <h2>
+                    আরামদায়ক সাইজ এবং পারফেক্ট কাট — যা আপনাকে দেয়
+                    <span class="highlight">Best Fit</span> এবং
+                    <span class="highlight">Maximum Comfort</span>
+                </h2>
+            </div>
+
+            <div class="description-card">
+                <p><strong>হুডি হাউস (Hoodie House)</strong> এর এই হুডিগুলো স্টাইল এবং আরামের নিখুঁত মিশ্রণ।</p>
+                <p>@(Model.Product?.Description ?? "নরম ফেব্রিক, সুন্দর ফিনিশিং, আর শীতের জন্য আদর্শ উষ্ণতা।")</p>
+                <p>যেকোনো ক্যাজুয়াল বা আউটডোর আউটফিটের জন্য পারফেক্ট পছন্দ!</p>
+            </div>
+
+            <div class="price-card">
+                <h3>@Model.Product?.ProductName</h3>
+                <div class="price">৳ <span id="displayPrice">@basePrice</span></div>
+            </div>
+
+            <div class="order-button-container">
+                <button class="order-now-btn" onclick="scrollToOrder()">অর্ডার করুন এখনই</button>
+            </div>
+        </section>
+
+        <section class="product-images">
+            <h2>📸 প্রোডাক্ট ছবি</h2>
+            <div class="images-grid">
+                @if (Model.ProductImages != null && Model.ProductImages.Any())
+                {
+                    foreach (var img in Model.ProductImages)
+                    {
+                        <img src="@Url.Content($"~/images/products/{img.ImageUrl}")"
+                             alt="@(img.AltText ?? Model.Product?.ProductName)"
+                             loading="lazy" />
+                    }
+                }
+                else
+                {
+                    <img src="@Url.Content("~/images/products/no-image.png")" alt="No image available" />
+                }
+            </div>
+        </section>
+
+
+
+        <!-- Product Details -->
+        <section class="product-details">
+            <h3>📋 প্রোডাক্ট ডিটেইলস</h3>
+
+            <div class="details-box">
+                <h4>কেন Hoodie House এর হুডি বেছে নেবেন?</h4>
+                <ul>
+                    <li>Premium Quality Fleece – উষ্ণ এবং নরম অনুভূতি।</li>
+                    <li>Smart Fit – প্রতিদিনের জন্য আরামদায়ক।</li>
+                    <li>Stylish Design – Casual এবং Street Look উভয়ের জন্য পারফেক্ট।</li>
+                </ul>
+            </div>
+
+            <div class="details-box">
+                <h4>ম্যাটেরিয়াল ও সাইজ</h4>
+                <ul>
+                    <li>ফ্যাব্রিক: 100% Cotton Fleece</li>
+                    @if (sizeAttr != null && sizeAttr.Values != null && sizeAttr.Values.Any())
+                    {
+                        <li>সাইজ: @string.Join(", ", sizeAttr.Values.Select(v => v.Value))</li>
+                    }
+                    else
+                    {
+                        <li>সাইজ:</li>
+                    }
+                    @if (colorAttr != null && colorAttr.Values != null && colorAttr.Values.Any())
+                    {
+                        <li>রং: @string.Join(", ", colorAttr.Values.Select(v => v.Value))</li>
+                    }
+                    else
+                    {
+                        <li>রং:</li>
+                    }
+                </ul>
+            </div>
+
+            <div class="details-box">
+                <h4>💯 গ্যারান্টি</h4>
+                <p class="guarantee-text">
+                    পণ্য হাতে পেয়ে তারপর মূল্য পরিশোধ। <strong>হুডি হাউস (Hoodie House)</strong> – আমরা প্রতিশ্রুত মান বজায় রাখি।
+                </p>
+            </div>
+        </section>
+
+        <!-- Order Section -->
+        <section class="order-section" id="orderSection">
+            <h2>🛒 আপনার অর্ডার সম্পন্ন করুন</h2>
+
+            <form class="order-form" id="orderForm">
+                <div class="product-summary modern-card">
+                    <h4>🧾 অর্ডার সারসংক্ষেপ</h4>
+                    <div class="summary-item">
+                        <span id="selectedVariantName">@Model.Product?.ProductName</span>
+                        <span id="subtotal">৳ @basePrice</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total:</span>
+                        <span id="total">৳ @basePrice</span>
                     </div>
                 </div>
-            }
-        </div>
-        
-        <hr />
 
-        <div id="sku-display" style="margin-bottom: 10px;">
-            SKU: <span id="selected-sku">---</span>
-        </div>
-        <div id="stock-display" style="margin-bottom: 20px;">
-            Stock: <span id="selected-stock">---</span>
-        </div>
-        
-        <button id="add-to-cart-btn" class="btn btn-primary" disabled>Select Options</button>
-    </div>
-</div>
+                <div class="form-group quantity-modern">
+                    <label>Quantity:</label>
+                    <div class="quantity-control">
+                        <button type="button" onclick="decreaseQuantity()">−</button>
+                        <input type="number" id="quantity" value="1" readonly>
+                        <button type="button" onclick="increaseQuantity()">+</button>
+                    </div>
+                </div>
 
+                <!-- Dynamic Attribute Selection -->
+                @foreach (var option in Model.Options)
+                {
+                    <div class="form-floating">
+                        <select id="attr_@option.AttributeId" class="variant-selector" data-attribute-id="@option.AttributeId" required>
+                            <option value="">@option.AttributeName নির্বাচন করুন</option>
+                            @foreach (var val in option.Values)
+                            {
+                                <option value="@val.Id">@val.Value</option>
+                            }
+                        </select>
+                        <label for="attr_@option.AttributeId">@option.AttributeName নির্বাচন করুন *</label>
+                    </div>
+                }
 
-<script>
-    // Serialize the variant data into a global JS object
-    const productData = @Html.Raw(Json.Serialize(new 
-    {
-        // A list of all available variants with their IDs, SKU, and Name
-        variants = Model.Variants.Select(v => new {
-            v.Id,
-            v.SKU,
-            v.VariantName
-        }),
-        
-        // A map of VariantID -> Price/Stock info
-        // Example: { 101: { price: 1299.99, stockQty: 50 }, 102: { ... } }
-        priceStock = Model.VariantPriceStocks.ToDictionary(
-            kvp => kvp.Key, // VariantId
-            kvp => new {
-                kvp.Value.Price,
-                kvp.Value.StockQty,
-                kvp.Value.CompareAtPrice
-            }
-        ),
-        
-        // A map of VariantID -> List of Images
-        // Example: { 101: [ "/img/silver.jpg" ], 102: [ "/img/black.jpg" ] }
-        images = Model.VariantImages.ToDictionary(
-            kvp => kvp.Key, // VariantId
-            kvp => kvp.Value.Select(img => img.ImageUrl)
-        ),
-        
-        // The "map" that connects variants to their attribute values
-        // Example: [ { variantId: 101, attributeValueId: 1 }, { variantId: 101, attributeValueId: 10 }, ... ]
-        mappings = Model.VariantAttributeValues.Select(m => new {
-            m.VariantId,
-            m.AttributeId,
-            m.AttributeValueId
-        })
-    }));
+                <div class="form-floating">
+                    <input type="text" id="name" required placeholder=" ">
+                    <label for="name">নাম *</label>
+                </div>
 
-    // Your external product-page.js file can now access 'productData'
-    // to build all its interactive logic.
-    //
-    // e.g., document.addEventListener('DOMContentLoaded', () => {
-    //           initializeProductVariants(productData);
-    //       });
-</script>
+                <div class="form-floating">
+                    <input type="tel" id="phone" required placeholder=" ">
+                    <label for="phone">মোবাইল নাম্বার *</label>
+                </div>
+
+                <div class="form-floating">
+                    <textarea id="address" rows="2" required placeholder=" "></textarea>
+                    <label for="address">ঠিকানা *</label>
+                </div>
+
+                <input type="hidden" id="selectedVariantId" value="">
+                <input type="hidden" id="selectedVariantPrice" value="@basePrice">
+
+                <button type="button" class="submit-order-btn" onclick="submitOrder()">
+                    <span>অর্ডার কনফার্ম করুন</span> 📦
+                </button>
+            </form>
+
+            <!-- Receipt Section -->
+            <div class="receipt modern-card" id="receipt" style="display:none; margin-top: 30px; text-align: left;">
+                <h4>🧾 রশিদ</h4>
+                <div class="summary-item">
+                    <span>Subtotal:</span>
+                    <span id="receipt-subtotal">৳ 0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Delivery Charge:</span>
+                    <span id="delivery-charge">৳ 0</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total Payable:</span>
+                    <span id="receipt-total">৳ 0</span>
+                </div>
+                <hr style="margin: 20px 0;">
+                <h4>অর্ডার তথ্য</h4>
+                <p><strong>পণ্য:</strong> <span id="receipt-product"></span></p>
+                <p><strong>নাম:</strong> <span id="receipt-name"></span></p>
+                <p><strong>মোবাইল:</strong> <span id="receipt-phone"></span></p>
+                <p><strong>ঠিকানা:</strong> <span id="receipt-address"></span></p>
+                <p><strong>পরিমাণ:</strong> <span id="receipt-quantity"></span></p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        window.productData = {
+            productName: '@Model.Product?.ProductName',
+            variants: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Variants)),
+variantPriceStocks: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+    Model.VariantPriceStocks.Values.Select(vps => new {
+        Id = vps.Id,
+        Price = vps.Price,
+        CompareAtPrice = vps.CompareAtPrice,
+        CostPrice = vps.CostPrice,
+        StockQty = vps.StockQty,
+        TrackInventory = vps.TrackInventory,
+        AllowBackorder = vps.AllowBackorder,
+        WeightGrams = vps.WeightGrams,
+        VariantId = Model.Variants.FirstOrDefault(v => v.Id == vps.Id)?.Id
+    })
+)),
+            variantAttributeValues: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.VariantAttributeValues)),
+            variantImages: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.VariantImages)),
+            basePrice: @basePrice
+        };
+    </script>
+    <script src="~/js/product-page.js"></script>
+</body>
+</html>

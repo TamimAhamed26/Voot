@@ -2166,23 +2166,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\DELL\\.nuget\\packages\\": {},
-    "E:\\VsShared\\NuGetPackages": {}
+    "C:\\Users\\Piistech\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\bd-mayer-dua\\src\\MDUA.Framework\\MDUA.Framework.csproj",
+      "projectUniqueName": "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Framework\\MDUA.Framework.csproj",
       "projectName": "MDUA.Framework",
-      "projectPath": "F:\\bd-mayer-dua\\src\\MDUA.Framework\\MDUA.Framework.csproj",
-      "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-      "outputPath": "F:\\bd-mayer-dua\\src\\MDUA.Framework\\obj\\",
+      "projectPath": "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Framework\\MDUA.Framework.csproj",
+      "packagesPath": "C:\\Users\\Piistech\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Piistech\\OneDrive\\Desktop\\Voot\\src\\MDUA.Framework\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "E:\\VsShared\\NuGetPackages"
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Piistech\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2209,7 +2209,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net9.0": {
@@ -2272,7 +2272,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100-rc.2.25502.107/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

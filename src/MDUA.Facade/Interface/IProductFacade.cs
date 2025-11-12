@@ -6,6 +6,6 @@ namespace MDUA.Facade.Interface
 {
     public interface IProductFacade : ICommonFacade<Product, ProductList, ProductBase>
     {
-        ProductDetailsModel GetProductDetails(int productId);
+        ProductDetailsModel GetProductDetails(string slug);
     }
 }

@@ -20,11 +20,13 @@ namespace MDUA.Facade
         // 
         // Custom method implementation
         //
-        public ProductDetailsModel GetProductDetails(int productId)
+        public ProductDetailsModel GetProductDetails(string slug)
         {
-            // You could add caching logic here
-            return _productDataAccess.GetProductDetails(productId);
+            return _productDataAccess.GetProductDetails(slug);
+           // return _productDataAccess.GetByQuery(string.Format(" UrlSlug='{0}'", slug)).FirstOrDefault()
+
         }
+
 
         //
         // Generic ICommonFacade Implementation
@@ -56,13 +58,11 @@ namespace MDUA.Facade
 
         public long Insert(ProductBase Object)
         {
-            // Business logic for Insert could go here (e.g., validation)
             return _productDataAccess.Insert(Object);
         }
 
         public long Update(ProductBase Object)
         {
-            // Business logic for Update could go here
             return _productDataAccess.Update(Object);
         }
     }

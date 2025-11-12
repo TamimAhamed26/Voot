@@ -1,0 +1,4237 @@
+USE [master]
+GO
+/****** Object:  Database [AA4]    Script Date: 11-Nov-25 3:14:50 PM ******/
+CREATE DATABASE [AA4]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'AA4', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\AA4.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'AA4_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\AA4_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [AA4] SET COMPATIBILITY_LEVEL = 160
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [AA4].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [AA4] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [AA4] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [AA4] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [AA4] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [AA4] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [AA4] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [AA4] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [AA4] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [AA4] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [AA4] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [AA4] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [AA4] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [AA4] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [AA4] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [AA4] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [AA4] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [AA4] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [AA4] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [AA4] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [AA4] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [AA4] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [AA4] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [AA4] SET RECOVERY SIMPLE 
+GO
+ALTER DATABASE [AA4] SET  MULTI_USER 
+GO
+ALTER DATABASE [AA4] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [AA4] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [AA4] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [AA4] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [AA4] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [AA4] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+ALTER DATABASE [AA4] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [AA4] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [AA4]
+GO
+USE [AA4]
+GO
+/****** Object:  Sequence [dbo].[Seq_SalesOrder]    Script Date: 11-Nov-25 3:14:50 PM ******/
+CREATE SEQUENCE [dbo].[Seq_SalesOrder] 
+ AS [int]
+ START WITH 1
+ INCREMENT BY 1
+ MINVALUE -2147483648
+ MAXVALUE 2147483647
+ CACHE 
+GO
+/****** Object:  Table [dbo].[JournalEntryDetail]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[JournalEntryDetail](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[JournalEntryId] [int] NOT NULL,
+	[AccountId] [int] NOT NULL,
+	[Debit] [decimal](18, 2) NOT NULL,
+	[Credit] [decimal](18, 2) NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+	[LineDescription] [nvarchar](255) NULL,
+	[CurrencyCode] [nvarchar](10) NULL,
+	[ExchangeRate] [decimal](18, 6) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[JournalEntry]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[JournalEntry](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ReferenceType] [nvarchar](50) NULL,
+	[ReferenceId] [int] NULL,
+	[EntryDate] [datetime] NOT NULL,
+	[Description] [nvarchar](255) NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__JournalE__3214EC07A5D9553F] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vUnbalancedJournalEntries]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[vUnbalancedJournalEntries] AS
+SELECT je.Id AS JournalEntryId,
+       SUM(jed.Debit) AS TotalDebit,
+       SUM(jed.Credit) AS TotalCredit
+FROM dbo.JournalEntry je
+JOIN dbo.JournalEntryDetail jed ON je.Id = jed.JournalEntryId
+GROUP BY je.Id
+HAVING SUM(jed.Debit) <> SUM(jed.Credit);
+GO
+/****** Object:  Table [dbo].[Account]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Account](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[AccountCode] [nvarchar](20) NOT NULL,
+	[AccountName] [nvarchar](100) NOT NULL,
+	[AccountTypeId] [int] NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[Description] [nvarchar](255) NULL,
+	[Balance] [decimal](18, 2) NULL,
+	[CurrencyCode] [nvarchar](10) NULL,
+	[ParentAccountId] [int] NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AccountType]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AccountType](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[Description] [nvarchar](200) NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Address]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Address](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CustomerId] [int] NOT NULL,
+	[Street] [nvarchar](255) NOT NULL,
+	[City] [nvarchar](100) NOT NULL,
+	[Divison] [nvarchar](100) NULL,
+	[PostalCode] [varchar](20) NOT NULL,
+	[Country] [nvarchar](100) NULL,
+	[AddressType] [nvarchar](50) NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AttributeName]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AttributeName](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	[DisplayOrder] [int] NOT NULL,
+	[IsVariantAffecting] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AttributeValue]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AttributeValue](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[AttributeId] [int] NOT NULL,
+	[Value] [nvarchar](100) NOT NULL,
+	[DisplayOrder] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AuditLog]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AuditLog](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[TableName] [nvarchar](128) NOT NULL,
+	[Operation] [nvarchar](10) NOT NULL,
+	[PrimaryKeyValue] [int] NOT NULL,
+	[OldValues] [nvarchar](max) NULL,
+	[NewValues] [nvarchar](max) NULL,
+	[ChangedBy] [nvarchar](100) NULL,
+	[ChangeDate] [datetime] NOT NULL,
+ CONSTRAINT [PK__AuditLog__3214EC07CCA91525] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Company]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Company](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CompanyName] [nvarchar](150) NOT NULL,
+	[CompanyCode] [nvarchar](50) NULL,
+	[Email] [nvarchar](255) NULL,
+	[Phone] [nvarchar](50) NULL,
+	[Website] [nvarchar](255) NULL,
+	[Address] [nvarchar](255) NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CompanyCustomer]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CompanyCustomer](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CompanyId] [int] NOT NULL,
+	[CustomerId] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CompanyVendor]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CompanyVendor](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CompanyId] [int] NOT NULL,
+	[VendorId] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Customer]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Customer](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CustomerName] [nvarchar](150) NOT NULL,
+	[Email] [nvarchar](255) NOT NULL,
+	[Phone] [varchar](20) NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[DateOfBirth] [datetime] NULL,
+	[Gender] [nvarchar](10) NULL,
+	[Notes] [nvarchar](500) NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__Customer__3214EC07ACAD2787] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[CustomerPayment]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[CustomerPayment](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CustomerId] [int] NOT NULL,
+	[PaymentMethodId] [int] NOT NULL,
+	[InventoryTransactionId] [int] NULL,
+	[PaymentType] [nvarchar](20) NOT NULL,
+	[Amount] [decimal](18, 2) NOT NULL,
+	[PaymentDate] [datetime] NOT NULL,
+	[Status] [nvarchar](20) NOT NULL,
+	[Notes] [nvarchar](500) NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__Customer__3214EC079792C229] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Delivery]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Delivery](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[SalesOrderId] [int] NOT NULL,
+	[DeliveryDate] [datetime] NOT NULL,
+	[TrackingNumber] [nvarchar](100) NULL,
+	[Status] [nvarchar](50) NOT NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__Delivery__3214EC07A18CA62D] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[GlobalSetting]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[GlobalSetting](
+	[Id] [int] NOT NULL,
+	[CompanyId] [int] NOT NULL,
+	[GKey] [nvarchar](50) NOT NULL,
+	[GContent] [nvarchar](max) NOT NULL,
+ CONSTRAINT [PK_GlobalSetting] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[InventoryTransaction]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[InventoryTransaction](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[SalesOrderDetailId] [int] NULL,
+	[PoReceivedId] [int] NULL,
+	[ProductId] [int] NOT NULL,
+	[InOut] [nvarchar](3) NOT NULL,
+	[Date] [datetime] NOT NULL,
+	[Price] [decimal](18, 2) NULL,
+	[Quantity] [int] NOT NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+	[Remarks] [nvarchar](255) NULL,
+ CONSTRAINT [PK__Inventor__3214EC07E3C237FF] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Language]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Language](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+	[Code] [varchar](10) NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[LanguageResource]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[LanguageResource](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CompanyId] [int] NULL,
+	[LanguageId] [int] NOT NULL,
+	[LKey] [nvarchar](255) NOT NULL,
+	[LValue] [nvarchar](max) NOT NULL,
+	[Description] [nvarchar](255) NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__Language__3214EC0712E5714A] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PaymentAllocation]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PaymentAllocation](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CustomerPaymentId] [int] NOT NULL,
+	[SalesOrderId] [int] NULL,
+	[AllocatedAmount] [decimal](18, 2) NOT NULL,
+	[AllocatedDate] [datetime] NOT NULL,
+	[Notes] [nvarchar](500) NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__PaymentA__3214EC0727E18518] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PaymentMethod]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PaymentMethod](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__PaymentM__3214EC074FA80AEA] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Permission]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Permission](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PermissionGroup]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PermissionGroup](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](100) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PermissionGroupMap]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PermissionGroupMap](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PermissionId] [int] NOT NULL,
+	[PermissionGroupId] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PoReceived]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PoReceived](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PoRequestedId] [int] NOT NULL,
+	[ReceivedQuantity] [int] NOT NULL,
+	[BuyingPrice] [decimal](18, 2) NOT NULL,
+	[ReceivedDate] [datetime] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+	[Remarks] [nvarchar](500) NULL,
+	[InvoiceNo] [nvarchar](100) NULL,
+ CONSTRAINT [PK__PoReceiv__3214EC074C86F9AD] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PoRequested]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PoRequested](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[VendorId] [int] NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[Quantity] [int] NOT NULL,
+	[RequestDate] [datetime] NOT NULL,
+	[Status] [nvarchar](50) NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+	[Remarks] [nvarchar](500) NULL,
+	[ReferenceNo] [nvarchar](100) NULL,
+ CONSTRAINT [PK__PoReques__3214EC0763D4F170] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Product]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Product](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CompanyId] [int] NOT NULL,
+	[ProductName] [nvarchar](200) NOT NULL,
+	[ReorderLevel] [int] NOT NULL,
+	[Barcode] [nvarchar](100) NULL,
+	[CategoryId] [int] NULL,
+	[Description] [nvarchar](max) NULL,
+	[Slug] [nvarchar](400) NULL,
+	[BasePrice] [decimal](18, 2) NULL,
+	[IsVariantBased] [bit] NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__Product__3214EC07334BE889] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProductAttribute]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProductAttribute](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[AttributeId] [int] NOT NULL,
+	[DisplayOrder] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProductCategory]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProductCategory](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_ProductCategory] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProductDiscount]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProductDiscount](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[DiscountType] [nvarchar](50) NOT NULL,
+	[DiscountValue] [decimal](18, 2) NOT NULL,
+	[MinQuantity] [int] NULL,
+	[EffectiveFrom] [datetime] NOT NULL,
+	[EffectiveTo] [datetime] NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProductImage]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProductImage](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[ImageUrl] [nvarchar](300) NOT NULL,
+	[IsPrimary] [bit] NOT NULL,
+	[SortOrder] [int] NOT NULL,
+	[AltText] [nvarchar](100) NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__ProductI__3214EC07B9863D89] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProductInventory]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProductInventory](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[CurrentStock] [int] NOT NULL,
+	[AverageCost] [decimal](18, 2) NOT NULL,
+	[UpdatedAt] [datetime] NOT NULL,
+	[SuggestedSellingPrice] [decimal](18, 2) NOT NULL,
+	[LastRestockedAt] [datetime] NULL,
+	[ReorderNeeded] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+ CONSTRAINT [PK__ProductI__3214EC071CDA7D76] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProductReview]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProductReview](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[CustomerName] [nvarchar](150) NULL,
+	[Rating] [int] NOT NULL,
+	[ReviewText] [nvarchar](500) NULL,
+	[IsApproved] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__ProductR__3214EC07EF2AFF0E] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProductVariant]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProductVariant](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[VariantName] [nvarchar](150) NOT NULL,
+	[SKU] [nvarchar](50) NULL,
+	[Barcode] [nvarchar](100) NULL,
+	[VariantPrice] [decimal](18, 2) NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__ProductV__3214EC07940D0B4E] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[SalesChannel]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SalesChannel](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__SalesCha__3214EC07BD1C02AE] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[SalesOrderDetail]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SalesOrderDetail](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[SalesOrderId] [int] NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[Quantity] [int] NOT NULL,
+	[UnitPrice] [decimal](18, 2) NOT NULL,
+	[LineTotal]  AS ([Quantity]*[UnitPrice]) PERSISTED,
+	[ProfitAmount] [decimal](18, 2) NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[SalesOrderHeader]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SalesOrderHeader](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CompanyCustomerId] [int] NOT NULL,
+	[AddressId] [int] NOT NULL,
+	[SalesChannelId] [int] NOT NULL,
+	[SalesOrderId]  AS (case when [SalesChannelId]=(2) OR [Confirmed]=(1) then 'SO'+right('00000000'+CONVERT([varchar](8),[Id]),(8))  end) PERSISTED,
+	[OnlineOrderId]  AS (case when [SalesChannelId]=(1) then 'ON'+right('00000000'+CONVERT([varchar](8),[Id]),(8))  end) PERSISTED,
+	[DirectOrderId]  AS (case when [SalesChannelId]=(2) then 'DO'+right('00000000'+CONVERT([varchar](8),[Id]),(8))  end) PERSISTED,
+	[OrderDate] [datetime] NOT NULL,
+	[TotalAmount] [decimal](18, 2) NOT NULL,
+	[DiscountAmount] [decimal](18, 2) NOT NULL,
+	[NetAmount]  AS ([TotalAmount]-[DiscountAmount]) PERSISTED,
+	[SessionId] [nvarchar](100) NULL,
+	[IPAddress] [varchar](45) NULL,
+	[Status] [nvarchar](30) NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[Confirmed] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__SalesOrd__3214EC070A447194] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[UserLogin]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[UserLogin](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserName] [nvarchar](100) NOT NULL,
+	[Email] [nvarchar](255) NOT NULL,
+	[Phone] [varchar](20) NULL,
+	[Password] [nvarchar](256) NOT NULL,
+	[CompanyId] [int] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__UserLogi__3214EC07DB28DA88] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[UserPermission]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[UserPermission](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [int] NOT NULL,
+	[PermissionId] [int] NOT NULL,
+	[PermissionGroupId] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Variant]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Variant](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[Sku] [nvarchar](100) NULL,
+	[UpcBarcode] [nvarchar](64) NULL,
+	[VariantKeyHash] [nvarchar](64) NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+ CONSTRAINT [PK__Variant__3214EC07EA6B29AC] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[VariantAttributeValue]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VariantAttributeValue](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[VariantId] [int] NOT NULL,
+	[AttributeId] [int] NOT NULL,
+	[AttributeValueId] [int] NOT NULL,
+	[DisplayOrder] [int] NOT NULL,
+ CONSTRAINT [PK_VariantAttributeValue] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[VariantImage]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VariantImage](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[VariantId] [int] NOT NULL,
+	[ImageUrl] [nvarchar](400) NOT NULL,
+	[AltText] [nvarchar](200) NULL,
+	[DisplayOrder] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[VariantPriceStock]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VariantPriceStock](
+	[Id] [int] NOT NULL,
+	[Price] [decimal](18, 2) NOT NULL,
+	[CompareAtPrice] [decimal](18, 2) NULL,
+	[CostPrice] [decimal](18, 2) NULL,
+	[StockQty] [int] NOT NULL,
+	[TrackInventory] [bit] NOT NULL,
+	[AllowBackorder] [bit] NOT NULL,
+	[WeightGrams] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Vendor]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Vendor](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[VendorName] [nvarchar](150) NOT NULL,
+	[Email] [nvarchar](255) NULL,
+	[Phone] [varchar](20) NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__Vendor__3214EC07C2416CAC] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[VendorPayment]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VendorPayment](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[VendorId] [int] NOT NULL,
+	[PaymentMethodId] [int] NOT NULL,
+	[InventoryTransactionId] [int] NULL,
+	[ReferenceNumber] [nvarchar](100) NULL,
+	[PaymentType] [nvarchar](20) NOT NULL,
+	[Amount] [decimal](18, 2) NOT NULL,
+	[PaymentDate] [datetime] NOT NULL,
+	[Status] [nvarchar](20) NOT NULL,
+	[Notes] [nvarchar](500) NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__VendorPa__3214EC072104A5E1] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[AttributeName] ON 
+
+INSERT [dbo].[AttributeName] ([Id], [Name], [DisplayOrder], [IsVariantAffecting]) VALUES (1, N'Color', 1, 1)
+INSERT [dbo].[AttributeName] ([Id], [Name], [DisplayOrder], [IsVariantAffecting]) VALUES (2, N'Storage', 2, 1)
+SET IDENTITY_INSERT [dbo].[AttributeName] OFF
+GO
+SET IDENTITY_INSERT [dbo].[AttributeValue] ON 
+
+INSERT [dbo].[AttributeValue] ([Id], [AttributeId], [Value], [DisplayOrder]) VALUES (1, 1, N'Silver', 1)
+INSERT [dbo].[AttributeValue] ([Id], [AttributeId], [Value], [DisplayOrder]) VALUES (2, 1, N'Black', 2)
+INSERT [dbo].[AttributeValue] ([Id], [AttributeId], [Value], [DisplayOrder]) VALUES (3, 2, N'512GB SSD', 1)
+INSERT [dbo].[AttributeValue] ([Id], [AttributeId], [Value], [DisplayOrder]) VALUES (4, 2, N'1TB SSD', 2)
+SET IDENTITY_INSERT [dbo].[AttributeValue] OFF
+GO
+SET IDENTITY_INSERT [dbo].[AuditLog] ON 
+
+INSERT [dbo].[AuditLog] ([Id], [TableName], [Operation], [PrimaryKeyValue], [OldValues], [NewValues], [ChangedBy], [ChangeDate]) VALUES (1, N'Company', N'INSERT', 1, NULL, N'{"Id":1,"CompanyName":"dass","CompanyCode":"das","Email":"asds","Phone":"das","Website":"dsa","Address":"dsa","IsActive":true,"CreatedBy":"KHALID\\Piistech","CreatedAt":"2025-11-11T11:38:18.597"}', N'KHALID\Piistech', CAST(N'2025-11-11T11:38:18.623' AS DateTime))
+INSERT [dbo].[AuditLog] ([Id], [TableName], [Operation], [PrimaryKeyValue], [OldValues], [NewValues], [ChangedBy], [ChangeDate]) VALUES (2, N'UserLogin', N'UPDATE', 1, N'{"Id":1,"UserName":"fds","Email":"df","Phone":"fds","Password":"dfs","CompanyId":1,"CreatedAt":"2025-11-11T11:41:34.387","UpdatedAt":"2025-11-11T11:41:34.387"}', N'{"Id":1,"UserName":"fds","Email":"df","Phone":"fds","Password":"dfs","CompanyId":1,"CreatedBy":"KHALID\\Piistech","CreatedAt":"2025-11-11T11:41:34.387","UpdatedBy":"KHALID\\Piistech","UpdatedAt":"2025-11-11T11:41:34.390"}', N'KHALID\Piistech', CAST(N'2025-11-11T11:41:34.410' AS DateTime))
+INSERT [dbo].[AuditLog] ([Id], [TableName], [Operation], [PrimaryKeyValue], [OldValues], [NewValues], [ChangedBy], [ChangeDate]) VALUES (3, N'UserLogin', N'INSERT', 1, NULL, N'{"Id":1,"UserName":"fds","Email":"df","Phone":"fds","Password":"dfs","CompanyId":1,"CreatedAt":"2025-11-11T11:41:34.387","UpdatedAt":"2025-11-11T11:41:34.387"}', N'KHALID\Piistech', CAST(N'2025-11-11T11:41:34.410' AS DateTime))
+SET IDENTITY_INSERT [dbo].[AuditLog] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Company] ON 
+
+INSERT [dbo].[Company] ([Id], [CompanyName], [CompanyCode], [Email], [Phone], [Website], [Address], [IsActive], [CreatedBy], [CreatedAt], [UpdatedBy], [UpdatedAt]) VALUES (1, N'dass', N'das', N'asds', N'das', N'dsa', N'dsa', 1, N'KHALID\Piistech', CAST(N'2025-11-11T11:38:18.597' AS DateTime), NULL, NULL)
+SET IDENTITY_INSERT [dbo].[Company] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Product] ON 
+
+INSERT [dbo].[Product] ([Id], [CompanyId], [ProductName], [ReorderLevel], [Barcode], [CategoryId], [Description], [Slug], [BasePrice], [IsVariantBased], [IsActive], [CreatedBy], [CreatedAt], [UpdatedBy], [UpdatedAt]) VALUES (1, 1, N'Premium Laptop', 5, NULL, 1, N'A high-performance laptop for professionals.', N'premium-laptop', CAST(1299.99 AS Decimal(18, 2)), 1, 1, N'KHALID\Piistech', CAST(N'2025-11-11T12:25:06.023' AS DateTime), N'KHALID\Piistech', CAST(N'2025-11-11T12:25:06.023' AS DateTime))
+SET IDENTITY_INSERT [dbo].[Product] OFF
+GO
+SET IDENTITY_INSERT [dbo].[ProductAttribute] ON 
+
+INSERT [dbo].[ProductAttribute] ([Id], [ProductId], [AttributeId], [DisplayOrder]) VALUES (1, 1, 1, 1)
+INSERT [dbo].[ProductAttribute] ([Id], [ProductId], [AttributeId], [DisplayOrder]) VALUES (2, 1, 2, 2)
+SET IDENTITY_INSERT [dbo].[ProductAttribute] OFF
+GO
+SET IDENTITY_INSERT [dbo].[ProductCategory] ON 
+
+INSERT [dbo].[ProductCategory] ([Id], [Name]) VALUES (1, N'Electronics')
+SET IDENTITY_INSERT [dbo].[ProductCategory] OFF
+GO
+SET IDENTITY_INSERT [dbo].[ProductImage] ON 
+
+INSERT [dbo].[ProductImage] ([Id], [ProductId], [ImageUrl], [IsPrimary], [SortOrder], [AltText], [CreatedBy], [CreatedAt], [UpdatedBy], [UpdatedAt]) VALUES (1, 1, N'/images/laptop-main.jpg', 1, 1, N'Premium Laptop front view', NULL, CAST(N'2025-11-11T12:25:06.040' AS DateTime), NULL, NULL)
+INSERT [dbo].[ProductImage] ([Id], [ProductId], [ImageUrl], [IsPrimary], [SortOrder], [AltText], [CreatedBy], [CreatedAt], [UpdatedBy], [UpdatedAt]) VALUES (2, 1, N'/images/laptop-side.jpg', 0, 2, N'Premium Laptop side view', NULL, CAST(N'2025-11-11T12:25:06.040' AS DateTime), NULL, NULL)
+SET IDENTITY_INSERT [dbo].[ProductImage] OFF
+GO
+SET IDENTITY_INSERT [dbo].[ProductVariant] ON 
+
+INSERT [dbo].[ProductVariant] ([Id], [ProductId], [VariantName], [SKU], [Barcode], [VariantPrice], [IsActive], [CreatedBy], [CreatedAt], [UpdatedBy], [UpdatedAt]) VALUES (1, 1, N'Premium Laptop - Silver, 512GB', N'PL-SLV-512', NULL, CAST(1299.99 AS Decimal(18, 2)), 1, NULL, CAST(N'2025-11-11T12:25:06.040' AS DateTime), NULL, NULL)
+INSERT [dbo].[ProductVariant] ([Id], [ProductId], [VariantName], [SKU], [Barcode], [VariantPrice], [IsActive], [CreatedBy], [CreatedAt], [UpdatedBy], [UpdatedAt]) VALUES (2, 1, N'Premium Laptop - Black, 1TB', N'PL-BLK-1TB', NULL, CAST(1499.99 AS Decimal(18, 2)), 1, NULL, CAST(N'2025-11-11T12:25:06.040' AS DateTime), NULL, NULL)
+SET IDENTITY_INSERT [dbo].[ProductVariant] OFF
+GO
+SET IDENTITY_INSERT [dbo].[UserLogin] ON 
+
+INSERT [dbo].[UserLogin] ([Id], [UserName], [Email], [Phone], [Password], [CompanyId], [CreatedBy], [CreatedAt], [UpdatedBy], [UpdatedAt]) VALUES (1, N'fds', N'df', N'fds', N'dfs', 1, N'KHALID\Piistech', CAST(N'2025-11-11T11:41:34.387' AS DateTime), N'KHALID\Piistech', CAST(N'2025-11-11T11:41:34.390' AS DateTime))
+SET IDENTITY_INSERT [dbo].[UserLogin] OFF
+GO
+SET IDENTITY_INSERT [dbo].[VariantAttributeValue] ON 
+
+INSERT [dbo].[VariantAttributeValue] ([Id], [VariantId], [AttributeId], [AttributeValueId], [DisplayOrder]) VALUES (1, 1, 1, 1, 1)
+INSERT [dbo].[VariantAttributeValue] ([Id], [VariantId], [AttributeId], [AttributeValueId], [DisplayOrder]) VALUES (2, 1, 2, 3, 2)
+INSERT [dbo].[VariantAttributeValue] ([Id], [VariantId], [AttributeId], [AttributeValueId], [DisplayOrder]) VALUES (3, 2, 1, 2, 1)
+INSERT [dbo].[VariantAttributeValue] ([Id], [VariantId], [AttributeId], [AttributeValueId], [DisplayOrder]) VALUES (4, 2, 2, 4, 2)
+SET IDENTITY_INSERT [dbo].[VariantAttributeValue] OFF
+GO
+SET IDENTITY_INSERT [dbo].[VariantImage] ON 
+
+INSERT [dbo].[VariantImage] ([Id], [VariantId], [ImageUrl], [AltText], [DisplayOrder]) VALUES (2, 1, N'/images/laptop-silver.jpg', N'Silver Laptop', 1)
+SET IDENTITY_INSERT [dbo].[VariantImage] OFF
+GO
+INSERT [dbo].[VariantPriceStock] ([Id], [Price], [CompareAtPrice], [CostPrice], [StockQty], [TrackInventory], [AllowBackorder], [WeightGrams]) VALUES (1, CAST(1299.99 AS Decimal(18, 2)), NULL, NULL, 50, 1, 0, NULL)
+INSERT [dbo].[VariantPriceStock] ([Id], [Price], [CompareAtPrice], [CostPrice], [StockQty], [TrackInventory], [AllowBackorder], [WeightGrams]) VALUES (2, CAST(1499.99 AS Decimal(18, 2)), NULL, NULL, 30, 1, 0, NULL)
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Account__38D0C56A59E53C9C]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Account] ADD UNIQUE NONCLUSTERED 
+(
+	[AccountCode] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__AccountT__737584F6CD76E449]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[AccountType] ADD UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ_AttributeValue]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[AttributeValue] ADD  CONSTRAINT [UQ_AttributeValue] UNIQUE NONCLUSTERED 
+(
+	[AttributeId] ASC,
+	[Value] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Company__9BCE05DCA5510013]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Company] ADD UNIQUE NONCLUSTERED 
+(
+	[CompanyName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [UQ_Company_Customer]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[CompanyCustomer] ADD  CONSTRAINT [UQ_Company_Customer] UNIQUE NONCLUSTERED 
+(
+	[CompanyId] ASC,
+	[CustomerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [UQ_Company_Vendor]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[CompanyVendor] ADD  CONSTRAINT [UQ_Company_Vendor] UNIQUE NONCLUSTERED 
+(
+	[CompanyId] ASC,
+	[VendorId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Customer__5C7E359EA262BBB1]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Customer] ADD  CONSTRAINT [UQ__Customer__5C7E359EA262BBB1] UNIQUE NONCLUSTERED 
+(
+	[Phone] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Customer__A9D10534F05F04BE]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Customer] ADD  CONSTRAINT [UQ__Customer__A9D10534F05F04BE] UNIQUE NONCLUSTERED 
+(
+	[Email] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Language__737584F6271212BC]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Language] ADD UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Language__A25C5AA779DC62A1]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Language] ADD UNIQUE NONCLUSTERED 
+(
+	[Code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ_Language_Company_Key]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[LanguageResource] ADD  CONSTRAINT [UQ_Language_Company_Key] UNIQUE NONCLUSTERED 
+(
+	[LanguageId] ASC,
+	[CompanyId] ASC,
+	[LKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__PaymentM__737584F6CF6A6993]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[PaymentMethod] ADD  CONSTRAINT [UQ__PaymentM__737584F6CF6A6993] UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Permissi__737584F621C5C675]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Permission] ADD UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Permissi__737584F644111295]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[PermissionGroup] ADD UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [UQ_Permission_Group]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[PermissionGroupMap] ADD  CONSTRAINT [UQ_Permission_Group] UNIQUE NONCLUSTERED 
+(
+	[PermissionId] ASC,
+	[PermissionGroupId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [UQ_ProductAttribute]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[ProductAttribute] ADD  CONSTRAINT [UQ_ProductAttribute] UNIQUE NONCLUSTERED 
+(
+	[ProductId] ASC,
+	[AttributeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [UQ_ProductInventory_Product]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[ProductInventory] ADD  CONSTRAINT [UQ_ProductInventory_Product] UNIQUE NONCLUSTERED 
+(
+	[ProductId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__SalesCha__737584F6E479F025]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[SalesChannel] ADD  CONSTRAINT [UQ__SalesCha__737584F6E479F025] UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__UserLogi__A9D10534C2966FB0]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[UserLogin] ADD  CONSTRAINT [UQ__UserLogi__A9D10534C2966FB0] UNIQUE NONCLUSTERED 
+(
+	[Email] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ_Variant_ProductKey]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Variant] ADD  CONSTRAINT [UQ_Variant_ProductKey] UNIQUE NONCLUSTERED 
+(
+	[ProductId] ASC,
+	[VariantKeyHash] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+/****** Object:  Index [UQ_Variant_AttributeValue]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[VariantAttributeValue] ADD  CONSTRAINT [UQ_Variant_AttributeValue] UNIQUE NONCLUSTERED 
+(
+	[VariantId] ASC,
+	[AttributeId] ASC,
+	[AttributeValueId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Vendor__5C7E359E11B76882]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Vendor] ADD  CONSTRAINT [UQ__Vendor__5C7E359E11B76882] UNIQUE NONCLUSTERED 
+(
+	[Phone] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Vendor__A9D10534D6CD5C05]    Script Date: 11-Nov-25 3:14:50 PM ******/
+ALTER TABLE [dbo].[Vendor] ADD  CONSTRAINT [UQ__Vendor__A9D10534D6CD5C05] UNIQUE NONCLUSTERED 
+(
+	[Email] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Account] ADD  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Account] ADD  CONSTRAINT [DF_Account_Balance]  DEFAULT ((0)) FOR [Balance]
+GO
+ALTER TABLE [dbo].[Account] ADD  CONSTRAINT [DF_Account_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[Account] ADD  CONSTRAINT [DF_Account_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[AccountType] ADD  CONSTRAINT [DF_AccountType_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[AccountType] ADD  CONSTRAINT [DF_AccountType_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[Address] ADD  CONSTRAINT [DF_Address_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[Address] ADD  CONSTRAINT [DF_Address_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[AttributeName] ADD  DEFAULT ((0)) FOR [DisplayOrder]
+GO
+ALTER TABLE [dbo].[AttributeName] ADD  DEFAULT ((1)) FOR [IsVariantAffecting]
+GO
+ALTER TABLE [dbo].[AttributeValue] ADD  DEFAULT ((0)) FOR [DisplayOrder]
+GO
+ALTER TABLE [dbo].[AuditLog] ADD  CONSTRAINT [DF__AuditLog__Change__17F790F9]  DEFAULT (getdate()) FOR [ChangeDate]
+GO
+ALTER TABLE [dbo].[Company] ADD  CONSTRAINT [DF_Company_IsActive]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Company] ADD  CONSTRAINT [DF_Company_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[Company] ADD  CONSTRAINT [DF_Company_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[Customer] ADD  CONSTRAINT [DF_Customer_IsActive]  DEFAULT ((0)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Customer] ADD  CONSTRAINT [DF_Customer_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[Customer] ADD  CONSTRAINT [DF_Customer_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[CustomerPayment] ADD  CONSTRAINT [DF__CustomerP__Payme__17036CC0]  DEFAULT (getdate()) FOR [PaymentDate]
+GO
+ALTER TABLE [dbo].[CustomerPayment] ADD  CONSTRAINT [DF__CustomerP__Statu__17F790F9]  DEFAULT ('Completed') FOR [Status]
+GO
+ALTER TABLE [dbo].[CustomerPayment] ADD  CONSTRAINT [DF_CustomerPayment_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[CustomerPayment] ADD  CONSTRAINT [DF_CustomerPayment_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[Delivery] ADD  CONSTRAINT [DF__Delivery__Status__1AD3FDA4]  DEFAULT ('Scheduled') FOR [Status]
+GO
+ALTER TABLE [dbo].[Delivery] ADD  CONSTRAINT [DF_Delivery_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[Delivery] ADD  CONSTRAINT [DF_Delivery_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[InventoryTransaction] ADD  CONSTRAINT [DF__InventoryT__Date__1DB06A4F]  DEFAULT (getdate()) FOR [Date]
+GO
+ALTER TABLE [dbo].[InventoryTransaction] ADD  CONSTRAINT [DF_InventoryTransaction_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[InventoryTransaction] ADD  CONSTRAINT [DF_InventoryTransaction_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[JournalEntry] ADD  CONSTRAINT [DF__JournalEn__Entry__208CD6FA]  DEFAULT (sysdatetime()) FOR [EntryDate]
+GO
+ALTER TABLE [dbo].[JournalEntry] ADD  CONSTRAINT [DF_JournalEntry_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[JournalEntryDetail] ADD  DEFAULT ((0)) FOR [Debit]
+GO
+ALTER TABLE [dbo].[JournalEntryDetail] ADD  DEFAULT ((0)) FOR [Credit]
+GO
+ALTER TABLE [dbo].[JournalEntryDetail] ADD  CONSTRAINT [DF_JED_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[JournalEntryDetail] ADD  CONSTRAINT [DF_JED_ExchangeRate]  DEFAULT ((1.0)) FOR [ExchangeRate]
+GO
+ALTER TABLE [dbo].[Language] ADD  CONSTRAINT [DF_Language_IsActive]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Language] ADD  CONSTRAINT [DF_Language_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[LanguageResource] ADD  CONSTRAINT [DF_LanguageResource_IsActive]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[LanguageResource] ADD  CONSTRAINT [DF_LanguageResource_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[PaymentAllocation] ADD  CONSTRAINT [DF__PaymentAl__Alloc__2EDAF651]  DEFAULT (sysutcdatetime()) FOR [AllocatedDate]
+GO
+ALTER TABLE [dbo].[PaymentAllocation] ADD  CONSTRAINT [DF_PaymentAllocation_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[PaymentAllocation] ADD  CONSTRAINT [DF_PaymentAllocation_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+ALTER TABLE [dbo].[PaymentMethod] ADD  CONSTRAINT [DF__PaymentMe__IsAct__31B762FC]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[PaymentMethod] ADD  CONSTRAINT [DF_PaymentMethod_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[PaymentMethod] ADD  CONSTRAINT [DF_PaymentMethod_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+ALTER TABLE [dbo].[PoReceived] ADD  CONSTRAINT [DF__PoReceive__Recei__3493CFA7]  DEFAULT (getdate()) FOR [ReceivedDate]
+GO
+ALTER TABLE [dbo].[PoReceived] ADD  CONSTRAINT [DF_PoReceived_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[PoReceived] ADD  CONSTRAINT [DF_PoReceived_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+ALTER TABLE [dbo].[PoRequested] ADD  CONSTRAINT [DF__PoRequest__Reque__37703C52]  DEFAULT (getdate()) FOR [RequestDate]
+GO
+ALTER TABLE [dbo].[PoRequested] ADD  CONSTRAINT [DF__PoRequest__Statu__3864608B]  DEFAULT ('Pending') FOR [Status]
+GO
+ALTER TABLE [dbo].[PoRequested] ADD  CONSTRAINT [DF_PoRequested_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[PoRequested] ADD  CONSTRAINT [DF_PoRequested_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+ALTER TABLE [dbo].[Product] ADD  CONSTRAINT [DF__Product__Reorder__3B40CD36]  DEFAULT ((0)) FOR [ReorderLevel]
+GO
+ALTER TABLE [dbo].[Product] ADD  CONSTRAINT [DF_Product_IsActive]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Product] ADD  CONSTRAINT [DF_Product_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[Product] ADD  CONSTRAINT [DF_Product_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+ALTER TABLE [dbo].[ProductAttribute] ADD  DEFAULT ((0)) FOR [DisplayOrder]
+GO
+ALTER TABLE [dbo].[ProductDiscount] ADD  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[ProductDiscount] ADD  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[ProductImage] ADD  CONSTRAINT [DF__ProductIm__IsPri__46B27FE2]  DEFAULT ((0)) FOR [IsPrimary]
+GO
+ALTER TABLE [dbo].[ProductImage] ADD  CONSTRAINT [DF__ProductIm__SortO__47A6A41B]  DEFAULT ((1)) FOR [SortOrder]
+GO
+ALTER TABLE [dbo].[ProductImage] ADD  CONSTRAINT [DF__ProductIm__Creat__489AC854]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[ProductInventory] ADD  CONSTRAINT [DF__ProductIn__Curre__40058253]  DEFAULT ((0)) FOR [CurrentStock]
+GO
+ALTER TABLE [dbo].[ProductInventory] ADD  CONSTRAINT [DF__ProductIn__Avera__40F9A68C]  DEFAULT ((0)) FOR [AverageCost]
+GO
+ALTER TABLE [dbo].[ProductInventory] ADD  CONSTRAINT [DF__ProductIn__Sugge__41EDCAC5]  DEFAULT ((0.00)) FOR [SuggestedSellingPrice]
+GO
+ALTER TABLE [dbo].[ProductInventory] ADD  CONSTRAINT [DF_PI_ReorderNeeded]  DEFAULT ((0)) FOR [ReorderNeeded]
+GO
+ALTER TABLE [dbo].[ProductInventory] ADD  CONSTRAINT [DF_PI_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[ProductReview] ADD  CONSTRAINT [DF__ProductRe__IsApp__51300E55]  DEFAULT ((0)) FOR [IsApproved]
+GO
+ALTER TABLE [dbo].[ProductReview] ADD  CONSTRAINT [DF__ProductRe__Creat__5224328E]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[ProductVariant] ADD  CONSTRAINT [DF__ProductVa__IsAct__531856C7]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[ProductVariant] ADD  CONSTRAINT [DF__ProductVa__Creat__540C7B00]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[SalesChannel] ADD  CONSTRAINT [DF_SalesChannel_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[SalesChannel] ADD  CONSTRAINT [DF_SalesChannel_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+ALTER TABLE [dbo].[SalesOrderDetail] ADD  CONSTRAINT [DF_SOD_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[SalesOrderDetail] ADD  CONSTRAINT [DF_SOD_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF__SalesOrde__Order__4B7734FF]  DEFAULT (getdate()) FOR [OrderDate]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF__SalesOrde__Disco__4C6B5938]  DEFAULT ((0)) FOR [DiscountAmount]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF__SalesOrde__Statu__4D5F7D71]  DEFAULT ('Draft') FOR [Status]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF_SOH_IsActive]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF_SOH_Confirmed]  DEFAULT ((0)) FOR [Confirmed]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF_SOH_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF_SOH_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[UserLogin] ADD  CONSTRAINT [DF_UserLogin_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[UserLogin] ADD  CONSTRAINT [DF_UserLogin_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+ALTER TABLE [dbo].[Variant] ADD  CONSTRAINT [DF__Variant__IsActiv__4EA8A765]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Variant] ADD  CONSTRAINT [DF__Variant__Created__4F9CCB9E]  DEFAULT (sysutcdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[VariantAttributeValue] ADD  DEFAULT ((0)) FOR [DisplayOrder]
+GO
+ALTER TABLE [dbo].[VariantImage] ADD  DEFAULT ((0)) FOR [DisplayOrder]
+GO
+ALTER TABLE [dbo].[VariantPriceStock] ADD  DEFAULT ((0)) FOR [StockQty]
+GO
+ALTER TABLE [dbo].[VariantPriceStock] ADD  DEFAULT ((1)) FOR [TrackInventory]
+GO
+ALTER TABLE [dbo].[VariantPriceStock] ADD  DEFAULT ((0)) FOR [AllowBackorder]
+GO
+ALTER TABLE [dbo].[Vendor] ADD  CONSTRAINT [DF_Vendor_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[Vendor] ADD  CONSTRAINT [DF_Vendor_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+ALTER TABLE [dbo].[VendorPayment] ADD  CONSTRAINT [DF__VendorPay__Payme__55009F39]  DEFAULT (getdate()) FOR [PaymentDate]
+GO
+ALTER TABLE [dbo].[VendorPayment] ADD  CONSTRAINT [DF__VendorPay__Statu__55F4C372]  DEFAULT ('Completed') FOR [Status]
+GO
+ALTER TABLE [dbo].[VendorPayment] ADD  CONSTRAINT [DF_VendorPayment_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+ALTER TABLE [dbo].[VendorPayment] ADD  CONSTRAINT [DF_VendorPayment_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+ALTER TABLE [dbo].[Account]  WITH CHECK ADD  CONSTRAINT [FK_Account_AccountType] FOREIGN KEY([AccountTypeId])
+REFERENCES [dbo].[AccountType] ([Id])
+GO
+ALTER TABLE [dbo].[Account] CHECK CONSTRAINT [FK_Account_AccountType]
+GO
+ALTER TABLE [dbo].[Address]  WITH CHECK ADD  CONSTRAINT [FK_Address_Customer] FOREIGN KEY([CustomerId])
+REFERENCES [dbo].[Customer] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Address] CHECK CONSTRAINT [FK_Address_Customer]
+GO
+ALTER TABLE [dbo].[AttributeValue]  WITH CHECK ADD  CONSTRAINT [FK_AttributeValue_Attribute] FOREIGN KEY([AttributeId])
+REFERENCES [dbo].[AttributeName] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AttributeValue] CHECK CONSTRAINT [FK_AttributeValue_Attribute]
+GO
+ALTER TABLE [dbo].[CompanyCustomer]  WITH CHECK ADD  CONSTRAINT [FK_CompanyCustomer_Company] FOREIGN KEY([CompanyId])
+REFERENCES [dbo].[Company] ([Id])
+GO
+ALTER TABLE [dbo].[CompanyCustomer] CHECK CONSTRAINT [FK_CompanyCustomer_Company]
+GO
+ALTER TABLE [dbo].[CompanyCustomer]  WITH CHECK ADD  CONSTRAINT [FK_CompanyCustomer_Customer] FOREIGN KEY([CustomerId])
+REFERENCES [dbo].[Customer] ([Id])
+GO
+ALTER TABLE [dbo].[CompanyCustomer] CHECK CONSTRAINT [FK_CompanyCustomer_Customer]
+GO
+ALTER TABLE [dbo].[CompanyVendor]  WITH CHECK ADD  CONSTRAINT [FK_CompanyVendor_Company] FOREIGN KEY([CompanyId])
+REFERENCES [dbo].[Company] ([Id])
+GO
+ALTER TABLE [dbo].[CompanyVendor] CHECK CONSTRAINT [FK_CompanyVendor_Company]
+GO
+ALTER TABLE [dbo].[CompanyVendor]  WITH CHECK ADD  CONSTRAINT [FK_CompanyVendor_Vendor] FOREIGN KEY([VendorId])
+REFERENCES [dbo].[Vendor] ([Id])
+GO
+ALTER TABLE [dbo].[CompanyVendor] CHECK CONSTRAINT [FK_CompanyVendor_Vendor]
+GO
+ALTER TABLE [dbo].[CustomerPayment]  WITH CHECK ADD  CONSTRAINT [FK_CustomerPayment_Customer] FOREIGN KEY([CustomerId])
+REFERENCES [dbo].[Customer] ([Id])
+GO
+ALTER TABLE [dbo].[CustomerPayment] CHECK CONSTRAINT [FK_CustomerPayment_Customer]
+GO
+ALTER TABLE [dbo].[CustomerPayment]  WITH CHECK ADD  CONSTRAINT [FK_CustomerPayment_InvTran] FOREIGN KEY([InventoryTransactionId])
+REFERENCES [dbo].[InventoryTransaction] ([Id])
+GO
+ALTER TABLE [dbo].[CustomerPayment] CHECK CONSTRAINT [FK_CustomerPayment_InvTran]
+GO
+ALTER TABLE [dbo].[CustomerPayment]  WITH CHECK ADD  CONSTRAINT [FK_CustomerPayment_Method] FOREIGN KEY([PaymentMethodId])
+REFERENCES [dbo].[PaymentMethod] ([Id])
+GO
+ALTER TABLE [dbo].[CustomerPayment] CHECK CONSTRAINT [FK_CustomerPayment_Method]
+GO
+ALTER TABLE [dbo].[Delivery]  WITH CHECK ADD  CONSTRAINT [FK_Delivery_SalesOrderHeader] FOREIGN KEY([SalesOrderId])
+REFERENCES [dbo].[SalesOrderHeader] ([Id])
+GO
+ALTER TABLE [dbo].[Delivery] CHECK CONSTRAINT [FK_Delivery_SalesOrderHeader]
+GO
+ALTER TABLE [dbo].[InventoryTransaction]  WITH CHECK ADD  CONSTRAINT [FK_InventoryTransaction_PoReceived] FOREIGN KEY([PoReceivedId])
+REFERENCES [dbo].[PoReceived] ([Id])
+GO
+ALTER TABLE [dbo].[InventoryTransaction] CHECK CONSTRAINT [FK_InventoryTransaction_PoReceived]
+GO
+ALTER TABLE [dbo].[InventoryTransaction]  WITH CHECK ADD  CONSTRAINT [FK_InventoryTransaction_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+GO
+ALTER TABLE [dbo].[InventoryTransaction] CHECK CONSTRAINT [FK_InventoryTransaction_Product]
+GO
+ALTER TABLE [dbo].[InventoryTransaction]  WITH CHECK ADD  CONSTRAINT [FK_InventoryTransaction_SalesOrderDetail] FOREIGN KEY([SalesOrderDetailId])
+REFERENCES [dbo].[SalesOrderDetail] ([Id])
+GO
+ALTER TABLE [dbo].[InventoryTransaction] CHECK CONSTRAINT [FK_InventoryTransaction_SalesOrderDetail]
+GO
+ALTER TABLE [dbo].[JournalEntryDetail]  WITH CHECK ADD  CONSTRAINT [FK_JED_Account] FOREIGN KEY([AccountId])
+REFERENCES [dbo].[Account] ([Id])
+GO
+ALTER TABLE [dbo].[JournalEntryDetail] CHECK CONSTRAINT [FK_JED_Account]
+GO
+ALTER TABLE [dbo].[JournalEntryDetail]  WITH CHECK ADD  CONSTRAINT [FK_JED_Journal] FOREIGN KEY([JournalEntryId])
+REFERENCES [dbo].[JournalEntry] ([Id])
+GO
+ALTER TABLE [dbo].[JournalEntryDetail] CHECK CONSTRAINT [FK_JED_Journal]
+GO
+ALTER TABLE [dbo].[LanguageResource]  WITH CHECK ADD  CONSTRAINT [FK_LanguageResource_Company] FOREIGN KEY([CompanyId])
+REFERENCES [dbo].[Company] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[LanguageResource] CHECK CONSTRAINT [FK_LanguageResource_Company]
+GO
+ALTER TABLE [dbo].[LanguageResource]  WITH CHECK ADD  CONSTRAINT [FK_LanguageResource_Language] FOREIGN KEY([LanguageId])
+REFERENCES [dbo].[Language] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[LanguageResource] CHECK CONSTRAINT [FK_LanguageResource_Language]
+GO
+ALTER TABLE [dbo].[PaymentAllocation]  WITH CHECK ADD  CONSTRAINT [FK_PaymentAllocation_CustomerPayment] FOREIGN KEY([CustomerPaymentId])
+REFERENCES [dbo].[CustomerPayment] ([Id])
+GO
+ALTER TABLE [dbo].[PaymentAllocation] CHECK CONSTRAINT [FK_PaymentAllocation_CustomerPayment]
+GO
+ALTER TABLE [dbo].[PaymentAllocation]  WITH CHECK ADD  CONSTRAINT [FK_PaymentAllocation_SalesOrder] FOREIGN KEY([SalesOrderId])
+REFERENCES [dbo].[SalesOrderHeader] ([Id])
+GO
+ALTER TABLE [dbo].[PaymentAllocation] CHECK CONSTRAINT [FK_PaymentAllocation_SalesOrder]
+GO
+ALTER TABLE [dbo].[PermissionGroupMap]  WITH CHECK ADD  CONSTRAINT [FK_PermissionGroupMap_Permission] FOREIGN KEY([PermissionId])
+REFERENCES [dbo].[Permission] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[PermissionGroupMap] CHECK CONSTRAINT [FK_PermissionGroupMap_Permission]
+GO
+ALTER TABLE [dbo].[PermissionGroupMap]  WITH CHECK ADD  CONSTRAINT [FK_PermissionGroupMap_PermissionGroup] FOREIGN KEY([PermissionGroupId])
+REFERENCES [dbo].[PermissionGroup] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[PermissionGroupMap] CHECK CONSTRAINT [FK_PermissionGroupMap_PermissionGroup]
+GO
+ALTER TABLE [dbo].[PoReceived]  WITH CHECK ADD  CONSTRAINT [FK_PoReceived_PoRequested] FOREIGN KEY([PoRequestedId])
+REFERENCES [dbo].[PoRequested] ([Id])
+GO
+ALTER TABLE [dbo].[PoReceived] CHECK CONSTRAINT [FK_PoReceived_PoRequested]
+GO
+ALTER TABLE [dbo].[PoRequested]  WITH CHECK ADD  CONSTRAINT [FK_PoRequested_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+GO
+ALTER TABLE [dbo].[PoRequested] CHECK CONSTRAINT [FK_PoRequested_Product]
+GO
+ALTER TABLE [dbo].[PoRequested]  WITH CHECK ADD  CONSTRAINT [FK_PoRequested_Vendor] FOREIGN KEY([VendorId])
+REFERENCES [dbo].[Vendor] ([Id])
+GO
+ALTER TABLE [dbo].[PoRequested] CHECK CONSTRAINT [FK_PoRequested_Vendor]
+GO
+ALTER TABLE [dbo].[Product]  WITH CHECK ADD  CONSTRAINT [FK_Product_Company] FOREIGN KEY([CompanyId])
+REFERENCES [dbo].[Company] ([Id])
+GO
+ALTER TABLE [dbo].[Product] CHECK CONSTRAINT [FK_Product_Company]
+GO
+ALTER TABLE [dbo].[ProductAttribute]  WITH CHECK ADD  CONSTRAINT [FK_ProductAttribute_Attribute] FOREIGN KEY([AttributeId])
+REFERENCES [dbo].[AttributeName] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ProductAttribute] CHECK CONSTRAINT [FK_ProductAttribute_Attribute]
+GO
+ALTER TABLE [dbo].[ProductAttribute]  WITH CHECK ADD  CONSTRAINT [FK_ProductAttribute_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ProductAttribute] CHECK CONSTRAINT [FK_ProductAttribute_Product]
+GO
+ALTER TABLE [dbo].[ProductDiscount]  WITH CHECK ADD  CONSTRAINT [FK_ProductDiscount_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ProductDiscount] CHECK CONSTRAINT [FK_ProductDiscount_Product]
+GO
+ALTER TABLE [dbo].[ProductImage]  WITH CHECK ADD  CONSTRAINT [FK_ProductImage_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ProductImage] CHECK CONSTRAINT [FK_ProductImage_Product]
+GO
+ALTER TABLE [dbo].[ProductInventory]  WITH CHECK ADD  CONSTRAINT [FK_ProductInventory_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ProductInventory] CHECK CONSTRAINT [FK_ProductInventory_Product]
+GO
+ALTER TABLE [dbo].[ProductReview]  WITH CHECK ADD  CONSTRAINT [FK_ProductReview_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ProductReview] CHECK CONSTRAINT [FK_ProductReview_Product]
+GO
+ALTER TABLE [dbo].[ProductVariant]  WITH CHECK ADD  CONSTRAINT [FK_ProductVariant_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[ProductVariant] CHECK CONSTRAINT [FK_ProductVariant_Product]
+GO
+ALTER TABLE [dbo].[SalesOrderDetail]  WITH CHECK ADD  CONSTRAINT [FK_SOD_Header] FOREIGN KEY([SalesOrderId])
+REFERENCES [dbo].[SalesOrderHeader] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[SalesOrderDetail] CHECK CONSTRAINT [FK_SOD_Header]
+GO
+ALTER TABLE [dbo].[SalesOrderDetail]  WITH CHECK ADD  CONSTRAINT [FK_SOD_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+GO
+ALTER TABLE [dbo].[SalesOrderDetail] CHECK CONSTRAINT [FK_SOD_Product]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader]  WITH CHECK ADD  CONSTRAINT [FK_SOH_Address] FOREIGN KEY([AddressId])
+REFERENCES [dbo].[Address] ([Id])
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] CHECK CONSTRAINT [FK_SOH_Address]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader]  WITH CHECK ADD  CONSTRAINT [FK_SOH_Channel] FOREIGN KEY([SalesChannelId])
+REFERENCES [dbo].[SalesChannel] ([Id])
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] CHECK CONSTRAINT [FK_SOH_Channel]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader]  WITH CHECK ADD  CONSTRAINT [FK_SOH_Customer] FOREIGN KEY([CompanyCustomerId])
+REFERENCES [dbo].[CompanyCustomer] ([Id])
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] CHECK CONSTRAINT [FK_SOH_Customer]
+GO
+ALTER TABLE [dbo].[UserLogin]  WITH CHECK ADD  CONSTRAINT [FK_UserLogin_Company] FOREIGN KEY([CompanyId])
+REFERENCES [dbo].[Company] ([Id])
+GO
+ALTER TABLE [dbo].[UserLogin] CHECK CONSTRAINT [FK_UserLogin_Company]
+GO
+ALTER TABLE [dbo].[UserPermission]  WITH CHECK ADD  CONSTRAINT [FK_UserPermission_Permission] FOREIGN KEY([PermissionId])
+REFERENCES [dbo].[Permission] ([Id])
+GO
+ALTER TABLE [dbo].[UserPermission] CHECK CONSTRAINT [FK_UserPermission_Permission]
+GO
+ALTER TABLE [dbo].[UserPermission]  WITH CHECK ADD  CONSTRAINT [FK_UserPermission_PermissionGroup] FOREIGN KEY([PermissionGroupId])
+REFERENCES [dbo].[PermissionGroup] ([Id])
+GO
+ALTER TABLE [dbo].[UserPermission] CHECK CONSTRAINT [FK_UserPermission_PermissionGroup]
+GO
+ALTER TABLE [dbo].[UserPermission]  WITH CHECK ADD  CONSTRAINT [FK_UserPermission_UserLogin] FOREIGN KEY([UserId])
+REFERENCES [dbo].[UserLogin] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[UserPermission] CHECK CONSTRAINT [FK_UserPermission_UserLogin]
+GO
+ALTER TABLE [dbo].[Variant]  WITH CHECK ADD  CONSTRAINT [FK_Variant_Product] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Product] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[Variant] CHECK CONSTRAINT [FK_Variant_Product]
+GO
+ALTER TABLE [dbo].[VariantAttributeValue]  WITH CHECK ADD  CONSTRAINT [FK_VariantAttributeValue_AttributeName] FOREIGN KEY([AttributeId])
+REFERENCES [dbo].[AttributeName] ([Id])
+GO
+ALTER TABLE [dbo].[VariantAttributeValue] CHECK CONSTRAINT [FK_VariantAttributeValue_AttributeName]
+GO
+ALTER TABLE [dbo].[VariantAttributeValue]  WITH CHECK ADD  CONSTRAINT [FK_VariantAttributeValue_AttributeValue] FOREIGN KEY([AttributeValueId])
+REFERENCES [dbo].[AttributeValue] ([Id])
+GO
+ALTER TABLE [dbo].[VariantAttributeValue] CHECK CONSTRAINT [FK_VariantAttributeValue_AttributeValue]
+GO
+ALTER TABLE [dbo].[VariantAttributeValue]  WITH CHECK ADD  CONSTRAINT [FK_VariantAttributeValue_Variant] FOREIGN KEY([VariantId])
+REFERENCES [dbo].[ProductVariant] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[VariantAttributeValue] CHECK CONSTRAINT [FK_VariantAttributeValue_Variant]
+GO
+ALTER TABLE [dbo].[VariantImage]  WITH CHECK ADD  CONSTRAINT [FK_VariantImage_ProductVariant] FOREIGN KEY([VariantId])
+REFERENCES [dbo].[ProductVariant] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[VariantImage] CHECK CONSTRAINT [FK_VariantImage_ProductVariant]
+GO
+ALTER TABLE [dbo].[VariantPriceStock]  WITH CHECK ADD  CONSTRAINT [FK_VPS_ProductVariant] FOREIGN KEY([Id])
+REFERENCES [dbo].[ProductVariant] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[VariantPriceStock] CHECK CONSTRAINT [FK_VPS_ProductVariant]
+GO
+ALTER TABLE [dbo].[VendorPayment]  WITH CHECK ADD  CONSTRAINT [FK_VendorPayment_InvTran] FOREIGN KEY([InventoryTransactionId])
+REFERENCES [dbo].[InventoryTransaction] ([Id])
+GO
+ALTER TABLE [dbo].[VendorPayment] CHECK CONSTRAINT [FK_VendorPayment_InvTran]
+GO
+ALTER TABLE [dbo].[VendorPayment]  WITH CHECK ADD  CONSTRAINT [FK_VendorPayment_Method] FOREIGN KEY([PaymentMethodId])
+REFERENCES [dbo].[PaymentMethod] ([Id])
+GO
+ALTER TABLE [dbo].[VendorPayment] CHECK CONSTRAINT [FK_VendorPayment_Method]
+GO
+ALTER TABLE [dbo].[VendorPayment]  WITH CHECK ADD  CONSTRAINT [FK_VendorPayment_Vendor] FOREIGN KEY([VendorId])
+REFERENCES [dbo].[CompanyVendor] ([Id])
+GO
+ALTER TABLE [dbo].[VendorPayment] CHECK CONSTRAINT [FK_VendorPayment_Vendor]
+GO
+ALTER TABLE [dbo].[CustomerPayment]  WITH CHECK ADD  CONSTRAINT [CHK_CustomerPayment_Status] CHECK  (([Status]='Cancelled' OR [Status]='Failed' OR [Status]='Pending' OR [Status]='Partial' OR [Status]='Completed'))
+GO
+ALTER TABLE [dbo].[CustomerPayment] CHECK CONSTRAINT [CHK_CustomerPayment_Status]
+GO
+ALTER TABLE [dbo].[CustomerPayment]  WITH CHECK ADD  CONSTRAINT [CHK_CustomerPayment_Type] CHECK  (([PaymentType]='Refund' OR [PaymentType]='Advance' OR [PaymentType]='Sale'))
+GO
+ALTER TABLE [dbo].[CustomerPayment] CHECK CONSTRAINT [CHK_CustomerPayment_Type]
+GO
+ALTER TABLE [dbo].[InventoryTransaction]  WITH CHECK ADD  CONSTRAINT [CHK_InventoryTransaction_InOut] CHECK  (([InOut]='OUT' OR [InOut]='IN'))
+GO
+ALTER TABLE [dbo].[InventoryTransaction] CHECK CONSTRAINT [CHK_InventoryTransaction_InOut]
+GO
+ALTER TABLE [dbo].[InventoryTransaction]  WITH CHECK ADD  CONSTRAINT [CHK_InventoryTransaction_Source] CHECK  (([PoReceivedId] IS NOT NULL OR [SalesOrderDetailId] IS NOT NULL))
+GO
+ALTER TABLE [dbo].[InventoryTransaction] CHECK CONSTRAINT [CHK_InventoryTransaction_Source]
+GO
+ALTER TABLE [dbo].[JournalEntryDetail]  WITH CHECK ADD  CONSTRAINT [CHK_JED_Positive] CHECK  (([Debit]>=(0) AND [Credit]>=(0) AND NOT ([Debit]>(0) AND [Credit]>(0))))
+GO
+ALTER TABLE [dbo].[JournalEntryDetail] CHECK CONSTRAINT [CHK_JED_Positive]
+GO
+ALTER TABLE [dbo].[PoReceived]  WITH CHECK ADD  CONSTRAINT [CHK_PoReceived_Price] CHECK  (([BuyingPrice]>=(0)))
+GO
+ALTER TABLE [dbo].[PoReceived] CHECK CONSTRAINT [CHK_PoReceived_Price]
+GO
+ALTER TABLE [dbo].[PoReceived]  WITH CHECK ADD  CONSTRAINT [CHK_PoReceived_Quantity] CHECK  (([ReceivedQuantity]>(0)))
+GO
+ALTER TABLE [dbo].[PoReceived] CHECK CONSTRAINT [CHK_PoReceived_Quantity]
+GO
+ALTER TABLE [dbo].[PoRequested]  WITH CHECK ADD  CONSTRAINT [CHK_PoRequested_Quantity] CHECK  (([Quantity]>(0)))
+GO
+ALTER TABLE [dbo].[PoRequested] CHECK CONSTRAINT [CHK_PoRequested_Quantity]
+GO
+ALTER TABLE [dbo].[ProductDiscount]  WITH CHECK ADD  CONSTRAINT [CHK_ProductDiscount_Dates] CHECK  (([EffectiveTo] IS NULL OR [EffectiveTo]>[EffectiveFrom]))
+GO
+ALTER TABLE [dbo].[ProductDiscount] CHECK CONSTRAINT [CHK_ProductDiscount_Dates]
+GO
+ALTER TABLE [dbo].[ProductDiscount]  WITH CHECK ADD  CONSTRAINT [CHK_ProductDiscount_Value] CHECK  (([DiscountValue]>=(0)))
+GO
+ALTER TABLE [dbo].[ProductDiscount] CHECK CONSTRAINT [CHK_ProductDiscount_Value]
+GO
+ALTER TABLE [dbo].[ProductReview]  WITH CHECK ADD  CONSTRAINT [CHK_ProductReview_Rating] CHECK  (([Rating]>=(1) AND [Rating]<=(5)))
+GO
+ALTER TABLE [dbo].[ProductReview] CHECK CONSTRAINT [CHK_ProductReview_Rating]
+GO
+ALTER TABLE [dbo].[SalesOrderDetail]  WITH CHECK ADD  CONSTRAINT [CHK_SOD_Qty] CHECK  (([Quantity]>(0)))
+GO
+ALTER TABLE [dbo].[SalesOrderDetail] CHECK CONSTRAINT [CHK_SOD_Qty]
+GO
+ALTER TABLE [dbo].[SalesOrderHeader]  WITH CHECK ADD  CONSTRAINT [CHK_SOH_Status] CHECK  (([Status]='Returned' OR [Status]='Cancelled' OR [Status]='Delivered' OR [Status]='Shipped' OR [Status]='Confirmed' OR [Status]='Draft'))
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] CHECK CONSTRAINT [CHK_SOH_Status]
+GO
+ALTER TABLE [dbo].[VendorPayment]  WITH CHECK ADD  CONSTRAINT [CHK_VendorPayment_Status] CHECK  (([Status]='Cancelled' OR [Status]='Failed' OR [Status]='Pending' OR [Status]='Partial' OR [Status]='Completed'))
+GO
+ALTER TABLE [dbo].[VendorPayment] CHECK CONSTRAINT [CHK_VendorPayment_Status]
+GO
+ALTER TABLE [dbo].[VendorPayment]  WITH CHECK ADD  CONSTRAINT [CHK_VendorPayment_Type] CHECK  (([PaymentType]='Refund' OR [PaymentType]='Advance' OR [PaymentType]='Purchase'))
+GO
+ALTER TABLE [dbo].[VendorPayment] CHECK CONSTRAINT [CHK_VendorPayment_Type]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_GetProductDetails]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_GetProductDetails]
+    @ProductId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- 1. Get Base Product
+    SELECT * FROM [dbo].[Product] WHERE Id = @ProductId;
+
+    -- 2. Get Base Product Images
+    SELECT * FROM [dbo].[ProductImage] WHERE ProductId = @ProductId ORDER BY SortOrder;
+
+    -- 3. Get Product Variants
+    SELECT * FROM [dbo].[ProductVariant] WHERE ProductId = @ProductId AND IsActive = 1;
+
+    -- Create a temp table of the variant IDs for faster lookups
+    SELECT Id INTO #VariantIds FROM [dbo].[ProductVariant] WHERE ProductId = @ProductId AND IsActive = 1;
+
+    -- 4. Get Variant Price/Stock (using the temp table)
+    SELECT * FROM [dbo].[VariantPriceStock] WHERE Id IN (SELECT Id FROM #VariantIds);
+
+    -- 5. Get Variant-Specific Images (using the temp table)
+    SELECT * FROM [dbo].[VariantImage] WHERE VariantId IN (SELECT Id FROM #VariantIds) ORDER BY DisplayOrder;
+
+    -- 6. Get Product Options (e.g., "Color", "Size")
+    -- We join AttributeName to get the name
+    SELECT
+        pa.AttributeId,
+        an.Name AS AttributeName
+    FROM [dbo].[ProductAttribute] pa
+    JOIN [dbo].[AttributeName] an ON pa.AttributeId = an.Id
+    WHERE pa.ProductId = @ProductId
+    ORDER BY pa.DisplayOrder;
+
+    -- 7. Get All *Possible* Values for those options (e.g., "Silver", "Black", "512GB")
+    SELECT
+        av.*
+    FROM [dbo].[AttributeValue] av
+    WHERE av.AttributeId IN (SELECT AttributeId FROM [dbo].[ProductAttribute] WHERE ProductId = @ProductId)
+    ORDER BY av.DisplayOrder;
+
+    -- 8. Get the Variant-to-Value Mappings
+    SELECT * FROM [dbo].[VariantAttributeValue] WHERE VariantId IN (SELECT Id FROM #VariantIds);
+
+    -- Drop the temp table
+    DROP TABLE #VariantIds;
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ProductDiscount_Save]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROCEDURE [dbo].[usp_ProductDiscount_Save]
+
+(
+
+    @ProductId       INT,
+
+    @DiscountType    NVARCHAR(50),   -- Flat or Percentage
+
+    @DiscountValue   DECIMAL(18,2),
+
+    @MinQuantity     INT = NULL,
+
+    @EffectiveFrom   DATETIME,
+
+    @EffectiveTo     DATETIME = NULL,
+
+    @CreatedBy       NVARCHAR(100) = NULL
+
+)
+
+AS
+
+BEGIN
+
+    SET NOCOUNT ON;
+ 
+    --------------------------------------------------------
+
+    -- 1. Validate Discount Type
+
+    --------------------------------------------------------
+
+    IF (@DiscountType NOT IN ('Flat', 'Percentage'))
+
+    BEGIN
+
+        RAISERROR('Invalid DiscountType. Only Flat or Percentage allowed.', 16, 1);
+
+        RETURN;
+
+    END
+ 
+    --------------------------------------------------------
+
+    -- 2. Check for existing discount for this product
+
+    --------------------------------------------------------
+
+    DECLARE @ExistingId INT, @ExistingFrom DATETIME, @ExistingTo DATETIME;
+ 
+    SELECT TOP 1 
+
+           @ExistingId = Id,
+
+           @ExistingFrom = EffectiveFrom,
+
+           @ExistingTo = EffectiveTo
+
+    FROM ProductDiscount
+
+    WHERE ProductId = @ProductId
+
+      AND IsActive = 1
+
+    ORDER BY EffectiveFrom DESC;
+ 
+    --------------------------------------------------------
+
+    -- 3. If no previous discount → just insert
+
+    --------------------------------------------------------
+
+    IF (@ExistingId IS NULL)
+
+    BEGIN
+
+        INSERT INTO ProductDiscount
+
+        (
+
+            ProductId, DiscountType, DiscountValue, MinQuantity,
+
+            EffectiveFrom, EffectiveTo, IsActive,
+
+            CreatedBy
+
+        )
+
+        VALUES
+
+        (
+
+            @ProductId, @DiscountType, @DiscountValue, @MinQuantity,
+
+            @EffectiveFrom, @EffectiveTo, 1,
+
+            @CreatedBy
+
+        );
+
+        RETURN;
+
+    END
+ 
+ 
+    --------------------------------------------------------
+
+    -- 4. If last discount has no end date → auto close it (N2 + C1)
+
+    --------------------------------------------------------
+
+    IF (@ExistingTo IS NULL)
+
+    BEGIN
+
+        UPDATE ProductDiscount
+
+        SET EffectiveTo = DATEADD(DAY, -1, @EffectiveFrom),
+
+            UpdatedAt = SYSDATETIME(),
+
+            UpdatedBy = @CreatedBy
+
+        WHERE Id = @ExistingId;
+
+    END
+
+    ELSE
+
+    BEGIN
+
+        --------------------------------------------------------
+
+        -- 5. Block overlapping date ranges (OD1)
+
+        --------------------------------------------------------
+
+        IF NOT (@EffectiveFrom > @ExistingTo)
+
+        BEGIN
+
+            RAISERROR('Discount period overlaps with existing discount.', 16, 1);
+
+            RETURN;
+
+        END
+
+    END
+ 
+    --------------------------------------------------------
+
+    -- 6. Insert new discount
+
+    --------------------------------------------------------
+
+    INSERT INTO ProductDiscount
+
+    (
+
+        ProductId, DiscountType, DiscountValue, MinQuantity,
+
+        EffectiveFrom, EffectiveTo, IsActive,
+
+        CreatedBy
+
+    )
+
+    VALUES
+
+    (
+
+        @ProductId, @DiscountType, @DiscountValue, @MinQuantity,
+
+        @EffectiveFrom, @EffectiveTo, 1,
+
+        @CreatedBy
+
+    );
+
+END
+
+GO
+/****** Object:  StoredProcedure [dbo].[usp_RecordCustomerPaymentJournal]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROCEDURE [dbo].[usp_RecordCustomerPaymentJournal]
+    @CustomerPaymentId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @Amount DECIMAL(18,2), @CustomerId INT, @Status NVARCHAR(20);
+
+    SELECT @Amount = Amount, @CustomerId = CustomerId, @Status = Status
+    FROM dbo.CustomerPayment
+    WHERE Id = @CustomerPaymentId;
+
+    IF @Status <> 'Completed' RETURN;
+
+    DECLARE @JournalId INT;
+    INSERT INTO dbo.JournalEntry (ReferenceType, ReferenceId, Description)
+    VALUES ('CustomerPayment', @CustomerPaymentId, CONCAT('Customer Payment #', @CustomerPaymentId));
+
+    SET @JournalId = SCOPE_IDENTITY();
+
+    -- Debit Cash
+    INSERT INTO dbo.JournalEntryDetail (JournalEntryId, AccountId, Debit)
+    SELECT @JournalId, a.Id, @Amount FROM dbo.Account a WHERE a.AccountCode = '1000';
+
+    -- Credit A/R
+    INSERT INTO dbo.JournalEntryDetail (JournalEntryId, AccountId, Credit)
+    SELECT @JournalId, a.Id, @Amount FROM dbo.Account a WHERE a.AccountCode = '1100';
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_RecordInventory_OUT]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/***************************************
+-- Procedure: usp_RecordInventory_OUT
+-- Purpose : Record outbound stock and decrement inventory
+-- Rules   : Must supply SalesOrderDetailId (price comes from SalesOrderDetail.UnitPrice unless @SellingPrice provided)
+-- Note    : AverageCost is NOT changed on OUT
+***************************************/
+CREATE   PROCEDURE [dbo].[usp_RecordInventory_OUT]
+(
+    @ProductId INT,
+    @SalesOrderDetailId INT,
+    @Quantity INT,
+    @SellingPrice DECIMAL(18,2) = NULL  -- optional; if NULL, will use SalesOrderDetail.UnitPrice
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    -- basic validation
+    IF @SalesOrderDetailId IS NULL
+    BEGIN
+        RAISERROR('SalesOrderDetailId is required for OUT transactions.',16,1);
+        RETURN;
+    END
+
+    IF @Quantity <= 0
+    BEGIN
+        RAISERROR('Quantity must be greater than zero.',16,1);
+        RETURN;
+    END
+
+    DECLARE @UnitPrice DECIMAL(18,2);
+
+    SELECT @UnitPrice = UnitPrice
+    FROM dbo.SalesOrderDetail
+    WHERE Id = @SalesOrderDetailId;
+
+    IF @UnitPrice IS NULL
+    BEGIN
+        RAISERROR('SalesOrderDetail.Id = %d not found or UnitPrice is NULL.',16,1,@SalesOrderDetailId);
+        RETURN;
+    END
+
+    IF @SellingPrice IS NULL
+        SET @SellingPrice = @UnitPrice;
+
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        DECLARE @CurrentStock INT;
+
+        SELECT @CurrentStock = CurrentStock
+        FROM dbo.ProductInventory WITH (UPDLOCK, HOLDLOCK)
+        WHERE ProductId = @ProductId;
+
+        IF @CurrentStock IS NULL
+        BEGIN
+            RAISERROR('No ProductInventory row found for ProductId = %d.',16,1,@ProductId);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        IF @CurrentStock < @Quantity
+        BEGIN
+            RAISERROR('Insufficient stock for ProductId = %d. Current=%d, Requested=%d',16,1,@ProductId, @CurrentStock, @Quantity);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- Insert OUT InventoryTransaction (Price is selling price)
+        INSERT INTO dbo.InventoryTransaction (SalesOrderDetailId, ProductId, InOut, Date, Price, Quantity)
+        VALUES (@SalesOrderDetailId, @ProductId, N'OUT', SYSUTCDATETIME(), @SellingPrice, @Quantity);
+
+        -- Reduce stock only (AverageCost unchanged)
+        UPDATE dbo.ProductInventory
+        SET CurrentStock = CurrentStock - @Quantity,
+            UpdatedAt = SYSUTCDATETIME()
+        WHERE ProductId = @ProductId;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF XACT_STATE() <> 0
+            ROLLBACK TRANSACTION;
+
+        DECLARE @ErrMsg NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR('Error in usp_RecordInventory_OUT: %s',16,1,@ErrMsg);
+        RETURN;
+    END CATCH
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_RecordPurchaseJournal]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROCEDURE [dbo].[usp_RecordPurchaseJournal]
+    @PoReceivedId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @Amount DECIMAL(18,2), @VendorId INT;
+
+    SELECT @Amount = BuyingPrice * ReceivedQuantity,
+           @VendorId = pr.VendorId
+    FROM dbo.PoReceived r
+    JOIN dbo.PoRequested pr ON r.PoRequestedId = pr.Id
+    WHERE r.Id = @PoReceivedId;
+
+    IF @Amount IS NULL RETURN;
+
+    DECLARE @JournalId INT;
+    INSERT INTO dbo.JournalEntry (ReferenceType, ReferenceId, Description)
+    VALUES ('PoReceived', @PoReceivedId, CONCAT('Purchase Received #', @PoReceivedId));
+
+    SET @JournalId = SCOPE_IDENTITY();
+
+    -- Debit Inventory
+    INSERT INTO dbo.JournalEntryDetail (JournalEntryId, AccountId, Debit)
+    SELECT @JournalId, a.Id, @Amount FROM dbo.Account a WHERE a.AccountCode = '1200';
+
+    -- Credit Accounts Payable
+    INSERT INTO dbo.JournalEntryDetail (JournalEntryId, AccountId, Credit)
+    SELECT @JournalId, a.Id, @Amount FROM dbo.Account a WHERE a.AccountCode = '2000';
+END;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_RecordVendorPaymentJournal]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROCEDURE [dbo].[usp_RecordVendorPaymentJournal]
+    @VendorPaymentId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @Amount DECIMAL(18,2), @Status NVARCHAR(20);
+
+    SELECT @Amount = Amount, @Status = Status
+    FROM dbo.VendorPayment
+    WHERE Id = @VendorPaymentId;
+
+    IF @Status <> 'Completed' RETURN;
+
+    DECLARE @JournalId INT;
+    INSERT INTO dbo.JournalEntry (ReferenceType, ReferenceId, Description)
+    VALUES ('VendorPayment', @VendorPaymentId, CONCAT('Vendor Payment #', @VendorPaymentId));
+
+    SET @JournalId = SCOPE_IDENTITY();
+
+    -- Debit Accounts Payable
+    INSERT INTO dbo.JournalEntryDetail (JournalEntryId, AccountId, Debit)
+    SELECT @JournalId, a.Id, @Amount FROM dbo.Account a WHERE a.AccountCode = '2000';
+
+    -- Credit Cash
+    INSERT INTO dbo.JournalEntryDetail (JournalEntryId, AccountId, Credit)
+    SELECT @JournalId, a.Id, @Amount FROM dbo.Account a WHERE a.AccountCode = '1000';
+END;
+GO
+/****** Object:  Trigger [dbo].[TR_Account_Audit]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_Account_Audit]
+ON [dbo].[Account]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- INSERT operation
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'Account' AS TableName,
+        'INSERT' AS Operation,
+        i.Id AS PrimaryKeyValue,
+        NULL AS OldValues,
+        (
+            SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+        ) AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    WHERE NOT EXISTS (SELECT 1 FROM deleted d WHERE d.Id = i.Id);
+
+    -- UPDATE operation
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'Account' AS TableName,
+        'UPDATE' AS Operation,
+        i.Id AS PrimaryKeyValue,
+        (
+            SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+        ) AS OldValues,
+        (
+            SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+        ) AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    INNER JOIN deleted d ON i.Id = d.Id;
+
+    -- DELETE operation
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'Account' AS TableName,
+        'DELETE' AS Operation,
+        d.Id AS PrimaryKeyValue,
+        (
+            SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+        ) AS OldValues,
+        NULL AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM deleted d
+    WHERE NOT EXISTS (SELECT 1 FROM inserted i WHERE i.Id = d.Id);
+END;
+GO
+ALTER TABLE [dbo].[Account] ENABLE TRIGGER [TR_Account_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_Account_Update]    Script Date: 11-Nov-25 3:14:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_Account_Update]
+ON [dbo].[Account]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE t
+    SET t.UpdatedAt = GETDATE(),
+        t.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[Account] t
+    INNER JOIN inserted i ON t.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[Account] ENABLE TRIGGER [TR_Account_Update]
+GO
+/****** Object:  Trigger [dbo].[TR_AccountType_Audit]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_AccountType_Audit]
+ON [dbo].[AccountType]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- INSERT
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'AccountType' AS TableName,
+        'INSERT' AS Operation,
+        i.Id AS PrimaryKeyValue,
+        NULL AS OldValues,
+        (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE()
+    FROM inserted i
+    WHERE NOT EXISTS (SELECT 1 FROM deleted d WHERE d.Id = i.Id);
+
+    -- UPDATE
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'AccountType' AS TableName,
+        'UPDATE' AS Operation,
+        i.Id AS PrimaryKeyValue,
+        (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS OldValues,
+        (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS NewValues,
+        SUSER_SNAME(),
+        GETDATE()
+    FROM inserted i
+    INNER JOIN deleted d ON i.Id = d.Id;
+
+    -- DELETE
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'AccountType' AS TableName,
+        'DELETE' AS Operation,
+        d.Id AS PrimaryKeyValue,
+        (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
+        NULL,
+        SUSER_SNAME(),
+        GETDATE()
+    FROM deleted d
+    WHERE NOT EXISTS (SELECT 1 FROM inserted i WHERE i.Id = d.Id);
+END;
+GO
+ALTER TABLE [dbo].[AccountType] ENABLE TRIGGER [TR_AccountType_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_AccountType_Update]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_AccountType_Update]
+ON [dbo].[AccountType]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE t
+    SET t.UpdatedAt = GETDATE(),
+        t.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[AccountType] t
+    INNER JOIN inserted i ON t.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[AccountType] ENABLE TRIGGER [TR_AccountType_Update]
+GO
+/****** Object:  Trigger [dbo].[TR_Address_Audit]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_Address_Audit]
+ON [dbo].[Address]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- INSERT
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'Address' AS TableName,
+        'INSERT' AS Operation,
+        i.Id AS PrimaryKeyValue,
+        NULL AS OldValues,
+        (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
+        SUSER_SNAME(),
+        GETDATE()
+    FROM inserted i
+    WHERE NOT EXISTS (SELECT 1 FROM deleted d WHERE d.Id = i.Id);
+
+    -- UPDATE
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'Address' AS TableName,
+        'UPDATE' AS Operation,
+        i.Id AS PrimaryKeyValue,
+        (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
+        (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
+        SUSER_SNAME(),
+        GETDATE()
+    FROM inserted i
+    INNER JOIN deleted d ON i.Id = d.Id;
+
+    -- DELETE
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'Address' AS TableName,
+        'DELETE' AS Operation,
+        d.Id AS PrimaryKeyValue,
+        (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
+        NULL,
+        SUSER_SNAME(),
+        GETDATE()
+    FROM deleted d
+    WHERE NOT EXISTS (SELECT 1 FROM inserted i WHERE i.Id = d.Id);
+END;
+GO
+ALTER TABLE [dbo].[Address] ENABLE TRIGGER [TR_Address_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_Address_Update]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_Address_Update]
+ON [dbo].[Address]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE a
+    SET a.UpdatedAt = GETDATE(),
+        a.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[Address] a
+    INNER JOIN inserted i ON a.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[Address] ENABLE TRIGGER [TR_Address_Update]
+GO
+/****** Object:  Trigger [dbo].[TR_Company_Audit]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_Company_Audit]
+ON [dbo].[Company]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- INSERT operation
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'Company' AS TableName,
+        'INSERT' AS Operation,
+        i.Id AS PrimaryKeyValue,
+        NULL AS OldValues,
+        (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    WHERE NOT EXISTS (SELECT 1 FROM deleted d WHERE d.Id = i.Id);
+
+    -- UPDATE operation
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'Company' AS TableName,
+        'UPDATE' AS Operation,
+        i.Id AS PrimaryKeyValue,
+        (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS OldValues,
+        (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    INNER JOIN deleted d ON i.Id = d.Id;
+
+    -- DELETE operation
+    INSERT INTO [dbo].[AuditLog] (
+        TableName,
+        Operation,
+        PrimaryKeyValue,
+        OldValues,
+        NewValues,
+        ChangedBy,
+        ChangeDate
+    )
+    SELECT
+        'Company' AS TableName,
+        'DELETE' AS Operation,
+        d.Id AS PrimaryKeyValue,
+        (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS OldValues,
+        NULL AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM deleted d
+    WHERE NOT EXISTS (SELECT 1 FROM inserted i WHERE i.Id = d.Id);
+END;
+GO
+ALTER TABLE [dbo].[Company] ENABLE TRIGGER [TR_Company_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_Company_UpdateMetadata]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_Company_UpdateMetadata]
+ON [dbo].[Company]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET 
+        c.UpdatedAt = GETDATE(),
+        c.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[Company] c
+    INNER JOIN inserted i ON c.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[Company] ENABLE TRIGGER [TR_Company_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_CompanyCustomer]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+    CREATE TRIGGER [dbo].[trg_Audit_CompanyCustomer]
+    ON [dbo].[CompanyCustomer]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'CompanyCustomer',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+    
+GO
+ALTER TABLE [dbo].[CompanyCustomer] ENABLE TRIGGER [trg_Audit_CompanyCustomer]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_CompanyVendor]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+    CREATE TRIGGER [dbo].[trg_Audit_CompanyVendor]
+    ON [dbo].[CompanyVendor]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'CompanyVendor',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+    
+GO
+ALTER TABLE [dbo].[CompanyVendor] ENABLE TRIGGER [trg_Audit_CompanyVendor]
+GO
+/****** Object:  Trigger [dbo].[TR_Customer_Audit]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_Customer_Audit]
+ON [dbo].[Customer]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Operation NVARCHAR(10);
+
+    -- Handle INSERT
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        SET @Operation = 'INSERT';
+
+        INSERT INTO [dbo].[AuditLog] (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy, ChangeDate)
+        SELECT 
+            'Customer',
+            @Operation,
+            i.Id,
+            NULL,
+            (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
+            SUSER_SNAME(),
+            GETDATE()
+        FROM inserted i;
+    END
+
+    -- Handle DELETE
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+    BEGIN
+        SET @Operation = 'DELETE';
+
+        INSERT INTO [dbo].[AuditLog] (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy, ChangeDate)
+        SELECT 
+            'Customer',
+            @Operation,
+            d.Id,
+            (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
+            NULL,
+            SUSER_SNAME(),
+            GETDATE()
+        FROM deleted d;
+    END
+
+    -- Handle UPDATE
+    ELSE IF EXISTS (SELECT 1 FROM inserted) AND EXISTS (SELECT 1 FROM deleted)
+    BEGIN
+        SET @Operation = 'UPDATE';
+
+        -- Update audit log
+        INSERT INTO [dbo].[AuditLog] (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy, ChangeDate)
+        SELECT 
+            'Customer',
+            @Operation,
+            i.Id,
+            (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
+            (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER),
+            SUSER_SNAME(),
+            GETDATE()
+        FROM inserted i
+        INNER JOIN deleted d ON i.Id = d.Id;
+
+        -- Update UpdatedBy and UpdatedAt in Customer table
+        UPDATE c
+        SET 
+            c.UpdatedBy = SUSER_SNAME(),
+            c.UpdatedAt = GETDATE()
+        FROM [dbo].[Customer] c
+        INNER JOIN inserted i ON c.Id = i.Id;
+    END
+END;
+GO
+ALTER TABLE [dbo].[Customer] ENABLE TRIGGER [TR_Customer_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_Customer_Update]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_Customer_Update]
+ON [dbo].[Customer]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET c.UpdatedAt = GETDATE(),
+        c.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[Customer] c
+    INNER JOIN inserted i ON c.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[Customer] ENABLE TRIGGER [TR_Customer_Update]
+GO
+/****** Object:  Trigger [dbo].[TR_CustomerPayment_Audit]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_CustomerPayment_Audit]
+ON [dbo].[CustomerPayment]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Operation NVARCHAR(10);
+
+    -- INSERT
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+        SET @Operation = 'INSERT';
+
+    -- DELETE
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+        SET @Operation = 'DELETE';
+
+    -- UPDATE
+    ELSE
+        SET @Operation = 'UPDATE';
+
+    INSERT INTO [dbo].[AuditLog] (
+        [TableName],
+        [Operation],
+        [PrimaryKeyValue],
+        [OldValues],
+        [NewValues],
+        [ChangedBy],
+        [ChangeDate]
+    )
+    SELECT
+        'CustomerPayment' AS TableName,
+        @Operation AS Operation,
+        COALESCE(i.Id, d.Id) AS PrimaryKeyValue,
+        CASE 
+            WHEN d.Id IS NOT NULL THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS OldValues,
+        CASE 
+            WHEN i.Id IS NOT NULL THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.Id = d.Id;
+END;
+GO
+ALTER TABLE [dbo].[CustomerPayment] ENABLE TRIGGER [TR_CustomerPayment_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_CustomerPayment_UpdateMetadata]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[TR_CustomerPayment_UpdateMetadata]
+ON [dbo].[CustomerPayment]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE cp
+    SET 
+        cp.UpdatedAt = GETDATE(),
+        cp.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[CustomerPayment] cp
+    INNER JOIN inserted i ON cp.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[CustomerPayment] ENABLE TRIGGER [TR_CustomerPayment_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[TR_Delivery_Audit]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_Delivery_Audit]
+ON [dbo].[Delivery]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Operation NVARCHAR(10);
+
+    -- Identify operation type
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+        SET @Operation = 'INSERT';
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+        SET @Operation = 'DELETE';
+    ELSE
+        SET @Operation = 'UPDATE';
+
+    -- Insert into AuditLog
+    INSERT INTO [dbo].[AuditLog] (
+        [TableName],
+        [Operation],
+        [PrimaryKeyValue],
+        [OldValues],
+        [NewValues],
+        [ChangedBy],
+        [ChangeDate]
+    )
+    SELECT
+        'Delivery' AS TableName,
+        @Operation AS Operation,
+        COALESCE(i.Id, d.Id) AS PrimaryKeyValue,
+        CASE 
+            WHEN d.Id IS NOT NULL THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS OldValues,
+        CASE 
+            WHEN i.Id IS NOT NULL THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.Id = d.Id;
+END;
+GO
+ALTER TABLE [dbo].[Delivery] ENABLE TRIGGER [TR_Delivery_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_Delivery_UpdateMetadata]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_Delivery_UpdateMetadata]
+ON [dbo].[Delivery]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE d
+    SET 
+        d.UpdatedAt = GETDATE(),
+        d.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[Delivery] d
+    INNER JOIN inserted i ON d.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[Delivery] ENABLE TRIGGER [TR_Delivery_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[TR_InventoryTransaction_Audit]    Script Date: 11-Nov-25 3:14:51 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_InventoryTransaction_Audit]
+ON [dbo].[InventoryTransaction]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Operation NVARCHAR(10);
+
+    -- Identify operation type
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+        SET @Operation = 'INSERT';
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+        SET @Operation = 'DELETE';
+    ELSE
+        SET @Operation = 'UPDATE';
+
+    -- Insert audit records
+    INSERT INTO [dbo].[AuditLog] (
+        [TableName],
+        [Operation],
+        [PrimaryKeyValue],
+        [OldValues],
+        [NewValues],
+        [ChangedBy],
+        [ChangeDate]
+    )
+    SELECT
+        'InventoryTransaction' AS TableName,
+        @Operation AS Operation,
+        COALESCE(i.Id, d.Id) AS PrimaryKeyValue,
+        CASE 
+            WHEN d.Id IS NOT NULL THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS OldValues,
+        CASE 
+            WHEN i.Id IS NOT NULL THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.Id = d.Id;
+END;
+GO
+ALTER TABLE [dbo].[InventoryTransaction] ENABLE TRIGGER [TR_InventoryTransaction_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_InventoryTransaction_UpdateMetadata]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_InventoryTransaction_UpdateMetadata]
+ON [dbo].[InventoryTransaction]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE t
+    SET 
+        t.UpdatedAt = GETDATE(),
+        t.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[InventoryTransaction] t
+    INNER JOIN inserted i ON t.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[InventoryTransaction] ENABLE TRIGGER [TR_InventoryTransaction_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[TR_JournalEntry_Audit]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_JournalEntry_Audit]
+ON [dbo].[JournalEntry]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Operation NVARCHAR(10);
+
+    -- Determine operation type
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+        SET @Operation = 'INSERT';
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+        SET @Operation = 'DELETE';
+    ELSE
+        SET @Operation = 'UPDATE';
+
+    -- Write to audit log
+    INSERT INTO [dbo].[AuditLog] (
+        [TableName],
+        [Operation],
+        [PrimaryKeyValue],
+        [OldValues],
+        [NewValues],
+        [ChangedBy],
+        [ChangeDate]
+    )
+    SELECT
+        'JournalEntry' AS TableName,
+        @Operation AS Operation,
+        COALESCE(i.Id, d.Id) AS PrimaryKeyValue,
+        CASE 
+            WHEN d.Id IS NOT NULL THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS OldValues,
+        CASE 
+            WHEN i.Id IS NOT NULL THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.Id = d.Id;
+END;
+GO
+ALTER TABLE [dbo].[JournalEntry] ENABLE TRIGGER [TR_JournalEntry_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_JournalEntry_UpdateMetadata]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_JournalEntry_UpdateMetadata]
+ON [dbo].[JournalEntry]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE j
+    SET 
+        j.UpdatedAt = GETDATE(),
+        j.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[JournalEntry] j
+    INNER JOIN inserted i ON j.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[JournalEntry] ENABLE TRIGGER [TR_JournalEntry_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[TR_JournalEntryDetail_Audit]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_JournalEntryDetail_Audit]
+ON [dbo].[JournalEntryDetail]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Operation NVARCHAR(10);
+
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+        SET @Operation = 'INSERT';
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+        SET @Operation = 'DELETE';
+    ELSE
+        SET @Operation = 'UPDATE';
+
+    INSERT INTO [dbo].[AuditLog] (
+        [TableName],
+        [Operation],
+        [PrimaryKeyValue],
+        [OldValues],
+        [NewValues],
+        [ChangedBy],
+        [ChangeDate]
+    )
+    SELECT
+        'JournalEntryDetail' AS TableName,
+        @Operation AS Operation,
+        COALESCE(i.Id, d.Id) AS PrimaryKeyValue,
+        CASE 
+            WHEN d.Id IS NOT NULL THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS OldValues,
+        CASE 
+            WHEN i.Id IS NOT NULL THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.Id = d.Id;
+END;
+GO
+ALTER TABLE [dbo].[JournalEntryDetail] ENABLE TRIGGER [TR_JournalEntryDetail_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_JournalEntryDetail_UpdateMetadata]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_JournalEntryDetail_UpdateMetadata]
+ON [dbo].[JournalEntryDetail]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE jed
+    SET 
+        jed.UpdatedAt = GETDATE(),
+        jed.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[JournalEntryDetail] jed
+    INNER JOIN inserted i ON jed.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[JournalEntryDetail] ENABLE TRIGGER [TR_JournalEntryDetail_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[TR_Language_Audit]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_Language_Audit]
+ON [dbo].[Language]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Operation NVARCHAR(10);
+
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+        SET @Operation = 'INSERT';
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+        SET @Operation = 'DELETE';
+    ELSE
+        SET @Operation = 'UPDATE';
+
+    INSERT INTO [dbo].[AuditLog] (
+        [TableName],
+        [Operation],
+        [PrimaryKeyValue],
+        [OldValues],
+        [NewValues],
+        [ChangedBy],
+        [ChangeDate]
+    )
+    SELECT
+        'Language' AS TableName,
+        @Operation AS Operation,
+        COALESCE(i.Id, d.Id) AS PrimaryKeyValue,
+        CASE 
+            WHEN d.Id IS NOT NULL THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS OldValues,
+        CASE 
+            WHEN i.Id IS NOT NULL THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.Id = d.Id;
+END;
+GO
+ALTER TABLE [dbo].[Language] ENABLE TRIGGER [TR_Language_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_Language_UpdateMetadata]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_Language_UpdateMetadata]
+ON [dbo].[Language]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE lang
+    SET 
+        lang.UpdatedAt = GETDATE(),
+        lang.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[Language] lang
+    INNER JOIN inserted i ON lang.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[Language] ENABLE TRIGGER [TR_Language_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_Language]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+    CREATE TRIGGER [dbo].[trg_Audit_Language]
+    ON [dbo].[Language]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'Language',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+    
+GO
+ALTER TABLE [dbo].[Language] ENABLE TRIGGER [trg_Audit_Language]
+GO
+/****** Object:  Trigger [dbo].[TR_LanguageResource_Audit]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_LanguageResource_Audit]
+ON [dbo].[LanguageResource]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Operation NVARCHAR(10);
+
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+        SET @Operation = 'INSERT';
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+        SET @Operation = 'DELETE';
+    ELSE
+        SET @Operation = 'UPDATE';
+
+    INSERT INTO [dbo].[AuditLog] (
+        [TableName],
+        [Operation],
+        [PrimaryKeyValue],
+        [OldValues],
+        [NewValues],
+        [ChangedBy],
+        [ChangeDate]
+    )
+    SELECT
+        'LanguageResource' AS TableName,
+        @Operation AS Operation,
+        COALESCE(i.Id, d.Id) AS PrimaryKeyValue,
+        CASE 
+            WHEN d.Id IS NOT NULL THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS OldValues,
+        CASE 
+            WHEN i.Id IS NOT NULL THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER)
+            ELSE NULL
+        END AS NewValues,
+        SUSER_SNAME() AS ChangedBy,
+        GETDATE() AS ChangeDate
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.Id = d.Id;
+END;
+GO
+ALTER TABLE [dbo].[LanguageResource] ENABLE TRIGGER [TR_LanguageResource_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_LanguageResource_UpdateMetadata]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_LanguageResource_UpdateMetadata]
+ON [dbo].[LanguageResource]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE lr
+    SET 
+        lr.UpdatedAt = GETDATE(),
+        lr.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[LanguageResource] lr
+    INNER JOIN inserted i ON lr.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[LanguageResource] ENABLE TRIGGER [TR_LanguageResource_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[TR_PaymentAllocation_Audit]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- Trigger for insert/update audit
+CREATE   TRIGGER [dbo].[TR_PaymentAllocation_Audit]
+ON [dbo].[PaymentAllocation]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE pa
+    SET 
+        pa.UpdatedAt = SYSDATETIME(),
+        pa.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[PaymentAllocation] pa
+    INNER JOIN inserted i ON pa.Id = i.Id;
+
+    -- For insert: set CreatedBy/CreatedAt if not already set
+    UPDATE pa
+    SET 
+        pa.CreatedAt = SYSDATETIME(),
+        pa.CreatedBy = ISNULL(pa.CreatedBy, SUSER_SNAME())
+    FROM [dbo].[PaymentAllocation] pa
+    INNER JOIN inserted i ON pa.Id = i.Id
+    WHERE pa.CreatedBy IS NULL;
+END;
+GO
+ALTER TABLE [dbo].[PaymentAllocation] ENABLE TRIGGER [TR_PaymentAllocation_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_PaymentMethod_Audit]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_PaymentMethod_Audit]
+ON [dbo].[PaymentMethod]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE pm
+    SET 
+        pm.UpdatedAt = SYSDATETIME(),
+        pm.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[PaymentMethod] pm
+    INNER JOIN inserted i ON pm.Id = i.Id;
+
+    UPDATE pm
+    SET 
+        pm.CreatedAt = SYSDATETIME(),
+        pm.CreatedBy = ISNULL(pm.CreatedBy, SUSER_SNAME())
+    FROM [dbo].[PaymentMethod] pm
+    INNER JOIN inserted i ON pm.Id = i.Id
+    WHERE pm.CreatedBy IS NULL;
+END;
+GO
+ALTER TABLE [dbo].[PaymentMethod] ENABLE TRIGGER [TR_PaymentMethod_Audit]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_PaymentMethod]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_Audit_PaymentMethod]
+    ON [dbo].[PaymentMethod]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'PaymentMethod',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+GO
+ALTER TABLE [dbo].[PaymentMethod] ENABLE TRIGGER [trg_Audit_PaymentMethod]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_Permission]    Script Date: 11-Nov-25 3:14:52 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+    CREATE TRIGGER [dbo].[trg_Audit_Permission]
+    ON [dbo].[Permission]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'Permission',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+    
+GO
+ALTER TABLE [dbo].[Permission] ENABLE TRIGGER [trg_Audit_Permission]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_PermissionGroup]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+    CREATE TRIGGER [dbo].[trg_Audit_PermissionGroup]
+    ON [dbo].[PermissionGroup]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'PermissionGroup',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+    
+GO
+ALTER TABLE [dbo].[PermissionGroup] ENABLE TRIGGER [trg_Audit_PermissionGroup]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_PermissionGroupMap]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+    CREATE TRIGGER [dbo].[trg_Audit_PermissionGroupMap]
+    ON [dbo].[PermissionGroupMap]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'PermissionGroupMap',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+    
+GO
+ALTER TABLE [dbo].[PermissionGroupMap] ENABLE TRIGGER [trg_Audit_PermissionGroupMap]
+GO
+/****** Object:  Trigger [dbo].[TR_PoReceived_Audit]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_PoReceived_Audit]
+ON [dbo].[PoReceived]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE R
+    SET 
+        R.UpdatedAt = SYSDATETIME(),
+        R.UpdatedBy = ISNULL(i.UpdatedBy, SUSER_SNAME())
+    FROM [dbo].[PoReceived] R
+    INNER JOIN inserted i ON R.Id = i.Id;
+
+    -- Auto fill CreatedBy for new rows
+    UPDATE R
+    SET 
+        R.CreatedBy = ISNULL(R.CreatedBy, SUSER_SNAME())
+    FROM [dbo].[PoReceived] R
+    INNER JOIN inserted i ON R.Id = i.Id
+    LEFT JOIN deleted d ON d.Id = i.Id
+    WHERE d.Id IS NULL;
+END
+GO
+ALTER TABLE [dbo].[PoReceived] ENABLE TRIGGER [TR_PoReceived_Audit]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_PoReceived]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_Audit_PoReceived]
+    ON [dbo].[PoReceived]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'PoReceived',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+GO
+ALTER TABLE [dbo].[PoReceived] ENABLE TRIGGER [trg_Audit_PoReceived]
+GO
+/****** Object:  Trigger [dbo].[TR_PoRequested_Audit]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_PoRequested_Audit]
+ON [dbo].[PoRequested]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE R
+    SET 
+        R.UpdatedAt = SYSDATETIME(),
+        R.UpdatedBy = ISNULL(i.UpdatedBy, SUSER_SNAME())
+    FROM [dbo].[PoRequested] R
+    INNER JOIN inserted i ON R.Id = i.Id;
+
+    -- Set CreatedBy automatically if new
+    UPDATE R
+    SET 
+        R.CreatedBy = ISNULL(R.CreatedBy, SUSER_SNAME())
+    FROM [dbo].[PoRequested] R
+    INNER JOIN inserted i ON R.Id = i.Id
+    LEFT JOIN deleted d ON d.Id = i.Id
+    WHERE d.Id IS NULL;  -- new rows only
+END
+GO
+ALTER TABLE [dbo].[PoRequested] ENABLE TRIGGER [TR_PoRequested_Audit]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_PoRequested]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_Audit_PoRequested]
+    ON [dbo].[PoRequested]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'PoRequested',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+GO
+ALTER TABLE [dbo].[PoRequested] ENABLE TRIGGER [trg_Audit_PoRequested]
+GO
+/****** Object:  Trigger [dbo].[TR_Product_Audit]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_Product_Audit]
+ON [dbo].[Product]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE p
+    SET 
+        p.CreatedBy = ISNULL(p.CreatedBy, SUSER_SNAME()),
+        p.CreatedAt = ISNULL(p.CreatedAt, SYSDATETIME()),
+        p.UpdatedBy = SUSER_SNAME(),
+        p.UpdatedAt = SYSDATETIME()
+    FROM [dbo].[Product] p
+    INNER JOIN inserted i ON p.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[Product] ENABLE TRIGGER [TR_Product_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_ProductInventory_Audit]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_ProductInventory_Audit]
+ON [dbo].[ProductInventory]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE pi
+    SET 
+        pi.CreatedBy = ISNULL(pi.CreatedBy, SUSER_SNAME()),
+        pi.CreatedAt = ISNULL(pi.CreatedAt, SYSDATETIME()),
+        pi.UpdatedBy = SUSER_SNAME(),
+        pi.UpdatedAt = SYSDATETIME()
+    FROM [dbo].[ProductInventory] pi
+    INNER JOIN inserted i ON pi.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[ProductInventory] ENABLE TRIGGER [TR_ProductInventory_Audit]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_ProductInventory]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_Audit_ProductInventory]
+    ON [dbo].[ProductInventory]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'ProductInventory',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+GO
+ALTER TABLE [dbo].[ProductInventory] ENABLE TRIGGER [trg_Audit_ProductInventory]
+GO
+/****** Object:  Trigger [dbo].[TR_SalesChannel_Audit]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_SalesChannel_Audit]
+ON [dbo].[SalesChannel]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE sc
+    SET 
+        sc.CreatedBy = ISNULL(sc.CreatedBy, SUSER_SNAME()),
+        sc.CreatedAt = ISNULL(sc.CreatedAt, SYSDATETIME()),
+        sc.UpdatedBy = SUSER_SNAME(),
+        sc.UpdatedAt = SYSDATETIME()
+    FROM [dbo].[SalesChannel] sc
+    INNER JOIN inserted i ON sc.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[SalesChannel] ENABLE TRIGGER [TR_SalesChannel_Audit]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_SalesChannel]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_Audit_SalesChannel]
+    ON [dbo].[SalesChannel]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'SalesChannel',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+GO
+ALTER TABLE [dbo].[SalesChannel] ENABLE TRIGGER [trg_Audit_SalesChannel]
+GO
+/****** Object:  Trigger [dbo].[TR_SOD_Audit]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   TRIGGER [dbo].[TR_SOD_Audit]
+ON [dbo].[SalesOrderDetail]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @Operation NVARCHAR(10);
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+        SET @Operation = 'INSERT';
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+        SET @Operation = 'DELETE';
+    ELSE
+        SET @Operation = 'UPDATE';
+
+    INSERT INTO [dbo].[AuditLog] (
+        TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy, ChangeDate
+    )
+    SELECT
+        'SalesOrderDetail',
+        @Operation,
+        COALESCE(i.Id, d.Id),
+        CASE WHEN d.Id IS NOT NULL THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END,
+        CASE WHEN i.Id IS NOT NULL THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END,
+        SUSER_SNAME(),
+        GETDATE()
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.Id = d.Id;
+END;
+GO
+ALTER TABLE [dbo].[SalesOrderDetail] ENABLE TRIGGER [TR_SOD_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_SOD_UpdateMetadata]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   TRIGGER [dbo].[TR_SOD_UpdateMetadata]
+ON [dbo].[SalesOrderDetail]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE s
+    SET 
+        s.UpdatedAt = GETDATE(),
+        s.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[SalesOrderDetail] s
+    INNER JOIN inserted i ON s.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[SalesOrderDetail] ENABLE TRIGGER [TR_SOD_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[trg_UpdateProfitAmount]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TRIGGER [dbo].[trg_UpdateProfitAmount]
+ON [dbo].[SalesOrderDetail]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE sod
+    SET ProfitAmount = ROUND((sod.UnitPrice - ISNULL(pi.AverageCost, 0)) * sod.Quantity, 2)
+    FROM dbo.SalesOrderDetail sod
+    INNER JOIN inserted i ON sod.Id = i.Id
+    LEFT JOIN dbo.ProductInventory pi ON pi.ProductId = i.ProductId;
+END
+GO
+ALTER TABLE [dbo].[SalesOrderDetail] ENABLE TRIGGER [trg_UpdateProfitAmount]
+GO
+/****** Object:  Trigger [dbo].[TR_SOH_Audit]    Script Date: 11-Nov-25 3:14:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_SOH_Audit]
+ON [dbo].[SalesOrderHeader]
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @Operation NVARCHAR(10);
+    IF EXISTS (SELECT 1 FROM inserted) AND NOT EXISTS (SELECT 1 FROM deleted)
+        SET @Operation = 'INSERT';
+    ELSE IF EXISTS (SELECT 1 FROM deleted) AND NOT EXISTS (SELECT 1 FROM inserted)
+        SET @Operation = 'DELETE';
+    ELSE
+        SET @Operation = 'UPDATE';
+
+    INSERT INTO [dbo].[AuditLog] (
+        TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy, ChangeDate
+    )
+    SELECT
+        'SalesOrderHeader',
+        @Operation,
+        COALESCE(i.Id, d.Id),
+        CASE WHEN d.Id IS NOT NULL THEN (SELECT d.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END,
+        CASE WHEN i.Id IS NOT NULL THEN (SELECT i.* FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) END,
+        SUSER_SNAME(),
+        GETDATE()
+    FROM inserted i
+    FULL OUTER JOIN deleted d ON i.Id = d.Id;
+END;
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ENABLE TRIGGER [TR_SOH_Audit]
+GO
+/****** Object:  Trigger [dbo].[TR_SOH_UpdateMetadata]    Script Date: 11-Nov-25 3:14:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_SOH_UpdateMetadata]
+ON [dbo].[SalesOrderHeader]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    UPDATE t
+    SET 
+        t.UpdatedAt = GETDATE(),
+        t.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[SalesOrderHeader] t
+    INNER JOIN inserted i ON t.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ENABLE TRIGGER [TR_SOH_UpdateMetadata]
+GO
+/****** Object:  Trigger [dbo].[trg_SalesOrderHeader_ConfirmUpdate]    Script Date: 11-Nov-25 3:14:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[trg_SalesOrderHeader_ConfirmUpdate]
+ON [dbo].[SalesOrderHeader]
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE h
+    SET Status = 'Confirmed'
+    FROM [dbo].[SalesOrderHeader] h
+    INNER JOIN inserted i ON h.Id = i.Id
+    WHERE i.SalesChannelId = 1
+      AND i.Confirmed = 1
+      AND (h.Status <> 'Confirmed' OR h.Status IS NULL);
+END;
+GO
+ALTER TABLE [dbo].[SalesOrderHeader] ENABLE TRIGGER [trg_SalesOrderHeader_ConfirmUpdate]
+GO
+/****** Object:  Trigger [dbo].[TR_UserLogin_Audit]    Script Date: 11-Nov-25 3:14:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_UserLogin_Audit]
+ON [dbo].[UserLogin]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE ul
+    SET 
+        ul.CreatedBy = ISNULL(ul.CreatedBy, SUSER_SNAME()),
+        ul.CreatedAt = ISNULL(ul.CreatedAt, SYSDATETIME()),
+        ul.UpdatedBy = SUSER_SNAME(),
+        ul.UpdatedAt = SYSDATETIME()
+    FROM [dbo].[UserLogin] ul
+    INNER JOIN inserted i ON ul.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[UserLogin] ENABLE TRIGGER [TR_UserLogin_Audit]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_UserLogin]    Script Date: 11-Nov-25 3:14:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_Audit_UserLogin]
+    ON [dbo].[UserLogin]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'UserLogin',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+GO
+ALTER TABLE [dbo].[UserLogin] ENABLE TRIGGER [trg_Audit_UserLogin]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_UserPermission]    Script Date: 11-Nov-25 3:14:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+    CREATE TRIGGER [dbo].[trg_Audit_UserPermission]
+    ON [dbo].[UserPermission]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'UserPermission',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+    
+GO
+ALTER TABLE [dbo].[UserPermission] ENABLE TRIGGER [trg_Audit_UserPermission]
+GO
+/****** Object:  Trigger [dbo].[TR_Vendor_Audit]    Script Date: 11-Nov-25 3:14:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_Vendor_Audit]
+ON [dbo].[Vendor]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE v
+    SET 
+        v.CreatedBy = ISNULL(v.CreatedBy, SUSER_SNAME()),
+        v.CreatedAt = ISNULL(v.CreatedAt, SYSDATETIME()),
+        v.UpdatedBy = SUSER_SNAME(),
+        v.UpdatedAt = SYSDATETIME()
+    FROM [dbo].[Vendor] v
+    INNER JOIN inserted i ON v.Id = i.Id;
+END;
+GO
+ALTER TABLE [dbo].[Vendor] ENABLE TRIGGER [TR_Vendor_Audit]
+GO
+/****** Object:  Trigger [dbo].[trg_Audit_Vendor]    Script Date: 11-Nov-25 3:14:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_Audit_Vendor]
+    ON [dbo].[Vendor]
+    AFTER INSERT, UPDATE, DELETE
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        DECLARE @User NVARCHAR(100) = SUSER_SNAME();
+        INSERT INTO dbo.AuditLog (TableName, Operation, PrimaryKeyValue, OldValues, NewValues, ChangedBy)
+        SELECT
+            'Vendor',
+            CASE
+                WHEN EXISTS (SELECT * FROM deleted) AND EXISTS (SELECT * FROM inserted) THEN 'UPDATE'
+                WHEN EXISTS (SELECT * FROM deleted) THEN 'DELETE'
+                ELSE 'INSERT'
+            END,
+            COALESCE(CONVERT(NVARCHAR(100), i.Id), CONVERT(NVARCHAR(100), d.Id)),
+            CASE 
+                WHEN EXISTS (SELECT * FROM deleted) THEN 
+                    (SELECT * FROM deleted d2 WHERE d2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN EXISTS (SELECT * FROM inserted) THEN 
+                    (SELECT * FROM inserted i2 WHERE i2.Id = COALESCE(i.Id, d.Id) FOR JSON AUTO, WITHOUT_ARRAY_WRAPPER)
+                ELSE NULL 
+            END,
+            @User
+        FROM inserted i
+        FULL JOIN deleted d ON i.Id = d.Id;
+    END;
+GO
+ALTER TABLE [dbo].[Vendor] ENABLE TRIGGER [trg_Audit_Vendor]
+GO
+/****** Object:  Trigger [dbo].[TR_VendorPayment_Audit]    Script Date: 11-Nov-25 3:14:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   TRIGGER [dbo].[TR_VendorPayment_Audit]
+ON [dbo].[VendorPayment]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE vp
+    SET 
+        vp.UpdatedAt = SYSDATETIME(),
+        vp.UpdatedBy = SUSER_SNAME()
+    FROM [dbo].[VendorPayment] vp
+    INNER JOIN inserted i ON vp.Id = i.Id;
+
+    UPDATE vp
+    SET 
+        vp.CreatedAt = SYSDATETIME(),
+        vp.CreatedBy = ISNULL(vp.CreatedBy, SUSER_SNAME())
+    FROM [dbo].[VendorPayment] vp
+    INNER JOIN inserted i ON vp.Id = i.Id
+    WHERE vp.CreatedBy IS NULL;
+END;
+GO
+ALTER TABLE [dbo].[VendorPayment] ENABLE TRIGGER [TR_VendorPayment_Audit]
+GO
+USE [master]
+GO
+ALTER DATABASE [AA4] SET  READ_WRITE 
+GO
