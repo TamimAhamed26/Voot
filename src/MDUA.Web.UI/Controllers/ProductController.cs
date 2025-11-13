@@ -1,12 +1,13 @@
 ﻿using MDUA.Entities;
 using MDUA.Facade.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Pipelines;
 using System.Net;
 
 namespace MDUA.Web.UI.Controllers
-{
-    public class ProductController : Controller
+{  
+    public class ProductController : BaseController
     {
         private readonly IProductFacade _productFacade;
 

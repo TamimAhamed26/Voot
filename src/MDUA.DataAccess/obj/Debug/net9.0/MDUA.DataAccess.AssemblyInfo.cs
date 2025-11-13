@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MDUA.DataAccess")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+30d79dc7dd38916bd2e78aee558ca0a9c7897e06")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3b21c31352fb2a31de70bdc4cb9bcb50a264a6b8")]
 [assembly: System.Reflection.AssemblyProductAttribute("MDUA.DataAccess")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MDUA.DataAccess")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
