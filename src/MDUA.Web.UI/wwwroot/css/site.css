@@ -1,0 +1,313 @@
+/* ===================================
+   MDUA Admin Panel - Site Styles
+   =================================== */
+
+/* ===================================
+   Global Layout Styles
+   =================================== */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.main-content {
+    flex: 1;
+}
+
+/* ===================================
+   Modern Navbar Styles
+   =================================== */
+.modern-navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.brand-logo {
+    background: rgba(255, 255, 255, 0.2);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.brand-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin-left: 12px;
+}
+
+.modern-navbar .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+    .modern-navbar .nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: white !important;
+    }
+
+    .modern-navbar .nav-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        color: white !important;
+    }
+
+/* User Info Styles */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.user-name {
+    color: white;
+    font-weight: 500;
+}
+
+/* Logout Button */
+.btn-logout {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .btn-logout:hover {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+/* ===================================
+   Modern Footer Styles
+   =================================== */
+.modern-footer {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+    color: #e2e8f0;
+    padding: 60px 0 20px;
+    margin-top: 80px;
+}
+
+.footer-content {
+    width: 100%;
+}
+
+.footer-brand .brand-logo {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.footer-brand .brand-text {
+    color: white;
+    font-size: 1.25rem;
+}
+
+.footer-description {
+    color: #cbd5e0;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.footer-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+        color: #cbd5e0;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+.footer-contact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .footer-contact li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+        color: #cbd5e0;
+    }
+
+.footer-divider {
+    border-color: rgba(255, 255, 255, 0.1);
+    margin: 2rem 0 1.5rem;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+    .footer-bottom p {
+        margin: 0;
+        color: #cbd5e0;
+    }
+
+/* Social Links */
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+    .social-links a {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #cbd5e0;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .social-links a:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+/* ===================================
+   Responsive Design
+   =================================== */
+@media (max-width: 992px) {
+    .modern-navbar {
+        padding: 0.75rem 0;
+    }
+
+    .brand-text {
+        font-size: 1.25rem;
+    }
+
+    .user-name {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .modern-footer {
+        padding: 40px 0 20px;
+        margin-top: 40px;
+    }
+
+    .btn-logout {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    .modern-navbar .navbar-collapse {
+        margin-top: 1rem;
+    }
+
+    .modern-navbar .nav-link {
+        padding: 0.75rem 1rem !important;
+        margin-bottom: 0.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .brand-logo {
+        width: 36px;
+        height: 36px;
+    }
+
+    .brand-text {
+        font-size: 1.1rem;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+
+    .footer-title {
+        font-size: 1rem;
+    }
+
+    .social-links a {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+
+.text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-soft {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}

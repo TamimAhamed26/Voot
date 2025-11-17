@@ -1,0 +1,323 @@
+﻿﻿ /* ===================================
+   Admin Dashboard Styles
+   =================================== */
+/* General Layout */
+.admin-dashboard {
+    min-height: calc(100vh - 200px);
+}
+
+/* Hero Section */
+.dashboard-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 0;
+    margin: -20px -15px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-section {
+    text-align: center;
+}
+
+    .welcome-section h1 {
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-section .lead {
+        color: rgba(255, 255, 255, 0.95);
+    }
+
+/* Dashboard Cards */
+.dashboard-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid #f0f0f0;
+}
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+.card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.dashboard-card .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #2d3748;
+}
+
+.dashboard-card .card-description {
+    color: #718096;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.btn-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+    .btn-card:hover {
+        transform: translateX(4px);
+    }
+
+/* Stats Cards */
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+}
+
+    .stat-card:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    color: #718096;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Alternative Dashboard Style (with FontAwesome icons) */
+.hero-content {
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    color: white;
+}
+
+/* Alternative Stat Cards */
+.stat-card .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    margin-right: 20px;
+}
+
+.stat-card .stat-content {
+    flex: 1;
+}
+
+.stat-card .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #2d3748;
+}
+
+.stat-card .stat-label {
+    color: #718096;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+/* Action Cards */
+.action-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    height: 100%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+    }
+
+.action-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.action-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 10px;
+}
+
+.action-description {
+    color: #718096;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.btn-action {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+/* Activity Section */
+.activity-section {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.activity-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 25px;
+}
+
+.activity-list {
+    position: relative;
+}
+
+.activity-item {
+    display: flex;
+    padding: 15px 0;
+    position: relative;
+}
+
+    .activity-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 40px;
+        width: 2px;
+        height: calc(100% - 20px);
+        background: #e2e8f0;
+    }
+
+.activity-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 20px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px #e2e8f0;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-text {
+    margin: 0;
+    color: #2d3748;
+}
+
+.activity-time {
+    color: #a0aec0;
+    font-size: 0.85rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-hero {
+        padding: 40px 0;
+    }
+
+    .hero-title,
+    .welcome-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle,
+    .welcome-section .lead {
+        font-size: 1rem;
+    }
+
+    .stat-value,
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+
+    .action-title {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-card,
+    .action-card,
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+
+    .btn-card,
+    .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+}
