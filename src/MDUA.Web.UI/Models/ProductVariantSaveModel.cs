@@ -12,19 +12,20 @@ namespace MDUA.Web.UI.Models
     public class ProductVariantSaveModel
     {
         public int Id { get; set; }
-
-        [Required]
         public int ProductId { get; set; }
-
-        [Required]
-        [StringLength(150)]
         public string VariantName { get; set; }
-
-        [StringLength(50)]
         public string SKU { get; set; }
-
-        public decimal? VariantPrice { get; set; }
-        public List<int> SelectedAttributeValueIds { get; set; }
+        public decimal VariantPrice { get; set; }
         public bool IsActive { get; set; }
+        public List<int> SelectedAttributeValueIds { get; set; }
+
+        // NEW: VariantPriceStock fields
+        public decimal Price { get; set; }
+        public decimal? CompareAtPrice { get; set; }
+        public decimal? CostPrice { get; set; }
+        public int StockQty { get; set; }
+        public bool TrackInventory { get; set; } = true;
+        public bool AllowBackorder { get; set; } = false;
+        public int? WeightGrams { get; set; }
     }
 }

@@ -1,37 +1,34 @@
 ﻿// Global variables
-var productModal, deleteModal, categoryModal, variantModal, appToast;
+var productModal, deleteModal, categoryModal, variantModal, attributeModal, appToast;
 var categoryCache = [];
+var allAttributesCache = [];
 
 function getCsrfToken() {
     return $('input[name="__RequestVerificationToken"]').val();
 }
 
-// Use modern jQuery document ready
 $(function () {
-    // Initialize Bootstrap components
     productModal = new bootstrap.Modal(document.getElementById('productModal'));
     deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
     appToast = new bootstrap.Toast(document.getElementById('appToast'));
     categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
     variantModal = new bootstrap.Modal(document.getElementById('variantModal'));
+    attributeModal = new bootstrap.Modal(document.getElementById('attributeModal'));
 
-    // Load initial data
     loadProducts();
     loadCategories();
+    loadAllAttributes();
 
-    // --- Form Handlers ---
     $("#productForm").on('submit', function (e) { e.preventDefault(); saveProduct(); });
     $("#btnConfirmDelete").on('click', function () { deleteProduct($(this).data('id')); });
     $("#categoryForm").on('submit', function (e) { e.preventDefault(); saveCategory(); });
     $("#variantForm").on('submit', function (e) { e.preventDefault(); saveVariant(); });
+    $("#attributeAddForm").on('submit', function (e) { e.preventDefault(); saveProductAttribute(); });
 });
 
-//
-// --- Data Loading Functions ---
-//
 function loadProducts() {
     var tableBody = $("#productTableBody");
-    tableBody.html('<tr><td colspan="7" class="text-center"><div class="spinner-border spinner-border-sm" role="status"></div> &nbsp; Loading products...</td></tr>');
+    tableBody.html('<tr><td colspan="7" class="text-center"><div class="spinner-border spinner-border-sm"></div> Loading products...</td></tr>');
 
     $.ajax({
         url: "/AdminProduct/GetProducts",
@@ -39,9 +36,7 @@ function loadProducts() {
         success: function (response) {
             tableBody.empty();
             if (response.success && response.products.length > 0) {
-                response.products.forEach(function (product) {
-                    tableBody.append(renderProductRow(product));
-                });
+                response.products.forEach(p => tableBody.append(renderProductRow(p)));
             } else {
                 tableBody.append('<tr><td colspan="7" class="text-center">No products found. Click "Add New Product" to begin.</td></tr>');
             }
@@ -55,7 +50,10 @@ function loadProducts() {
 }
 
 function loadCategories() {
-    if (categoryCache.length > 0) { populateCategoryDropdown(categoryCache); return; }
+    if (categoryCache.length > 0) {
+        populateCategoryDropdown(categoryCache);
+        return;
+    }
     $.ajax({
         url: "/AdminProduct/GetCategories",
         type: "GET",
@@ -65,13 +63,22 @@ function loadCategories() {
                 populateCategoryDropdown(categoryCache);
             }
         },
-        error: function () { $("#CategoryId").html('<option value="">Error loading categories</option>'); }
+        error: function () {
+            $("#CategoryId").html('<option value="">Error loading categories</option>');
+        }
     });
 }
 
-//
-// --- Modal Functions (Product, Delete, Category) ---
-//
+function loadAllAttributes() {
+    $.ajax({
+        url: "/AdminProduct/GetAvailableAttributes",
+        type: "GET",
+        success: function (response) {
+            if (response.success) allAttributesCache = response.attributes;
+        }
+    });
+}
+
 function showCreateModal() {
     $("#productForm")[0].reset();
     $("#productModalLabel").text("Add New Product");
@@ -86,6 +93,7 @@ function showEditModal(id) {
     $("#productForm")[0].reset();
     $("#productModalLabel").text("Edit Product");
     $("#modalErrorAlert").addClass('d-none');
+
     $.ajax({
         url: "/AdminProduct/GetProduct?id=" + id,
         type: "GET",
@@ -105,7 +113,9 @@ function showEditModal(id) {
                 productModal.show();
             }
         },
-        error: function (xhr) { showToast("Error", "Could not load product. " + xhr.responseJSON?.message, true); }
+        error: function (xhr) {
+            showToast("Error", "Could not load product. " + xhr.responseJSON?.message, true);
+        }
     });
 }
 
@@ -119,61 +129,155 @@ function showDeleteModal(id, name) {
 function showCategoryModal() {
     $("#categoryForm")[0].reset();
     $("#categoryErrorAlert").addClass('d-none');
-    var productModalElement = document.getElementById('productModal');
-    productModalElement.style.zIndex = 1040;
+    document.getElementById('productModal').style.zIndex = 1040;
     categoryModal.show();
     $('.modal-backdrop').last().css('z-index', 1050);
 }
 
-//
-// --- "FETCH DATA": This function loads dynamic dropdowns and variant list ---
-//
 function showVariantModal(productId, productName) {
     $("#variantModalLabel").text(`Manage Variants for: ${productName}`);
     $("#v_ProductId").val(productId);
-
-    // Store the product name in the modal's data for later use
     $("#variantModal").data("productName", productName);
 
     var tableBody = $("#variantTableBody");
-    tableBody.html('<tr><td colspan="5" class="text-center">Loading variants...</td></tr>');
+    tableBody.html('<tr><td colspan="6" class="text-center">Loading variants...</td></tr>');
 
-    // Call the helper to load the dynamic form
-    loadDynamicVariantForm(productId, function () {
-        // This callback runs AFTER the form is built
-        clearVariantForm(); // Reset form for 'Add'
+    loadDynamicVariantForm(productId, () => {
+        clearVariantForm();
         variantModal.show();
     });
 
-    // Load existing variants
     $.ajax({
         url: `/AdminProduct/GetVariants?productId=${productId}`,
         type: "GET",
         success: function (response) {
             tableBody.empty();
             if (response.success && response.variants.length > 0) {
-                response.variants.forEach(function (v) { tableBody.append(renderVariantRow(v)); });
+                response.variants.forEach(v => tableBody.append(renderVariantRow(v)));
             } else {
-                tableBody.append('<tr><td colspan="5" class="text-center">No variants found.</td></tr>');
+                tableBody.append('<tr><td colspan="6" class="text-center">No variants found.</td></tr>');
             }
         },
         error: function (xhr) {
             var msg = xhr.responseJSON?.message || "An unknown error.";
-            tableBody.html(`<tr><td colspan="5" class="text-danger">Error: ${msg}</td></tr>`);
+            tableBody.html(`<tr><td colspan="6" class="text-danger">Error: ${msg}</td></tr>`);
         }
     });
 }
 
+function showAttributeModal() {
+    var productId = $("#v_ProductId").val();
+    var productName = $("#variantModal").data("productName");
+    $("#attributeModalLabel").text(`Manage Attributes for: ${productName}`);
+    $("#attr_ProductId").val(productId);
+    $("#attributeErrorAlert").addClass('d-none');
 
-//
-// --- CRUD Functions ---
-//
+    document.getElementById('variantModal').style.zIndex = 1040;
+    attributeModal.show();
+    $('.modal-backdrop').last().css('z-index', 1050);
+
+    var tableBody = $("#productAttributeTableBody");
+    tableBody.html('<tr><td>Loading...</td></tr>');
+
+    $.ajax({
+        url: `/AdminProduct/GetProductAttributes?productId=${productId}`,
+        type: "GET",
+        success: function (response) {
+            tableBody.empty();
+            if (response.success) {
+                if (response.attributes.length > 0) {
+                    response.attributes.forEach(attr => tableBody.append(renderProductAttributeRow(attr)));
+                } else {
+                    tableBody.append('<tr><td>No attributes assigned.</td></tr>');
+                }
+                populateAvailableAttributes(response.attributes);
+            }
+        },
+        error: function (xhr) {
+            tableBody.html(`<tr><td class="text-danger">Error: ${xhr.responseJSON?.message}</td></tr>`);
+        }
+    });
+}
+
+function populateAvailableAttributes(currentAttributes) {
+    var dropdown = $("#availableAttributesDropdown");
+    dropdown.empty().append('<option value="">-- Select attribute to add --</option>');
+
+    var currentIds = currentAttributes.map(a => a.attributeId);
+    var available = allAttributesCache.filter(attr => !currentIds.includes(attr.id));
+
+    available.forEach(attr => {
+        dropdown.append(`<option value="${attr.id}">${escapeHTML(attr.name)}</option>`);
+    });
+}
+
+function saveProductAttribute() {
+    var productId = $("#attr_ProductId").val();
+    var attributeId = $("#availableAttributesDropdown").val();
+    if (!attributeId) {
+        $("#attributeErrorAlert").text("Please select an attribute.").removeClass('d-none');
+        return;
+    }
+
+    $.ajax({
+        url: "/AdminProduct/AddProductAttribute",
+        type: "POST",
+        data: { productId: productId, attributeId: attributeId },
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                var tableBody = $("#productAttributeTableBody");
+                if (tableBody.find('td').length === 1) tableBody.empty();
+                tableBody.append(renderProductAttributeRow(response.newAttribute));
+                $("#availableAttributesDropdown option[value='" + attributeId + "']").remove();
+                $("#availableAttributesDropdown").val("");
+                $("#attributeErrorAlert").addClass('d-none');
+                loadDynamicVariantForm(productId);
+            }
+        },
+        error: function (xhr) {
+            $("#attributeErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none');
+        }
+    });
+}
+
+function deleteProductAttribute(productAttributeId, attributeId, btn) {
+    if (!confirm("Are you sure you want to remove this attribute from the product?")) return;
+
+    $.ajax({
+        url: "/AdminProduct/DeleteProductAttribute",
+        type: "POST",
+        data: { productAttributeId: productAttributeId },
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                $(btn).closest('tr').fadeOut(300, function () {
+                    $(this).remove();
+                    if ($("#productAttributeTableBody tr").length === 0) {
+                        $("#productAttributeTableBody").append('<tr><td>No attributes assigned.</td></tr>');
+                    }
+                });
+
+                var attr = allAttributesCache.find(a => a.id === attributeId);
+                if (attr) {
+                    $("#availableAttributesDropdown").append(`<option value="${attr.id}">${escapeHTML(attr.name)}</option>`);
+                }
+                loadDynamicVariantForm($("#attr_ProductId").val());
+            }
+        },
+        error: function (xhr) {
+            $("#attributeErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none');
+        }
+    });
+}
+
 function saveProduct() {
     var isCreate = $("#Id").val() === "";
     var url = isCreate ? "/AdminProduct/Create" : "/AdminProduct/Edit";
     var formData = $("#productForm").serializeArray();
-    if (!$("#IsVariantBased").is(":checked")) { formData.push({ name: "IsVariantBased", value: "false" }); }
-    if (!$("#IsActive").is(":checked")) { formData.push({ name: "IsActive", value: "false" }); }
+
+    if (!$("#IsVariantBased").is(":checked")) formData.push({ name: "IsVariantBased", value: "false" });
+    if (!$("#IsActive").is(":checked")) formData.push({ name: "IsActive", value: "false" });
 
     $.ajax({
         url: url,
@@ -186,8 +290,7 @@ function saveProduct() {
                 showToast("Success", "Product saved successfully.");
                 var newRow = renderProductRow(response.product);
                 if (isCreate) {
-                    var existingRow = $("#productTableBody").find('tr[id^="row-"]').length;
-                    if (existingRow === 0) { $("#productTableBody").empty(); }
+                    if (!$("#productTableBody").find('tr[id^="row-"]').length) $("#productTableBody").empty();
                     $("#productTableBody").append(newRow);
                 } else {
                     $("#row-" + response.product.id).replaceWith(newRow);
@@ -195,8 +298,7 @@ function saveProduct() {
             }
         },
         error: function (xhr) {
-            var msg = "An error occurred. " + (xhr.responseJSON?.message || "Check console.");
-            $("#modalErrorAlert").text(msg).removeClass('d-none');
+            $("#modalErrorAlert").text("An error occurred. " + (xhr.responseJSON?.message || "Check console.")).removeClass('d-none');
         }
     });
 }
@@ -213,15 +315,14 @@ function deleteProduct(id) {
                 showToast("Success", "Product deleted successfully.");
                 $("#row-" + id).fadeOut(500, function () {
                     $(this).remove();
-                    if ($("#productTableBody").find('tr').length === 0) {
+                    if ($("#productTableBody tr").length === 0) {
                         $("#productTableBody").append('<tr><td colspan="7" class="text-center">No products found.</td></tr>');
                     }
                 });
             }
         },
         error: function (xhr) {
-            var msg = "An error occurred. " + xhr.responseJSON?.message;
-            $("#deleteErrorAlert").text(msg).removeClass('d-none');
+            $("#deleteErrorAlert").text("An error occurred. " + xhr.responseJSON?.message).removeClass('d-none');
         }
     });
 }
@@ -248,56 +349,59 @@ function saveCategory() {
     });
 }
 
-//
-// --- ⭐️⭐️ "SAVE DATA" - THIS IS THE CORRECT, WORKING FUNCTION ⭐️⭐️ ---
-//
 function saveVariant() {
     var isCreate = $("#v_VariantId").val() === "";
     var url = isCreate ? "/AdminProduct/CreateVariant" : "/AdminProduct/UpdateVariant";
 
-    // --- 1. Manually build the data object ---
-    // This fixes the "Id: '' is invalid" error.
     var formData = {
+        Id: $("#v_VariantId").val() || 0,
         ProductId: $("#v_ProductId").val(),
         SKU: $("#v_SKU").val(),
         VariantPrice: $("#v_VariantPrice").val(),
-        IsActive: $("#v_IsActive").val() === "true", // Convert string to boolean
+        IsActive: $("#v_IsActive").val() === "true",
+        // VariantPriceStock fields
+        Price: $("#v_Price").val() || 0,
+        CompareAtPrice: $("#v_CompareAtPrice").val() || null,
+        CostPrice: $("#v_CostPrice").val() || null,
+        StockQty: $("#v_StockQty").val() || 0,
+        TrackInventory: $("#v_TrackInventory").is(":checked"),
+        AllowBackorder: $("#v_AllowBackorder").is(":checked"),
+        WeightGrams: $("#v_WeightGrams").val() || null,
         SelectedAttributeValueIds: []
     };
 
-    // --- 2. Auto-generate VariantName and fill SelectedAttributeValueIds ---
     var selectedTexts = [];
+    var allSelected = true;
+
     $(".dynamic-attr-select").each(function () {
         var valueId = $(this).val();
         if (valueId) {
             formData.SelectedAttributeValueIds.push(parseInt(valueId));
             selectedTexts.push($(this).find('option:selected').text());
+        } else {
+            allSelected = false;
         }
     });
 
-    var productName = $("#variantModal").data("productName");
-    formData.VariantName = `${productName} - ${selectedTexts.join(" / ")}`;
-
-    // --- 3. ONLY add the Id property if we are EDITING ---
-    if (!isCreate) {
-        formData.Id = $("#v_VariantId").val();
+    if (!allSelected && $(".dynamic-attr-select").length > 0) {
+        $("#variantErrorAlert").html("Please select a value for all attributes.").removeClass('d-none');
+        return;
     }
-    // If we are CREATING, we do not send "Id" at all.
+
+    formData.VariantName = `${$("#variantModal").data("productName")} - ${selectedTexts.join(" / ")}`;
 
     $.ajax({
         url: url,
         type: "POST",
-        data: formData, // Send the clean, manually-built object
+        data: formData,
         headers: { 'RequestVerificationToken': getCsrfToken() },
         success: function (response) {
             if (response.success) {
                 var newRow = renderVariantRow(response.variant);
                 if (isCreate) {
-                    var existingRows = $("#variantTableBody").find('tr[id^="variant-row-"]').length;
-                    if (existingRows === 0) { $("#variantTableBody").empty(); }
+                    if (!$("#variantTableBody").find('tr[id^="variant-row-"]').length) $("#variantTableBody").empty();
                     $("#variantTableBody").append(newRow);
                 } else {
-                    // This will now work, because renderVariantRow exists
                     $("#variant-row-" + response.variant.id).replaceWith(newRow);
                 }
                 clearVariantForm();
@@ -306,94 +410,85 @@ function saveVariant() {
             }
         },
         error: function (xhr) {
-            // Your error helper logic
-            var errorResponse = xhr.responseJSON;
-            var message = "An unknown error occurred.";
-            if (errorResponse) {
-                message = `<strong>${errorResponse.message}</strong>`;
-                if (errorResponse.errors) {
-                    var errorList = "<ul>";
-                    for (var key in errorResponse.errors) {
+            var msg = "An unknown error occurred.";
+            if (xhr.responseJSON) {
+                msg = `<strong>${xhr.responseJSON.message}</strong>`;
+                if (xhr.responseJSON.errors) {
+                    var list = "<ul>";
+                    for (var key in xhr.responseJSON.errors) {
                         if (key.includes("SelectedAttributeValueIds")) {
-                            errorList += `<li>Attributes: Please select a value for all options.</li>`;
+                            list += `<li>Attributes: Please select a value for all options.</li>`;
                         } else {
-                            errorResponse.errors[key].forEach(function (err) {
-                                errorList += `<li>${escapeHTML(key)}: ${escapeHTML(err)}</li>`;
-                            });
+                            xhr.responseJSON.errors[key].forEach(err => list += `<li>${escapeHTML(key)}: ${escapeHTML(err)}</li>`);
                         }
                     }
-                    errorList += "</ul>";
-                    message = errorList;
+                    msg += list + "</ul>";
                 }
             }
-            $("#variantErrorAlert").html(message).removeClass('d-none');
+            $("#variantErrorAlert").html(msg).removeClass('d-none');
         }
     });
 }
 
-//
-// --- ⭐️⭐️ "FETCH DATA" for Edit - THIS IS THE CORRECT, WORKING FUNCTION ⭐️⭐️ ---
-//
-function editVariant(id, btn) {
-    var formContainer = $("#dynamic-variant-form-container");
-    formContainer.html('<div class="col-12 text-center">Loading options...</div>');
+function editVariant(id) {
+    var container = $("#dynamic-variant-form-container");
+    container.html('<div class="col-12 text-center">Loading options...</div>');
     var productId = $("#v_ProductId").val();
 
-    // --- AJAX CALL 1: Get the variant's main data (GetVariant) ---
     $.ajax({
         url: "/AdminProduct/GetVariant?id=" + id,
         type: "GET",
         success: function (response) {
             if (response.success) {
                 var v = response.variant;
-                // Populate the simple form fields
                 $("#v_VariantId").val(v.id);
-                $("#v_ProductId").val(v.productId);
                 $("#v_SKU").val(v.sku);
                 $("#v_VariantPrice").val(v.variantPrice);
                 $("#v_IsActive").val(v.isActive.toString());
 
-                // --- AJAX CALL 2: Get the attribute dropdowns (GetProductOptions) ---
+                // Populate VariantPriceStock fields
+                if (response.priceStock) {
+                    $("#v_Price").val(response.priceStock.price);
+                    $("#v_CompareAtPrice").val(response.priceStock.compareAtPrice || "");
+                    $("#v_CostPrice").val(response.priceStock.costPrice || "");
+                    $("#v_StockQty").val(response.priceStock.stockQty);
+                    $("#v_TrackInventory").prop('checked', response.priceStock.trackInventory);
+                    $("#v_AllowBackorder").prop('checked', response.priceStock.allowBackorder);
+                    $("#v_WeightGrams").val(response.priceStock.weightGrams || "");
+                }
+
                 $.ajax({
                     url: `/AdminProduct/GetProductOptions?productId=${productId}`,
                     type: "GET",
-                    success: function (optionsResponse) {
-                        formContainer.empty();
-                        if (optionsResponse.success && optionsResponse.options.length > 0) {
-
-                            // Build the dropdowns
-                            optionsResponse.options.forEach(function (option) {
-                                var selectId = `attr-val-${option.attributeId}`;
+                    success: function (optResp) {
+                        container.empty();
+                        if (optResp.success && optResp.options.length > 0) {
+                            optResp.options.forEach(opt => {
+                                var selectId = `attr-val-${opt.attributeId}`;
                                 var html = `<div class="col-sm-3 mb-3">
-                                              <label for="${selectId}" class="form-label">${escapeHTML(option.attributeName)}</label>
-                                              <select id="${selectId}" name="SelectedAttributeValueIds" class="form-select dynamic-attr-select" required>
-                                                <option value="">-- Select ${escapeHTML(option.attributeName)} --</option>`;
-                                option.values.forEach(function (val) {
-                                    html += `<option value="${val.id}">${escapeHTML(val.value)}</option>`;
-                                });
+                                    <label for="${selectId}" class="form-label">${escapeHTML(opt.attributeName)}</label>
+                                    <select id="${selectId}" class="form-select dynamic-attr-select" required>
+                                        <option value="">-- Select ${escapeHTML(opt.attributeName)} --</option>`;
+                                opt.values.forEach(val => html += `<option value="${val.id}">${escapeHTML(val.value)}</option>`);
                                 html += `</select></div>`;
-                                formContainer.append(html);
+                                container.append(html);
                             });
 
-                            // --- 8. NOW we can set the selected values ---
-                            if (response.selectedValueIds) {
-                                response.selectedValueIds.forEach(function (valueId) {
-                                    var select = $(`#dynamic-variant-form-container select option[value='${valueId}']`).closest('select');
-                                    if (select.length > 0) {
-                                        select.val(valueId);
-                                    }
-                                });
-                            }
+                            response.selectedValueIds?.forEach(valId => {
+                                container.find(`option[value='${valId}']`).prop('selected', true);
+                            });
 
                             $("#btnCancelEditVariant").removeClass("d-none");
-
                         } else {
-                            formContainer.html('<div class="col-12"><p>No attributes are set for this product.</p></div>');
+                            container.html(`
+                                <div class="col-12">
+                                    <p>This product has no attributes (like Color or Size).</p>
+                                    <button type="button" class="btn btn-warning" onclick="showAttributeModal()">Manage Product Attributes</button>
+                                </div>`);
                         }
                     },
                     error: function (xhr) {
-                        var msg = xhr.responseJSON?.message || "An unknown error.";
-                        formContainer.html(`<div class="col-12 text-danger">Error: ${msg}</div>`);
+                        container.html(`<div class="col-12 text-danger">Error: ${xhr.responseJSON?.message || "Unknown"}</div>`);
                     }
                 });
             }
@@ -410,17 +505,24 @@ function clearVariantForm() {
     $("#v_ProductId").val(productId);
     $("#v_VariantId").val("");
 
-    // Clear dynamic dropdowns and show "Add" button
+    // Reset VariantPriceStock fields to defaults
+    $("#v_Price").val("");
+    $("#v_CompareAtPrice").val("");
+    $("#v_CostPrice").val("");
+    $("#v_StockQty").val("0");
+    $("#v_TrackInventory").prop('checked', true);
+    $("#v_AllowBackorder").prop('checked', false);
+    $("#v_WeightGrams").val("");
+
     $("#dynamic-variant-form-container").empty();
     $("#btnCancelEditVariant").addClass("d-none");
-    $("#variantErrorAlert").addClass("d-none");
-
-    // Re-build the dynamic form for creating a new variant
+    $("#variantErrorAlert").addClass('d-none');
     loadDynamicVariantForm(productId);
 }
 
 function deleteVariant(id, btn) {
-    if (!confirm("Are you sure you want to delete this variant?")) { return; }
+    if (!confirm("Are you sure you want to delete this variant?")) return;
+
     $.ajax({
         url: "/AdminProduct/DeleteVariant",
         type: "POST",
@@ -430,62 +532,54 @@ function deleteVariant(id, btn) {
             if (response.success) {
                 $(btn).closest('tr').fadeOut(300, function () {
                     $(this).remove();
-                    if ($("#variantTableBody").find('tr').length === 0) {
-                        $("#variantTableBody").append('<tr><td colspan="5" class="text-center">No variants found.</td></tr>');
+                    if ($("#variantTableBody tr").length === 0) {
+                        $("#variantTableBody").append('<tr><td colspan="6" class="text-center">No variants found.</td></tr>');
                     }
                 });
                 showToast("Success", "Variant deleted.");
             }
         },
-        error: function (xhr) { $("#variantErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none'); }
+        error: function (xhr) {
+            $("#variantErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none');
+        }
     });
 }
 
-// --- NEW HELPER FUNCTION ---
 function loadDynamicVariantForm(productId, callback) {
-    var formContainer = $("#dynamic-variant-form-container");
-    formContainer.html('<div class="col-12 text-center">Loading options...</div>');
+    var container = $("#dynamic-variant-form-container");
+    container.html('<div class="col-12 text-center">Loading options...</div>');
 
     $.ajax({
         url: `/AdminProduct/GetProductOptions?productId=${productId}`,
         type: "GET",
         success: function (response) {
-            formContainer.empty();
+            container.empty();
             if (response.success && response.options.length > 0) {
-                response.options.forEach(function (option) {
-                    var selectId = `attr-val-${option.attributeId}`;
+                response.options.forEach(opt => {
+                    var selectId = `attr-val-${opt.attributeId}`;
                     var html = `<div class="col-sm-3 mb-3">
-                                  <label for="${selectId}" class="form-label">${escapeHTML(option.attributeName)}</label>
-                                  <select id="${selectId}" name="SelectedAttributeValueIds" class="form-select dynamic-attr-select" required>
-                                    <option value="">-- Select ${escapeHTML(option.attributeName)} --</option>`;
-
-                    option.values.forEach(function (val) {
-                        html += `<option value="${val.id}">${escapeHTML(val.value)}</option>`;
-                    });
-
+                        <label for="${selectId}" class="form-label">${escapeHTML(opt.attributeName)}</label>
+                        <select id="${selectId}" class="form-select dynamic-attr-select" required>
+                            <option value="">-- Select ${escapeHTML(opt.attributeName)} --</option>`;
+                    opt.values.forEach(val => html += `<option value="${val.id}">${escapeHTML(val.value)}</option>`);
                     html += `</select></div>`;
-                    formContainer.append(html);
+                    container.append(html);
                 });
             } else {
-                formContainer.html('<div class="col-12"><p>This product is not set up for dynamic variants. Please edit the product and add attributes.</p></div>');
+                container.html(`
+                    <div class="col-12">
+                        <p>This product has no attributes (like Color or Size).</p>
+                        <button type="button" class="btn btn-warning" onclick="showAttributeModal()">Manage Product Attributes</button>
+                    </div>`);
             }
-
-            // Run the callback function if it exists
-            if (callback) {
-                callback();
-            }
+            if (callback) callback();
         },
         error: function (xhr) {
-            var msg = xhr.responseJSON?.message || "An unknown error.";
-            formContainer.html(`<div class="col-12 text-danger">Error: ${msg}</div>`);
+            container.html(`<div class="col-12 text-danger">Error: ${xhr.responseJSON?.message || "Unknown"}</div>`);
         }
     });
 }
 
-
-//
-// --- ⭐️⭐️ UI Helper Functions - THESE ARE REQUIRED ⭐️⭐️ ---
-//
 function renderProductRow(product) {
     var price = product.basePrice ? '$' + product.basePrice.toFixed(2) : 'N/A';
     var activeBadge = product.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
@@ -508,19 +602,47 @@ function renderProductRow(product) {
         </tr>`;
 }
 
-// --- This function IS INCLUDED ---
+function renderProductAttributeRow(attr) {
+    return `
+        <tr id="product-attr-row-${attr.productAttributeId}">
+            <td>${escapeHTML(attr.attributeName)}</td>
+            <td class="text-end">
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteProductAttribute(${attr.productAttributeId}, ${attr.attributeId}, this)">
+                    Remove
+                </button>
+            </td>
+        </tr>`;
+}
+
 function renderVariantRow(variant) {
     var price = variant.variantPrice ? '$' + variant.variantPrice.toFixed(2) : 'N/A';
     var activeBadge = variant.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+
+    // NEW: Display stock quantity with color coding
+    var stockQty = variant.stockQty !== undefined ? variant.stockQty : 'N/A';
+    var stockBadge = '';
+
+    if (variant.stockQty !== undefined) {
+        if (variant.stockQty > 10) {
+            stockBadge = `<span class="badge bg-success">${stockQty}</span>`;
+        } else if (variant.stockQty > 0) {
+            stockBadge = `<span class="badge bg-warning text-dark">${stockQty}</span>`;
+        } else {
+            stockBadge = `<span class="badge bg-danger">${stockQty}</span>`;
+        }
+    } else {
+        stockBadge = '<span class="text-muted">N/A</span>';
+    }
 
     return `
         <tr id="variant-row-${variant.id}">
             <td>${escapeHTML(variant.variantName)}</td>
             <td>${escapeHTML(variant.sku)}</td>
             <td>${price}</td>
+            <td>${stockBadge}</td>
             <td>${activeBadge}</td>
             <td class="text-end">
-                <button class="btn btn-sm btn-outline-primary" onclick="editVariant(${variant.id}, this)">Edit</button>
+                <button class="btn btn-sm btn-outline-primary" onclick="editVariant(${variant.id})">Edit</button>
                 <button class="btn btn-sm btn-outline-danger" onclick="deleteVariant(${variant.id}, this)">Delete</button>
             </td>
         </tr>`;
@@ -528,11 +650,10 @@ function renderVariantRow(variant) {
 
 function populateCategoryDropdown(categories, selectedId) {
     var dropdown = $("#CategoryId");
-    dropdown.empty();
-    dropdown.append('<option value="">-- Select Category --</option>');
-    categories.forEach(function (category) {
-        var selected = (category.id === selectedId) ? "selected" : "";
-        dropdown.append(`<option value="${category.id}" ${selected}>${escapeHTML(category.name)}</option>`);
+    dropdown.empty().append('<option value="">-- Select Category --</option>');
+    categories.forEach(cat => {
+        var selected = (cat.id === selectedId) ? "selected" : "";
+        dropdown.append(`<option value="${cat.id}" ${selected}>${escapeHTML(cat.name)}</option>`);
     });
 }
 
@@ -540,29 +661,16 @@ function showToast(title, message, isError = false) {
     $("#toastTitle").text(title);
     $("#toastMessage").text(message);
     $("#appToast").removeClass('bg-danger bg-success text-white');
-    if (isError) {
-        $("#appToast").addClass('bg-danger text-white');
-    } else {
-        $("#appToast").addClass('bg-success text-white');
-    }
+    $("#appToast").addClass(isError ? 'bg-danger text-white' : 'bg-success text-white');
     appToast.show();
 }
 
-// Security helpers
 function escapeHTML(str) {
     if (str === null || str === undefined) return "";
-    return str.toString().replace(/[&<>"']/g, function (m) {
-        return {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;'
-        }[m];
-    });
+    return str.toString().replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
 }
 
 function escapeQuote(str) {
     if (str === null || str === undefined) return "";
-    return str.toString().replace(/'/g, '\\\'').replace(/"/g, '&quot;');
+    return str.toString().replace(/'/g, "\\'").replace(/"/g, "&quot;");
 }

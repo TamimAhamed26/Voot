@@ -39,6 +39,7 @@
     </div>
 </div>
 
+<!-- Product Modal -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -126,6 +127,7 @@
     </div>
 </div>
 
+<!-- Category Modal -->
 <div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -148,6 +150,7 @@
     </div>
 </div>
 
+<!-- Variant Modal -->
 <div class="modal fade" id="variantModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -158,55 +161,131 @@
             <div class="modal-body">
                 <div id="variantErrorAlert" class="alert alert-danger d-none"></div>
 
-                <h5>Add / Edit Variant</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Add / Edit Variant</h5>
+                    <button type="button" class="btn btn-sm btn-warning" onclick="showAttributeModal()">
+                        <i class="bi bi-gear"></i> Manage Attributes
+                    </button>
+                </div>
 
                 <form id="variantForm">
                     <input type="hidden" id="v_ProductId" name="ProductId" />
                     <input type="hidden" id="v_VariantId" name="Id" />
                     <input type="hidden" id="v_VariantName" name="VariantName" />
 
-                    <div id="dynamic-variant-form-container" class="row gx-3">
+                    <!-- Dynamic Attribute Selectors -->
+                    <div id="dynamic-variant-form-container" class="row gx-3 mb-3">
                     </div>
 
                     <hr class="my-3" />
 
-                    <div class="row gx-3 gy-2 align-items-end">
-                        <div class="col-sm-3">
-                            <label for="v_SKU">SKU</label>
-                            <input type="text" id="v_SKU" name="SKU" class="form-control" />
+                    <!-- Basic Variant Info -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <strong>Basic Information</strong>
                         </div>
-                        <div class="col-sm-3">
-                            <label for="v_VariantPrice">Price</label>
-                            <input type="number" step="0.01" id="v_VariantPrice" name="VariantPrice" class="form-control" />
+                        <div class="card-body">
+                            <div class="row gx-3 gy-2">
+                                <div class="col-md-4">
+                                    <label for="v_SKU" class="form-label">SKU *</label>
+                                    <input type="text" id="v_SKU" name="SKU" class="form-control" required />
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="v_VariantPrice" class="form-label">Display Price *</label>
+                                    <input type="number" step="0.01" id="v_VariantPrice" name="VariantPrice" class="form-control" required />
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="v_IsActive" class="form-label">Status</label>
+                                    <select id="v_IsActive" name="IsActive" class="form-select">
+                                        <option value="true">Active</option>
+                                        <option value="false">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-2">
-                            <label for="v_IsActive">Status</label>
-                            <select id="v_IsActive" name="IsActive" class="form-select">
-                                <option value="true">Active</option>
-                                <option value="false">Inactive</option>
-                            </select>
+                    </div>
+
+                    <!-- Price & Stock Information -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <strong>Pricing & Stock</strong>
                         </div>
-                        <div class="col-sm-2">
-                            <button type="submit" class="btn btn-primary w-100">Save Variant</button>
+                        <div class="card-body">
+                            <div class="row gx-3 gy-3">
+                                <div class="col-md-4">
+                                    <label for="v_Price" class="form-label">Actual Price *</label>
+                                    <input type="number" step="0.01" id="v_Price" name="Price" class="form-control" required />
+                                    <small class="text-muted">Price used for calculations</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="v_CompareAtPrice" class="form-label">Compare at Price</label>
+                                    <input type="number" step="0.01" id="v_CompareAtPrice" name="CompareAtPrice" class="form-control" />
+                                    <small class="text-muted">Original price (for discounts)</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="v_CostPrice" class="form-label">Cost Price</label>
+                                    <input type="number" step="0.01" id="v_CostPrice" name="CostPrice" class="form-control" />
+                                    <small class="text-muted">Your cost (for profit calculation)</small>
+                                </div>
+                            </div>
+
+                            <div class="row gx-3 gy-3 mt-2">
+                                <div class="col-md-3">
+                                    <label for="v_StockQty" class="form-label">Stock Quantity *</label>
+                                    <input type="number" id="v_StockQty" name="StockQty" class="form-control" value="0" required />
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="v_WeightGrams" class="form-label">Weight (grams)</label>
+                                    <input type="number" id="v_WeightGrams" name="WeightGrams" class="form-control" />
+                                    <small class="text-muted">For shipping calculation</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label d-block">&nbsp;</label>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="v_TrackInventory" name="TrackInventory" class="form-check-input" checked />
+                                        <label for="v_TrackInventory" class="form-check-label">Track Inventory</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label d-block">&nbsp;</label>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="v_AllowBackorder" name="AllowBackorder" class="form-check-input" />
+                                        <label for="v_AllowBackorder" class="form-check-label">Allow Backorder</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-2">
-                            <button type="button" class="btn btn-secondary w-100 d-none" id="btnCancelEditVariant" onclick="clearVariantForm()">Cancel Edit</button>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row gx-3">
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-save"></i> Save Variant
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-secondary w-100 d-none" id="btnCancelEditVariant" onclick="clearVariantForm()">
+                                <i class="bi bi-x-circle"></i> Cancel Edit
+                            </button>
                         </div>
                     </div>
                 </form>
 
                 <hr class="my-4" />
 
+                <!-- Existing Variants Table -->
                 <h5>Existing Variants</h5>
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover table-sm">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>SKU</th>
                                 <th>Price</th>
+                                <th>Stock</th>
                                 <th>Active</th>
-                                <th></th>
+                                <th style="width: 150px;"></th>
                             </tr>
                         </thead>
                         <tbody id="variantTableBody">
@@ -218,6 +297,43 @@
     </div>
 </div>
 
+<!-- Attribute Management Modal -->
+<div class="modal fade" id="attributeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attributeModalLabel">Manage Product Attributes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="attr_ProductId" />
+                <div id="attributeErrorAlert" class="alert alert-danger d-none"></div>
+
+                <h6>Current Attributes</h6>
+                <table class="table table-sm table-bordered mb-3">
+                    <tbody id="productAttributeTableBody">
+                        <tr><td>Loading...</td></tr>
+                    </tbody>
+                </table>
+
+                <form id="attributeAddForm">
+                    <label class="form-label">Add New Attribute</label>
+                    <div class="input-group">
+                        <select id="availableAttributesDropdown" class="form-select" required>
+                            <option value="">-- Select attribute to add --</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -238,6 +354,7 @@
     </div>
 </div>
 
+<!-- Toast Notification -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="appToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">

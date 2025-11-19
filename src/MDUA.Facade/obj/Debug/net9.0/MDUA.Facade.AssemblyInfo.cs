@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MDUA.Facade")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+693e486ee93d9da26ff766d9e017a8163014c753")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+18e013df333927b44310c8a05e5804092092685a")]
 [assembly: System.Reflection.AssemblyProductAttribute("MDUA.Facade")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MDUA.Facade")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

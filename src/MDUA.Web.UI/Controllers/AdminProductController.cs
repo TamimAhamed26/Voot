@@ -2,6 +2,7 @@
 using MDUA.Entities;
 using MDUA.Entities.Bases;
 using MDUA.Entities.List;
+using MDUA.Facade;
 using MDUA.Facade.Interface;
 using MDUA.Web.UI.Models; // <-- Contains your DTO and SaveModel
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +17,7 @@ namespace MDUA.Web.UI.Controllers
         private readonly IProductCategoryFacade _productCategoryFacade;
         private readonly IProductVariantFacade _productVariantFacade;
         private readonly ILogger<AdminProductController> _logger;
+        private readonly IVariantPriceStockFacade _variantPriceStockFacade;
 
         // --- 1. Inject all new Facades ---
         private readonly IProductAttributeFacade _productAttributeFacade;
@@ -32,6 +34,8 @@ namespace MDUA.Web.UI.Controllers
             IProductAttributeFacade productAttributeFacade,
             IAttributeNameFacade attributeNameFacade,
             IAttributeValueFacade attributeValueFacade,
+            IVariantPriceStockFacade variantPriceStockFacade,
+
             IVariantAttributeValueFacade variantAttributeValueFacade)
         {
             _productFacade = productFacade;
@@ -42,6 +46,8 @@ namespace MDUA.Web.UI.Controllers
             _productAttributeFacade = productAttributeFacade;
             _attributeNameFacade = attributeNameFacade;
             _attributeValueFacade = attributeValueFacade;
+            _variantPriceStockFacade = variantPriceStockFacade;
+
             _variantAttributeValueFacade = variantAttributeValueFacade;
         }
 
@@ -69,6 +75,136 @@ namespace MDUA.Web.UI.Controllers
         }
         #endregion
 
+        #region --- Attribute Management (NEW) ---
+
+        //
+        // GET: /AdminProduct/GetProductAttributes?productId=1
+        // Gets the attributes *currently linked* to a product
+        //
+        [HttpGet]
+        public IActionResult GetProductAttributes(int productId)
+        {
+            if (!IsPermitted(Permission.Product.View))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            try
+            {
+                var productAttributes = _productAttributeFacade.GetByProductId(productId);
+
+                // We need to get the names for them
+                var result = productAttributes.Select(pa => new {
+                    productAttributeId = pa.Id, // This is the ID of the *link* (for deleting)
+                    attributeId = pa.AttributeId,
+                    attributeName = _attributeNameFacade.Get(pa.AttributeId)?.Name
+                }).ToList();
+
+                return Json(new { success = true, attributes = result });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting product attributes for {ProductId}", productId);
+                return StatusCode(500, new { success = false, message = "Error loading attributes." });
+            }
+        }
+
+        //
+        // GET: /AdminProduct/GetAvailableAttributes
+        // Gets *all* attributes in the system (for the dropdown)
+        //
+        [HttpGet]
+        public IActionResult GetAvailableAttributes()
+        {
+            if (!IsPermitted(Permission.Product.View))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            try
+            {
+                var attributes = _attributeNameFacade.GetAll();
+                return Json(new { success = true, attributes = attributes });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting all attributes");
+                return StatusCode(500, new { success = false, message = "Error loading attributes." });
+            }
+        }
+
+        //
+        // POST: /AdminProduct/AddProductAttribute
+        // Links an attribute (like "Color") to a product
+        //
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddProductAttribute(int productId, int attributeId)
+        {
+            if (!IsPermitted(Permission.Product.Edit))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            try
+            {
+                // Check if it already exists
+                var existing = _productAttributeFacade.GetByProductId(productId)
+                    .FirstOrDefault(pa => pa.AttributeId == attributeId);
+
+                if (existing != null)
+                {
+                    return StatusCode(400, new { success = false, message = "This attribute is already added to the product." });
+                }
+
+                var productAttribute = new ProductAttribute
+                {
+                    ProductId = productId,
+                    AttributeId = attributeId,
+                    DisplayOrder = 0 // You can make this editable later
+                };
+
+                _productAttributeFacade.Insert(productAttribute); // This populates productAttribute.Id
+
+                // Get the name to send back to the UI
+                var attrName = _attributeNameFacade.Get(attributeId)?.Name;
+
+                return Json(new
+                {
+                    success = true,
+                    newAttribute = new
+                    {
+                        productAttributeId = productAttribute.Id,
+                        attributeId = productAttribute.AttributeId,
+                        attributeName = attrName
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding attribute {AttributeId} to product {ProductId}", attributeId, productId);
+                return StatusCode(500, new { success = false, message = "Error adding attribute." });
+            }
+        }
+
+        //
+        // POST: /AdminProduct/DeleteProductAttribute
+        // Unlinks an attribute from a product
+        //
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteProductAttribute(int productAttributeId) // This is the ID of the LINK, not the attribute
+        {
+            if (!IsPermitted(Permission.Product.Edit))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            try
+            {
+                _productAttributeFacade.Delete(productAttributeId);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting product attribute {ProductAttributeId}", productAttributeId);
+                return StatusCode(500, new { success = false, message = "Error deleting attribute." });
+            }
+        }
+
+        #endregion
         #region Product Shell & List (No Changes)
         //
         // GET: /AdminProduct/
@@ -323,9 +459,32 @@ namespace MDUA.Web.UI.Controllers
             {
                 return StatusCode(403, new { success = false, message = "Access Denied" });
             }
+
             var variants = _productVariantFacade.GetByProductId(productId);
-            return Json(new { success = true, variants = variants });
+
+            // Enhance variants with stock data
+            // We perform a "client-side" join here (in memory) because our Facades return separate lists.
+            // For a high-volume system, this should be a single SQL query in a custom DAL method.
+            var variantsWithStock = variants.Select(v => {
+                var stockRecord = _variantPriceStockFacade.Get(v.Id);
+                return new
+                {
+                    v.Id,
+                    v.ProductId,
+                    v.VariantName,
+                    v.SKU,
+                    // Use the Price from VariantPriceStock if available, otherwise fall back to Variant table
+                    // This handles cases where data might be slightly out of sync or during migration
+                    VariantPrice = stockRecord?.Price ?? v.VariantPrice,
+                    v.IsActive,
+                    // Include the stock quantity
+                    StockQty = stockRecord?.StockQty ?? 0
+                };
+            }).ToList();
+
+            return Json(new { success = true, variants = variantsWithStock });
         }
+
 
         //
         // GET: /AdminProduct/GetVariant/5
@@ -334,21 +493,26 @@ namespace MDUA.Web.UI.Controllers
         public IActionResult GetVariant(int id)
         {
             if (!IsPermitted(Permission.Product.View))
-            {
                 return StatusCode(403, new { success = false, message = "Access Denied" });
-            }
+
             var variant = _productVariantFacade.Get(id);
             if (variant == null)
-            {
                 return StatusCode(404, new { success = false, message = "Variant not found" });
-            }
-            // We also need to get its selected attributes for the edit form
+
             var links = _variantAttributeValueFacade.GetByVariantId(id);
             var selectedValueIds = links.Select(l => l.AttributeValueId).ToList();
 
-            return Json(new { success = true, variant = variant, selectedValueIds = selectedValueIds });
-        }
+            // NEW: Get price/stock data
+            var priceStock = _variantPriceStockFacade.Get(id);
 
+            return Json(new
+            {
+                success = true,
+                variant = variant,
+                selectedValueIds = selectedValueIds,
+                priceStock = priceStock // NEW
+            });
+        }
 
         //
         // "SAVE DATA" - CREATE (UPDATED ACTION)
@@ -379,7 +543,23 @@ namespace MDUA.Web.UI.Controllers
 
                 _productVariantFacade.Insert(variant);
 
-                // 2. Save attribute links
+                // 2. Create VariantPriceStock record
+                var priceStock = new VariantPriceStock
+                {
+                    Id = variant.Id,
+                    Price = model.Price,
+                    CompareAtPrice = model.CompareAtPrice,
+                    CostPrice = model.CostPrice,
+                    StockQty = model.StockQty,
+                    TrackInventory = model.TrackInventory,
+                    AllowBackorder = model.AllowBackorder,
+                    WeightGrams = model.WeightGrams
+                };
+
+                // Cast to base type for Insert
+                _variantPriceStockFacade.Insert((VariantPriceStockBase)priceStock);
+
+                // 3. Save attribute links
                 int displayOrder = 0;
                 foreach (var valueId in model.SelectedAttributeValueIds)
                 {
@@ -401,33 +581,10 @@ namespace MDUA.Web.UI.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating dynamic variant for ProductId {ProductId}", model.ProductId);
-
-                var inner = ex.InnerException != null ? ex.InnerException.ToString() : null;
-
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = "Error saving variant.",
-                    exception = ex.ToString(),
-                    innerException = inner,
-                    // optional: include model details for debugging (remove in prod)
-                    model = new
-                    {
-                        model.ProductId,
-                        model.SKU,
-                        model.VariantName,
-                        model.VariantPrice,
-                        model.SelectedAttributeValueIds
-                    }
-                });
+                return StatusCode(500, new { success = false, message = "Error saving variant.", exception = ex.Message });
             }
-
         }
 
-
-        //
-        // "SAVE DATA" - UPDATE (UPDATED ACTION)
-        //
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateVariant(ProductVariantSaveModel model)
@@ -444,7 +601,7 @@ namespace MDUA.Web.UI.Controllers
 
             try
             {
-                // 1. Update main row
+                // 1. Update main variant
                 variant.VariantName = model.VariantName;
                 variant.SKU = model.SKU;
                 variant.VariantPrice = model.VariantPrice;
@@ -454,12 +611,44 @@ namespace MDUA.Web.UI.Controllers
 
                 _productVariantFacade.Update(variant);
 
-                // 2. Delete old links
+                // 2. Update VariantPriceStock
+                var priceStock = _variantPriceStockFacade.Get(model.Id);
+                if (priceStock != null)
+                {
+                    priceStock.Price = model.Price;
+                    priceStock.CompareAtPrice = model.CompareAtPrice;
+                    priceStock.CostPrice = model.CostPrice;
+                    priceStock.StockQty = model.StockQty;
+                    priceStock.TrackInventory = model.TrackInventory;
+                    priceStock.AllowBackorder = model.AllowBackorder;
+                    priceStock.WeightGrams = model.WeightGrams;
+
+                    // Cast to base type for Update
+                    _variantPriceStockFacade.Update((VariantPriceStockBase)priceStock);
+                }
+                else
+                {
+                    // Create new if doesn't exist
+                    var newPriceStock = new VariantPriceStock
+                    {
+                        Id = model.Id,
+                        Price = model.Price,
+                        CompareAtPrice = model.CompareAtPrice,
+                        CostPrice = model.CostPrice,
+                        StockQty = model.StockQty,
+                        TrackInventory = model.TrackInventory,
+                        AllowBackorder = model.AllowBackorder,
+                        WeightGrams = model.WeightGrams
+                    };
+                    _variantPriceStockFacade.Insert((VariantPriceStockBase)newPriceStock);
+                }
+
+                // 3. Delete old attribute links
                 var oldLinks = _variantAttributeValueFacade.GetByVariantId(model.Id);
                 foreach (var link in oldLinks)
                     _variantAttributeValueFacade.Delete(link.Id);
 
-                // 3. Add new links
+                // 4. Add new attribute links
                 int displayOrder = 0;
                 foreach (var valueId in model.SelectedAttributeValueIds)
                 {
@@ -481,13 +670,7 @@ namespace MDUA.Web.UI.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating variant {VariantId}", model.Id);
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = "Error saving variant.",
-                    exception = ex.Message,
-                    stack = ex.StackTrace
-                });
+                return StatusCode(500, new { success = false, message = "Error saving variant.", exception = ex.Message });
             }
         }
 
