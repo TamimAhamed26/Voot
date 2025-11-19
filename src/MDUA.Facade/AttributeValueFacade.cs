@@ -11,7 +11,6 @@ namespace MDUA.Facade
         private readonly IAttributeValueDataAccess _dataAccess;
         public AttributeValueFacade(IAttributeValueDataAccess dataAccess) { _dataAccess = dataAccess; }
         public AttributeValueList GetByAttributeId(int _AttributeId) => _dataAccess.GetByAttributeId(_AttributeId);
-        // ... (Implement other ICommonFacade methods) ...
         public AttributeValue Get(int _Id) => _dataAccess.Get(_Id);
         public long Delete(int _Id) => _dataAccess.Delete(_Id);
         public AttributeValueList GetAll() => _dataAccess.GetAll();

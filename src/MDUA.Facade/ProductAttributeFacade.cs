@@ -11,7 +11,6 @@ namespace MDUA.Facade
         private readonly IProductAttributeDataAccess _dataAccess;
         public ProductAttributeFacade(IProductAttributeDataAccess dataAccess) { _dataAccess = dataAccess; }
         public ProductAttributeList GetByProductId(int _ProductId) => _dataAccess.GetByProductId(_ProductId);
-        // ... (Implement other ICommonFacade methods) ...
         public ProductAttribute Get(int _Id) => _dataAccess.Get(_Id);
         public long Delete(int _Id) => _dataAccess.Delete(_Id);
         public ProductAttributeList GetAll() => _dataAccess.GetAll();

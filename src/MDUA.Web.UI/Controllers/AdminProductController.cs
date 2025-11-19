@@ -73,9 +73,39 @@ namespace MDUA.Web.UI.Controllers
                 errors = errors
             };
         }
+
+        /// <summary>
+        /// Checks if a variant with the same attribute combination already exists
+        /// </summary>
+        private bool VariantExists(int productId, List<int> attributeValueIds, int? excludeVariantId = null)
+        {
+            // Get all variants for this product
+            var existingVariants = _productVariantFacade.GetByProductId(productId);
+
+            foreach (var variant in existingVariants)
+            {
+                // Skip the variant being edited
+                if (excludeVariantId.HasValue && variant.Id == excludeVariantId.Value)
+                    continue;
+
+                // Get attribute values for this variant
+                var variantAttributes = _variantAttributeValueFacade.GetByVariantId(variant.Id);
+                var variantValueIds = variantAttributes.Select(va => va.AttributeValueId).OrderBy(id => id).ToList();
+
+                // Compare sorted lists
+                var inputValueIds = attributeValueIds.OrderBy(id => id).ToList();
+
+                if (variantValueIds.SequenceEqual(inputValueIds))
+                {
+                    return true; // Duplicate found
+                }
+            }
+
+            return false; // No duplicate
+        }
         #endregion
 
-        #region --- Attribute Management (NEW) ---
+        #region --- Attribute Management  ---
 
         //
         // GET: /AdminProduct/GetProductAttributes?productId=1
@@ -205,7 +235,8 @@ namespace MDUA.Web.UI.Controllers
         }
 
         #endregion
-        #region Product Shell & List (No Changes)
+
+        #region Product Shell & List 
         //
         // GET: /AdminProduct/
         //
@@ -234,7 +265,7 @@ namespace MDUA.Web.UI.Controllers
         }
         #endregion
 
-        #region Product CRUD (No Changes)
+        #region Product CRUD 
         //
         // GET: /AdminProduct/GetProduct/5 
         //
@@ -362,7 +393,7 @@ namespace MDUA.Web.UI.Controllers
         }
         #endregion
 
-        #region Category Quick-Add (No Changes)
+        #region Category Quick-Add 
         //
         // GET: /AdminProduct/GetCategories 
         //
@@ -399,7 +430,7 @@ namespace MDUA.Web.UI.Controllers
         }
         #endregion
 
-        #region --- DYNAMIC VARIANT ACTIONS (NEW & UPDATED) ---
+        #region --- DYNAMIC VARIANT ACTIONS  ---
 
         //
         // "FETCH DATA" (NEW ACTION)
@@ -456,29 +487,25 @@ namespace MDUA.Web.UI.Controllers
         public IActionResult GetVariants(int productId)
         {
             if (!IsPermitted(Permission.Product.View))
-            {
                 return StatusCode(403, new { success = false, message = "Access Denied" });
-            }
 
             var variants = _productVariantFacade.GetByProductId(productId);
 
             // Enhance variants with stock data
-            // We perform a "client-side" join here (in memory) because our Facades return separate lists.
-            // For a high-volume system, this should be a single SQL query in a custom DAL method.
-            var variantsWithStock = variants.Select(v => {
-                var stockRecord = _variantPriceStockFacade.Get(v.Id);
+            var variantsWithStock = variants.Select(v =>
+            {
+                var priceStock = _variantPriceStockFacade.Get(v.Id);
                 return new
                 {
-                    v.Id,
-                    v.ProductId,
-                    v.VariantName,
-                    v.SKU,
-                    // Use the Price from VariantPriceStock if available, otherwise fall back to Variant table
-                    // This handles cases where data might be slightly out of sync or during migration
-                    VariantPrice = stockRecord?.Price ?? v.VariantPrice,
-                    v.IsActive,
-                    // Include the stock quantity
-                    StockQty = stockRecord?.StockQty ?? 0
+                    id = v.Id,
+                    productId = v.ProductId,
+                    variantName = v.VariantName,
+                    sku = v.SKU,
+                    variantPrice = v.VariantPrice,
+                    isActive = v.IsActive,
+                    stockQty = priceStock?.StockQty ?? 0,
+                    trackInventory = priceStock?.TrackInventory ?? true,
+                    allowBackorder = priceStock?.AllowBackorder ?? false
                 };
             }).ToList();
 
@@ -529,6 +556,16 @@ namespace MDUA.Web.UI.Controllers
 
             try
             {
+                // *** NEW: Check for duplicate variant ***
+                if (VariantExists(model.ProductId, model.SelectedAttributeValueIds))
+                {
+                    return StatusCode(400, new
+                    {
+                        success = false,
+                        message = "A variant with this combination of attributes already exists. Please choose different attributes."
+                    });
+                }
+
                 // 1. Create main variant
                 var variant = new ProductVariant
                 {
@@ -556,7 +593,6 @@ namespace MDUA.Web.UI.Controllers
                     WeightGrams = model.WeightGrams
                 };
 
-                // Cast to base type for Insert
                 _variantPriceStockFacade.Insert((VariantPriceStockBase)priceStock);
 
                 // 3. Save attribute links
@@ -576,7 +612,22 @@ namespace MDUA.Web.UI.Controllers
                     });
                 }
 
-                return Json(new { success = true, variant = variant });
+                return Json(new
+                {
+                    success = true,
+                    variant = new
+                    {
+                        id = variant.Id,
+                        productId = variant.ProductId,
+                        variantName = variant.VariantName,
+                        sku = variant.SKU,
+                        variantPrice = variant.VariantPrice,
+                        isActive = variant.IsActive,
+                        stockQty = model.StockQty,
+                        trackInventory = model.TrackInventory,
+                        allowBackorder = model.AllowBackorder
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -601,7 +652,33 @@ namespace MDUA.Web.UI.Controllers
 
             try
             {
-                // 1. Update main variant
+                //
+                // Detect whether attributes actually changed
+                //
+                var oldAttributeLinks = _variantAttributeValueFacade.GetByVariantId(model.Id);
+                var oldValueIds = oldAttributeLinks.Select(a => a.AttributeValueId).OrderBy(id => id).ToList();
+                var newValueIds = model.SelectedAttributeValueIds.OrderBy(id => id).ToList();
+
+                bool attributesChanged = !oldValueIds.SequenceEqual(newValueIds);
+
+                //
+                // Check duplicate variant only if attributes changed
+                //
+                if (attributesChanged)
+                {
+                    if (VariantExists(model.ProductId, model.SelectedAttributeValueIds, model.Id))
+                    {
+                        return StatusCode(400, new
+                        {
+                            success = false,
+                            message = "A variant with this combination of attributes already exists. Please choose different attributes."
+                        });
+                    }
+                }
+
+                //
+                //Update main variant table
+                //
                 variant.VariantName = model.VariantName;
                 variant.SKU = model.SKU;
                 variant.VariantPrice = model.VariantPrice;
@@ -611,8 +688,11 @@ namespace MDUA.Web.UI.Controllers
 
                 _productVariantFacade.Update(variant);
 
-                // 2. Update VariantPriceStock
+                //
+                //Update VariantPriceStock (create if missing)
+                //
                 var priceStock = _variantPriceStockFacade.Get(model.Id);
+
                 if (priceStock != null)
                 {
                     priceStock.Price = model.Price;
@@ -623,12 +703,10 @@ namespace MDUA.Web.UI.Controllers
                     priceStock.AllowBackorder = model.AllowBackorder;
                     priceStock.WeightGrams = model.WeightGrams;
 
-                    // Cast to base type for Update
                     _variantPriceStockFacade.Update((VariantPriceStockBase)priceStock);
                 }
                 else
                 {
-                    // Create new if doesn't exist
                     var newPriceStock = new VariantPriceStock
                     {
                         Id = model.Id,
@@ -640,32 +718,59 @@ namespace MDUA.Web.UI.Controllers
                         AllowBackorder = model.AllowBackorder,
                         WeightGrams = model.WeightGrams
                     };
+
                     _variantPriceStockFacade.Insert((VariantPriceStockBase)newPriceStock);
                 }
 
-                // 3. Delete old attribute links
-                var oldLinks = _variantAttributeValueFacade.GetByVariantId(model.Id);
-                foreach (var link in oldLinks)
-                    _variantAttributeValueFacade.Delete(link.Id);
-
-                // 4. Add new attribute links
-                int displayOrder = 0;
-                foreach (var valueId in model.SelectedAttributeValueIds)
+                //
+                //  Update attribute links ONLY if changed
+                //
+                if (attributesChanged)
                 {
-                    var attrValue = _attributeValueFacade.Get(valueId);
-                    if (attrValue == null)
-                        return StatusCode(400, new { success = false, message = $"Invalid attributeValueId: {valueId}" });
+                    // Delete old attribute links
+                    foreach (var link in oldAttributeLinks)
+                        _variantAttributeValueFacade.Delete(link.Id);
 
-                    _variantAttributeValueFacade.Insert(new VariantAttributeValue
+                    // Insert new attribute links
+                    int displayOrder = 0;
+                    foreach (var valueId in model.SelectedAttributeValueIds)
                     {
-                        VariantId = variant.Id,
-                        AttributeId = attrValue.AttributeId,
-                        AttributeValueId = valueId,
-                        DisplayOrder = displayOrder++
-                    });
+                        var attrValue = _attributeValueFacade.Get(valueId);
+                        if (attrValue == null)
+                            return StatusCode(400, new { success = false, message = $"Invalid attributeValueId: {valueId}" });
+
+                        _variantAttributeValueFacade.Insert(new VariantAttributeValue
+                        {
+                            VariantId = variant.Id,
+                            AttributeId = attrValue.AttributeId,
+                            AttributeValueId = valueId,
+                            DisplayOrder = displayOrder++
+                        });
+                    }
                 }
 
-                return Json(new { success = true, variant = variant });
+                var updatedPriceStock = _variantPriceStockFacade.Get(model.Id);
+
+                //
+                //  Final response
+                //
+                return Json(new
+                {
+                    success = true,
+                    variant = new
+                    {
+                        id = variant.Id,
+                        productId = variant.ProductId,
+                        variantName = variant.VariantName,
+                        sku = variant.SKU,
+                        variantPrice = variant.VariantPrice,
+                        isActive = variant.IsActive,
+                        stockQty = updatedPriceStock?.StockQty ?? 0,
+                        trackInventory = updatedPriceStock?.TrackInventory ?? true,
+                        allowBackorder = updatedPriceStock?.AllowBackorder ?? false,
+                        weightGrams = updatedPriceStock?.WeightGrams ?? 0
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -673,6 +778,7 @@ namespace MDUA.Web.UI.Controllers
                 return StatusCode(500, new { success = false, message = "Error saving variant.", exception = ex.Message });
             }
         }
+
 
 
         [HttpPost]

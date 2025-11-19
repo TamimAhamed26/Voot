@@ -30,6 +30,7 @@ F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation\dist\additional-methods.js
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\css\product-admin.css
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\favicon.ico
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
@@ -65,6 +66,7 @@ F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.j
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\css\dashboard.css
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
 wwwroot\css\dashboard.css
+wwwroot\css\product-admin.css
 wwwroot\css\product-page.css
 wwwroot\css\site.css
 wwwroot\favicon.ico

@@ -15,6 +15,24 @@ $(function () {
     variantModal = new bootstrap.Modal(document.getElementById('variantModal'));
     attributeModal = new bootstrap.Modal(document.getElementById('attributeModal'));
 
+    // NEW: Handle modal backdrop cleanup
+    $('#categoryModal').on('hidden.bs.modal', function () {
+        if ($('.modal.show').length > 0) {
+            $('body').addClass('modal-open');
+        }
+    });
+
+    $('#attributeModal').on('hidden.bs.modal', function () {
+        if ($('.modal.show').length > 0) {
+            $('body').addClass('modal-open');
+        }
+    });
+
+    // NEW: Toggle Manage Attributes button visibility based on IsVariantBased checkbox
+    $('#IsVariantBased').on('change', function () {
+        toggleManageAttributesButton();
+    });
+
     loadProducts();
     loadCategories();
     loadAllAttributes();
@@ -25,6 +43,62 @@ $(function () {
     $("#variantForm").on('submit', function (e) { e.preventDefault(); saveVariant(); });
     $("#attributeAddForm").on('submit', function (e) { e.preventDefault(); saveProductAttribute(); });
 });
+
+// NEW: Toggle Manage Attributes button visibility
+function toggleManageAttributesButton() {
+    if ($('#IsVariantBased').is(':checked')) {
+        $('#manageAttributesContainer').slideDown(200);
+    } else {
+        $('#manageAttributesContainer').slideUp(200);
+    }
+}
+
+// NEW: Show attribute modal from product modal (for existing products only)
+function showAttributeModalFromProduct() {
+    var productId = $('#Id').val();
+
+    if (!productId) {
+        alert('Please save the product first before managing attributes.');
+        return;
+    }
+
+    // Hide product modal temporarily
+    productModal.hide();
+
+    // Set up the attribute modal with product ID
+    $("#attr_ProductId").val(productId);
+    $("#attributeModalLabel").text(`Manage Attributes for Product ID: ${productId}`);
+    $("#attributeErrorAlert").addClass('d-none');
+
+    attributeModal.show();
+
+    var tableBody = $("#productAttributeTableBody");
+    tableBody.html('<tr><td>Loading...</td></tr>');
+
+    $.ajax({
+        url: `/AdminProduct/GetProductAttributes?productId=${productId}`,
+        type: "GET",
+        success: function (response) {
+            tableBody.empty();
+            if (response.success) {
+                if (response.attributes.length > 0) {
+                    response.attributes.forEach(attr => tableBody.append(renderProductAttributeRow(attr)));
+                } else {
+                    tableBody.append('<tr><td>No attributes assigned.</td></tr>');
+                }
+                populateAvailableAttributes(response.attributes);
+            }
+        },
+        error: function (xhr) {
+            tableBody.html(`<tr><td class="text-danger">Error: ${xhr.responseJSON?.message}</td></tr>`);
+        }
+    });
+
+    // When attribute modal closes, reopen product modal
+    $('#attributeModal').one('hidden.bs.modal', function () {
+        productModal.show();
+    });
+}
 
 function loadProducts() {
     var tableBody = $("#productTableBody");
@@ -85,6 +159,7 @@ function showCreateModal() {
     $("#Id").val("");
     $("#modalErrorAlert").addClass('d-none');
     $("#IsActive").prop('checked', true);
+    $('#manageAttributesContainer').hide(); // Hide manage attributes for new products
     populateCategoryDropdown(categoryCache);
     productModal.show();
 }
@@ -110,6 +185,10 @@ function showEditModal(id) {
                 populateCategoryDropdown(categoryCache, p.categoryId);
                 $("#IsVariantBased").prop('checked', p.isVariantBased);
                 $("#IsActive").prop('checked', p.isActive);
+
+                // Show/hide manage attributes button based on variant status
+                toggleManageAttributesButton();
+
                 productModal.show();
             }
         },
@@ -129,9 +208,7 @@ function showDeleteModal(id, name) {
 function showCategoryModal() {
     $("#categoryForm")[0].reset();
     $("#categoryErrorAlert").addClass('d-none');
-    document.getElementById('productModal').style.zIndex = 1040;
     categoryModal.show();
-    $('.modal-backdrop').last().css('z-index', 1050);
 }
 
 function showVariantModal(productId, productName) {
@@ -172,9 +249,7 @@ function showAttributeModal() {
     $("#attr_ProductId").val(productId);
     $("#attributeErrorAlert").addClass('d-none');
 
-    document.getElementById('variantModal').style.zIndex = 1040;
     attributeModal.show();
-    $('.modal-backdrop').last().css('z-index', 1050);
 
     var tableBody = $("#productAttributeTableBody");
     tableBody.html('<tr><td>Loading...</td></tr>');
@@ -232,6 +307,7 @@ function saveProductAttribute() {
                 $("#availableAttributesDropdown option[value='" + attributeId + "']").remove();
                 $("#availableAttributesDropdown").val("");
                 $("#attributeErrorAlert").addClass('d-none');
+                showToast("Success", "Attribute added successfully.");
                 loadDynamicVariantForm(productId);
             }
         },
@@ -340,7 +416,6 @@ function saveCategory() {
                 populateCategoryDropdown(categoryCache, response.newCategory.id);
                 categoryModal.hide();
                 showToast("Success", "Category created.");
-                document.getElementById('productModal').style.zIndex = 1055;
             }
         },
         error: function (xhr) {
@@ -462,6 +537,8 @@ function editVariant(id) {
                     type: "GET",
                     success: function (optResp) {
                         container.empty();
+                        $("#noAttributesWarning").addClass('d-none');
+
                         if (optResp.success && optResp.options.length > 0) {
                             optResp.options.forEach(opt => {
                                 var selectId = `attr-val-${opt.attributeId}`;
@@ -480,11 +557,7 @@ function editVariant(id) {
 
                             $("#btnCancelEditVariant").removeClass("d-none");
                         } else {
-                            container.html(`
-                                <div class="col-12">
-                                    <p>This product has no attributes (like Color or Size).</p>
-                                    <button type="button" class="btn btn-warning" onclick="showAttributeModal()">Manage Product Attributes</button>
-                                </div>`);
+                            $("#noAttributesWarning").removeClass('d-none');
                         }
                     },
                     error: function (xhr) {
@@ -517,6 +590,7 @@ function clearVariantForm() {
     $("#dynamic-variant-form-container").empty();
     $("#btnCancelEditVariant").addClass("d-none");
     $("#variantErrorAlert").addClass('d-none');
+    $("#noAttributesWarning").addClass('d-none');
     loadDynamicVariantForm(productId);
 }
 
@@ -554,6 +628,8 @@ function loadDynamicVariantForm(productId, callback) {
         type: "GET",
         success: function (response) {
             container.empty();
+            $("#noAttributesWarning").addClass('d-none');
+
             if (response.success && response.options.length > 0) {
                 response.options.forEach(opt => {
                     var selectId = `attr-val-${opt.attributeId}`;
@@ -566,11 +642,7 @@ function loadDynamicVariantForm(productId, callback) {
                     container.append(html);
                 });
             } else {
-                container.html(`
-                    <div class="col-12">
-                        <p>This product has no attributes (like Color or Size).</p>
-                        <button type="button" class="btn btn-warning" onclick="showAttributeModal()">Manage Product Attributes</button>
-                    </div>`);
+                $("#noAttributesWarning").removeClass('d-none');
             }
             if (callback) callback();
         },
@@ -618,7 +690,7 @@ function renderVariantRow(variant) {
     var price = variant.variantPrice ? '$' + variant.variantPrice.toFixed(2) : 'N/A';
     var activeBadge = variant.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
 
-    // NEW: Display stock quantity with color coding
+    // Display stock quantity with color coding
     var stockQty = variant.stockQty !== undefined ? variant.stockQty : 'N/A';
     var stockBadge = '';
 
@@ -650,7 +722,7 @@ function renderVariantRow(variant) {
 
 function populateCategoryDropdown(categories, selectedId) {
     var dropdown = $("#CategoryId");
-    dropdown.empty().append('<option value="">-- Select Category --</option>');
+    dropdown.empty().append('<option value="">Select Category</option>');
     categories.forEach(cat => {
         var selected = (cat.id === selectedId) ? "selected" : "";
         dropdown.append(`<option value="${cat.id}" ${selected}>${escapeHTML(cat.name)}</option>`);

@@ -11,15 +11,11 @@ namespace MDUA.Facade
     {
         private readonly IProductDataAccess _productDataAccess;
 
-        // Constructor for Dependency Injection
         public ProductFacade(IProductDataAccess productDataAccess)
         {
             _productDataAccess = productDataAccess;
         }
 
-        // 
-        // Custom method implementation
-        //
         public ProductDetailsModel GetProductDetails(string slug)
         {
             return _productDataAccess.GetProductDetails(slug);
@@ -28,9 +24,6 @@ namespace MDUA.Facade
         }
 
 
-        //
-        // Generic ICommonFacade Implementation
-        //
         public long Delete(int _Id)
         {
             return _productDataAccess.Delete(_Id);

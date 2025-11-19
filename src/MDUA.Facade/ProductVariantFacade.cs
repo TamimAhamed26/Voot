@@ -9,7 +9,6 @@ namespace MDUA.Facade
 {
     public class ProductVariantFacade : IProductVariantFacade
     {
-        // Inject the Data Access layer
         private readonly IProductVariantDataAccess _productVariantDataAccess;
 
         public ProductVariantFacade(IProductVariantDataAccess productVariantDataAccess)
@@ -17,10 +16,8 @@ namespace MDUA.Facade
             _productVariantDataAccess = productVariantDataAccess;
         }
 
-        // --- Custom Method Implementation ---
         public ProductVariantList GetByProductId(int _ProductId)
         {
-            // Pass the call down to the Data Access layer
             return _productVariantDataAccess.GetByProductId(_ProductId);
         }
 
