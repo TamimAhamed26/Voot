@@ -14,7 +14,7 @@ $(function () {
     categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
     variantModal = new bootstrap.Modal(document.getElementById('variantModal'));
     attributeModal = new bootstrap.Modal(document.getElementById('attributeModal'));
-
+    discountModal = new bootstrap.Modal(document.getElementById('discountModal'));
     // NEW: Handle modal backdrop cleanup
     $('#categoryModal').on('hidden.bs.modal', function () {
         if ($('.modal.show').length > 0) {
@@ -41,8 +41,108 @@ $(function () {
     $("#btnConfirmDelete").on('click', function () { deleteProduct($(this).data('id')); });
     $("#categoryForm").on('submit', function (e) { e.preventDefault(); saveCategory(); });
     $("#variantForm").on('submit', function (e) { e.preventDefault(); saveVariant(); });
+    $("#discountForm").on('submit', function (e) { e.preventDefault(); saveDiscount(); });
     $("#attributeAddForm").on('submit', function (e) { e.preventDefault(); saveProductAttribute(); });
 });
+function showDiscountModal(productId, productName) {
+    $("#discountForm")[0].reset();
+    $("#disc_ProductId").val(productId);
+    $("#discountErrorAlert").addClass("d-none");
+
+    // Default Date
+    var now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    $("#EffectiveFrom").val(now.toISOString().slice(0, 16));
+
+    discountModal.show();
+    loadDiscountsList(productId);
+}
+function loadDiscountsList(productId) {
+    var tbody = $("#discountTableBody");
+    tbody.html('<tr><td colspan="3" class="text-center">Loading...</td></tr>');
+
+    $.ajax({
+        url: `/AdminProduct/GetDiscounts?productId=${productId}`,
+        type: "GET",
+        success: function (response) {
+            tbody.empty();
+            if (response.success && response.discounts.length > 0) {
+                response.discounts.forEach(d => {
+                    var valueDisplay = d.discountType === "Percentage" ? `${d.discountValue}%` : `$${d.discountValue}`;
+                    var fromDate = new Date(d.effectiveFrom).toLocaleDateString();
+
+                    var row = `
+                        <tr>
+                            <td><span class="badge bg-info text-dark">${valueDisplay}</span></td>
+                            <td><small>${fromDate}</small></td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteDiscount(${d.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                    tbody.append(row);
+                });
+            } else {
+                tbody.append('<tr><td colspan="3" class="text-center text-muted small">No active discounts.</td></tr>');
+            }
+        }
+    });
+}
+function saveDiscount() {
+    var formData = $("#discountForm").serializeArray();
+
+    $.ajax({
+        // FIXED: Correct URL to match AdminProductController
+        url: "/AdminProduct/ApplyDiscount",
+        type: "POST",
+        data: $.param(formData),
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                showToast("Success", response.message);
+                $("#discountForm")[0].reset();
+
+                // Reload list inside modal
+                loadDiscountsList($("#disc_ProductId").val());
+
+                // Reload Main Product Grid (Shows Simple Product discounts)
+                loadProducts();
+
+                // Reload Variant Modal (Shows Variant discounts)
+                if ($("#variantModal").hasClass('show')) {
+                    loadVariantsForModal($("#v_ProductId").val());
+                }
+            }
+        },
+        error: function (xhr) {
+            $("#discountErrorAlert").text(xhr.responseJSON?.message || "Error").removeClass('d-none');
+        }
+    });
+}
+function deleteDiscount(id) {
+    if (!confirm("Remove this discount? Prices will be recalculated.")) return;
+
+    $.ajax({
+        url: "/AdminProduct/DeleteDiscount",
+        type: "POST",
+        data: { id: id },
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                showToast("Deleted", response.message);
+                loadDiscountsList($("#disc_ProductId").val());
+                loadProducts();
+                if ($("#variantModal").hasClass('show')) {
+                    loadVariantsForModal($("#v_ProductId").val());
+                }
+            }
+        },
+        error: function (xhr) {
+            alert(xhr.responseJSON?.message || "Error deleting discount");
+        }
+    });
+}
 
 // NEW: Toggle Manage Attributes button visibility
 function toggleManageAttributesButton() {
@@ -107,6 +207,7 @@ function loadProducts() {
     $.ajax({
         url: "/AdminProduct/GetProducts",
         type: "GET",
+
         success: function (response) {
             tableBody.empty();
             if (response.success && response.products.length > 0) {
@@ -653,27 +754,50 @@ function loadDynamicVariantForm(productId, callback) {
 }
 
 function renderProductRow(product) {
-    var price = product.basePrice ? '$' + product.basePrice.toFixed(2) : 'N/A';
+    var priceHtml = '';
+
+    // Logic for Simple Products (Red Cross Out)
+    if (product.hasDiscount) {
+        priceHtml = `
+            <div class="d-flex flex-column">
+                <span class="text-decoration-line-through text-muted small" style="font-size:0.85em;">
+                    $${product.originalPrice.toFixed(2)}
+                </span>
+                <span class="text-danger fw-bold">
+                    $${product.sellingPrice.toFixed(2)}
+                </span>
+            </div>`;
+    } else {
+        // No discount or Variant-based (Variant prices shown in variant modal)
+        // Fallback: if SellingPrice is 0 (e.g. variant), show Original
+        var display = (product.sellingPrice > 0) ? product.sellingPrice : product.originalPrice;
+        priceHtml = `$${display.toFixed(2)}`;
+    }
+
     var activeBadge = product.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
     var variantBadge = product.isVariantBased ? '<span class="badge bg-info">Yes</span>' : '<span class="badge bg-light text-dark">No</span>';
-    var variantButton = product.isVariantBased ? `<button class="btn btn-sm btn-outline-info" onclick="showVariantModal(${product.id}, '${escapeQuote(product.productName)}')">Variants</button>` : '';
+
+    var variantButton = product.isVariantBased ?
+        `<button class="btn btn-sm btn-outline-info" onclick="showVariantModal(${product.id}, '${escapeQuote(product.productName)}')">Variants</button>` : '';
 
     return `
         <tr id="row-${product.id}">
             <td>${product.id}</td>
             <td>${escapeHTML(product.productName)}</td>
             <td>${escapeHTML(product.slug)}</td>
-            <td>${price}</td>
+            <td>${priceHtml}</td>
             <td>${variantBadge}</td>
             <td>${activeBadge}</td>
             <td class="text-end">
+                <button class="btn btn-sm btn-outline-warning me-1" onclick="showDiscountModal(${product.id}, '${escapeQuote(product.productName)}')">
+                    <i class="bi bi-tag"></i> Discount
+                </button>
                 ${variantButton}
                 <button class="btn btn-sm btn-outline-primary" onclick="showEditModal(${product.id})">Edit</button>
                 <button class="btn btn-sm btn-outline-danger" onclick="showDeleteModal(${product.id}, '${escapeQuote(product.productName)}')">Delete</button>
             </td>
         </tr>`;
 }
-
 function renderProductAttributeRow(attr) {
     return `
         <tr id="product-attr-row-${attr.productAttributeId}">
@@ -687,30 +811,34 @@ function renderProductAttributeRow(attr) {
 }
 
 function renderVariantRow(variant) {
-    var price = variant.variantPrice ? '$' + variant.variantPrice.toFixed(2) : 'N/A';
-    var activeBadge = variant.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+    
 
-    // Display stock quantity with color coding
-    var stockQty = variant.stockQty !== undefined ? variant.stockQty : 'N/A';
-    var stockBadge = '';
+    var sellingPrice = (variant.price !== undefined && variant.price !== null) ? variant.price : variant.variantPrice;
+    var comparePrice = variant.compareAtPrice;
 
-    if (variant.stockQty !== undefined) {
-        if (variant.stockQty > 10) {
-            stockBadge = `<span class="badge bg-success">${stockQty}</span>`;
-        } else if (variant.stockQty > 0) {
-            stockBadge = `<span class="badge bg-warning text-dark">${stockQty}</span>`;
-        } else {
-            stockBadge = `<span class="badge bg-danger">${stockQty}</span>`;
-        }
+    var priceHtml = '';
+
+    if (comparePrice && comparePrice > sellingPrice) {
+        priceHtml = `
+            <div class="d-flex flex-column align-items-end">
+                <span class="text-decoration-line-through text-muted small" style="font-size:0.85em;">$${comparePrice.toFixed(2)}</span>
+                <span class="text-danger fw-bold">$${sellingPrice.toFixed(2)}</span>
+            </div>`;
     } else {
-        stockBadge = '<span class="text-muted">N/A</span>';
+        // NORMAL
+        priceHtml = `<span class="fw-bold">$${sellingPrice.toFixed(2)}</span>`;
     }
+
+    // ... (rest of the badge logic remains same)
+
+    var activeBadge = variant.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+    var stockBadge = variant.stockQty > 0 ? `<span class="badge bg-success">${variant.stockQty}</span>` : `<span class="badge bg-danger">0</span>`;
 
     return `
         <tr id="variant-row-${variant.id}">
             <td>${escapeHTML(variant.variantName)}</td>
             <td>${escapeHTML(variant.sku)}</td>
-            <td>${price}</td>
+            <td>${priceHtml}</td>
             <td>${stockBadge}</td>
             <td>${activeBadge}</td>
             <td class="text-end">

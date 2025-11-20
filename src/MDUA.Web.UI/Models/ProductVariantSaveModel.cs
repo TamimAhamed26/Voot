@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MDUA.Web.UI.Models
 {
-    public class ProductOptionDTO
+    public class ProductOption1DTO
     {
         public int AttributeId { get; set; }
-        public string AttributeName { get; set; } // e.g., "Color"
-        public AttributeValueList Values { get; set; } // e.g., ["Black", "Red", "Blue"]
+        public string AttributeName { get; set; } 
+        public AttributeValueList Values { get; set; }
     }
     public class ProductVariantSaveModel
     {

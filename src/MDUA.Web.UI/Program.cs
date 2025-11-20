@@ -1,10 +1,9 @@
 using MDUA.Facade;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authentication.Cookies;
-
+using MDUA.Framework; 
 var builder = WebApplication.CreateBuilder(args);
-
-// -------------------- Services --------------------
+ConfigurationBlock.Configuration = builder.Configuration;
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

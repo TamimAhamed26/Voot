@@ -16,8 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IUserPermissionDataAccess, UserPermissionDataAccess>();
         services.AddScoped<IUserPermissionFacade, UserPermissionFacade>();
         services.AddScoped<IProductCategoryDataAccess, ProductCategoryDataAccess>();
-        // --- ADD THESE NEW DALs ---
-        services.AddScoped<IVariantPriceStockDataAccess, VariantPriceStockDataAccess>();
+        services.AddScoped<IProductDiscountDataAccess, ProductDiscountDataAccess>(); services.AddScoped<IVariantPriceStockDataAccess, VariantPriceStockDataAccess>();
 
         services.AddScoped<IAttributeNameDataAccess, AttributeNameDataAccess>();
         services.AddScoped<IAttributeValueDataAccess, AttributeValueDataAccess>();
@@ -36,7 +35,7 @@ public static class DependencyInjection
         services.AddScoped<IProductCategoryFacade, ProductCategoryFacade>();
         services.AddScoped<IProductVariantFacade, ProductVariantFacade>();
         services.AddScoped<IVariantPriceStockFacade, VariantPriceStockFacade>();
-
+        services.AddScoped<IProductDiscountFacade, ProductDiscountFacade>();
         services.AddScoped<IAttributeNameFacade, AttributeNameFacade>();
         services.AddScoped<IAttributeValueFacade, AttributeValueFacade>();
         services.AddScoped<IProductAttributeFacade, ProductAttributeFacade>();

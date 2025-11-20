@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using System.Collections;
 using System.Diagnostics;
 
@@ -8,7 +9,7 @@ namespace MDUA.Framework
     /// </summary>
     public sealed class ConfigurationBlock
     {
-
+        public static IConfiguration Configuration { get; set; }
         private static Hashtable _hashtable = (Hashtable)AppDomain.CurrentDomain.GetData("Configuration");
 
         /// <summary>
@@ -26,30 +27,43 @@ namespace MDUA.Framework
         {
             get
             {
-                if (System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionSCH"] == null)
+                // --- 2. Check if Configuration is loaded ---
+                if (Configuration == null)
                 {
-                    throw new Exception("Connection string not configured");
+                    throw new InvalidOperationException("ConfigurationBlock.Configuration is null. You must assign 'builder.Configuration' to 'MDUA.Framework.ConfigurationBlock.Configuration' in your Program.cs file.");
                 }
-                return System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionSCH"].ConnectionString;
-                //return _ConnectionString;
+
+                // --- 3. Read from appsettings.json ---
+                string conn = Configuration.GetConnectionString("ConnectionSCH");
+
+                if (string.IsNullOrEmpty(conn))
+                {
+                    throw new Exception("Connection string 'ConnectionSCH' not found in appsettings.json.");
+                }
+
+                return conn;
             }
         }
 
         public static string MasterConnectionString
         {
             get
-            { 
-                // Get call stack
-                StackTrace stackTrace = new StackTrace();
-
-                // Get calling method name
-                Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
-                   
-                if (System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionSCH"] == null)
+            {
+                // --- 2. Check if Configuration is loaded ---
+                if (Configuration == null)
                 {
-                   throw new Exception("Connection string not configured");
+                    throw new InvalidOperationException("ConfigurationBlock.Configuration is null. You must assign 'builder.Configuration' to 'MDUA.Framework.ConfigurationBlock.Configuration' in your Program.cs file.");
                 }
-                return System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionSCH"].ConnectionString;
+
+                // --- 3. Read from appsettings.json ---
+                string conn = Configuration.GetConnectionString("ConnectionSCH");
+
+                if (string.IsNullOrEmpty(conn))
+                {
+                    throw new Exception("Connection string 'ConnectionSCH' not found in appsettings.json.");
+                }
+
+                return conn; 
                 //return _ConnectionString;
             }
         }
@@ -82,30 +96,12 @@ namespace MDUA.Framework
         {
             get
             {
-                try
-                {
-                    bool value;
-                    string config = "false";
+                if (Configuration == null) return false;
 
-                    if (System.Configuration.ConfigurationManager.AppSettings["DisplayTraceInformation"] != null)
-                    {
-                        config = System.Configuration.ConfigurationManager.AppSettings["DisplayTraceInformation"].ToString();
-                    }
-
-                    if (Boolean.TryParse(config, out value))
-                    {
-                        return value;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                catch
-                {
-                    return false;
-                }
+                var val = Configuration["DisplayTraceInformation"];
+                return bool.TryParse(val, out bool result) && result;
             }
         }
     }
+    
 }

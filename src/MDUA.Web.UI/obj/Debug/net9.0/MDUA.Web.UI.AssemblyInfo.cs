@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MDUA.Web.UI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d126480c9c93117e26d9c8aeaea86dbe81c6a48")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e194f21872a4a2cfa103f74a216d640a00d90df")]
 [assembly: System.Reflection.AssemblyProductAttribute("MDUA.Web.UI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MDUA.Web.UI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

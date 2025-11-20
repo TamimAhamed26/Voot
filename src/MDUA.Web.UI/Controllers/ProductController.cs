@@ -1,15 +1,19 @@
 ﻿using MDUA.Entities;
+using MDUA.Facade;
 using MDUA.Facade.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Pipelines;
 using System.Net;
+using static MDUA.Entities.ProductDiscount;
+
 
 namespace MDUA.Web.UI.Controllers
 {
     public class ProductController : BaseController
     {
         private readonly IProductFacade _productFacade;
+        private readonly IProductDiscountFacade _productDiscountFacade;
         private readonly IProductAttributeFacade _productAttributeFacade;
         private readonly IAttributeNameFacade _attributeNameFacade;
         private readonly IAttributeValueFacade _attributeValueFacade;
@@ -24,7 +28,8 @@ namespace MDUA.Web.UI.Controllers
             IAttributeValueFacade attributeValueFacade,
             IProductVariantFacade productVariantFacade,
             IVariantPriceStockFacade variantPriceStockFacade,
-            IVariantAttributeValueFacade variantAttributeValueFacade)
+            IVariantAttributeValueFacade variantAttributeValueFacade,
+            IProductDiscountFacade productDiscountFacade)
         {
             _productFacade = productFacade;
             _productAttributeFacade = productAttributeFacade;
@@ -33,6 +38,7 @@ namespace MDUA.Web.UI.Controllers
             _productVariantFacade = productVariantFacade;
             _variantPriceStockFacade = variantPriceStockFacade;
             _variantAttributeValueFacade = variantAttributeValueFacade;
+            _productDiscountFacade = productDiscountFacade;
         }
 
         [HttpGet("product/{slug}")]
@@ -58,12 +64,14 @@ namespace MDUA.Web.UI.Controllers
                     {
                         AttributeId = attr.AttributeId,
                         AttributeName = attrName.Name,
-                        Values = attrValues 
+                        Values = attrValues
                     });
                 }
             }
 
             return View(model);
         }
+
+        
     }
 }

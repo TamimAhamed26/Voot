@@ -30,6 +30,7 @@ namespace MDUA.DataAccess.Interface
 
 
 	public interface IProductDiscountDataAccess : ICommonDataAccess<ProductDiscount, ProductDiscountList, ProductDiscountBase>
-	{ 
-	}	
+	{
+        ProductDiscountList GetByProductId(int productId);
+    }	
 }
