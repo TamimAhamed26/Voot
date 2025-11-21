@@ -46,18 +46,23 @@ $(function () {
 });
 function showDiscountModal(productId, productName) {
     $("#discountForm")[0].reset();
+
+    // 1. Update the input used for reloading the list (Keep this)
     $("#disc_ProductId").val(productId);
+
+    // 2. ADD THIS: Update the input INSIDE the form (For the POST request)
+    $("#discountForm #ProductId").val(productId);
+
     $("#discountErrorAlert").addClass("d-none");
 
-    // Default Date
+    // Default Date logic...
     var now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     $("#EffectiveFrom").val(now.toISOString().slice(0, 16));
 
     discountModal.show();
     loadDiscountsList(productId);
-}
-function loadDiscountsList(productId) {
+} function loadDiscountsList(productId) {
     var tbody = $("#discountTableBody");
     tbody.html('<tr><td colspan="3" class="text-center">Loading...</td></tr>');
 
@@ -93,7 +98,6 @@ function saveDiscount() {
     var formData = $("#discountForm").serializeArray();
 
     $.ajax({
-        // FIXED: Correct URL to match AdminProductController
         url: "/AdminProduct/ApplyDiscount",
         type: "POST",
         data: $.param(formData),
@@ -103,15 +107,19 @@ function saveDiscount() {
                 showToast("Success", response.message);
                 $("#discountForm")[0].reset();
 
-                // Reload list inside modal
+                // 1. Reload Discount List inside the modal
                 loadDiscountsList($("#disc_ProductId").val());
 
-                // Reload Main Product Grid (Shows Simple Product discounts)
+                // 2. Reload Main Product Grid (Updates Simple Product Prices)
                 loadProducts();
 
-                // Reload Variant Modal (Shows Variant discounts)
+                // 3. Reload Variant Grid if that modal is open (Updates Variant Prices)
+                // FIXED: Check if modal is open, then use the new helper
                 if ($("#variantModal").hasClass('show')) {
-                    loadVariantsForModal($("#v_ProductId").val());
+                    var variantProductId = $("#v_ProductId").val();
+                    if (variantProductId) {
+                        loadVariantsTable(variantProductId);
+                    }
                 }
             }
         },
@@ -121,7 +129,7 @@ function saveDiscount() {
     });
 }
 function deleteDiscount(id) {
-    if (!confirm("Remove this discount? Prices will be recalculated.")) return;
+    if (!confirm("Remove this discount? Prices will update immediately.")) return; // Updated message
 
     $.ajax({
         url: "/AdminProduct/DeleteDiscount",
@@ -131,10 +139,20 @@ function deleteDiscount(id) {
         success: function (response) {
             if (response.success) {
                 showToast("Deleted", response.message);
+
+                // 1. Reload list
                 loadDiscountsList($("#disc_ProductId").val());
+
+                // 2. Reload Main Grid
                 loadProducts();
+
+                // 3. Reload Variant Grid if open
+                // FIXED: Use the new helper
                 if ($("#variantModal").hasClass('show')) {
-                    loadVariantsForModal($("#v_ProductId").val());
+                    var variantProductId = $("#v_ProductId").val();
+                    if (variantProductId) {
+                        loadVariantsTable(variantProductId);
+                    }
                 }
             }
         },
@@ -311,19 +329,10 @@ function showCategoryModal() {
     $("#categoryErrorAlert").addClass('d-none');
     categoryModal.show();
 }
-
-function showVariantModal(productId, productName) {
-    $("#variantModalLabel").text(`Manage Variants for: ${productName}`);
-    $("#v_ProductId").val(productId);
-    $("#variantModal").data("productName", productName);
-
+// NEW HELPER: Reusable function to load the variant table
+function loadVariantsTable(productId) {
     var tableBody = $("#variantTableBody");
     tableBody.html('<tr><td colspan="6" class="text-center">Loading variants...</td></tr>');
-
-    loadDynamicVariantForm(productId, () => {
-        clearVariantForm();
-        variantModal.show();
-    });
 
     $.ajax({
         url: `/AdminProduct/GetVariants?productId=${productId}`,
@@ -342,7 +351,20 @@ function showVariantModal(productId, productName) {
         }
     });
 }
+function showVariantModal(productId, productName) {
+    $("#variantModalLabel").text(`Manage Variants for: ${productName}`);
+    $("#v_ProductId").val(productId);
+    $("#variantModal").data("productName", productName);
 
+    // 1. Load the Form Options
+    loadDynamicVariantForm(productId, () => {
+        clearVariantForm();
+        variantModal.show();
+    });
+
+    // 2. Load the Table (Using the new helper)
+    loadVariantsTable(productId);
+}
 function showAttributeModal() {
     var productId = $("#v_ProductId").val();
     var productName = $("#variantModal").data("productName");
@@ -465,6 +487,7 @@ function saveProduct() {
             if (response.success) {
                 productModal.hide();
                 showToast("Success", "Product saved successfully.");
+                loadProducts(); 
                 var newRow = renderProductRow(response.product);
                 if (isCreate) {
                     if (!$("#productTableBody").find('tr[id^="row-"]').length) $("#productTableBody").empty();
@@ -583,6 +606,7 @@ function saveVariant() {
                 clearVariantForm();
                 showToast("Success", "Variant saved.");
                 $("#variantErrorAlert").addClass('d-none');
+                loadVariantsTable($("#v_ProductId").val()); 
             }
         },
         error: function (xhr) {
@@ -756,25 +780,19 @@ function loadDynamicVariantForm(productId, callback) {
 function renderProductRow(product) {
     var priceHtml = '';
 
-    // Logic for Simple Products (Red Cross Out)
-    if (product.hasDiscount) {
+    if (product.hasDiscount && product.originalPrice > product.sellingPrice) {
         priceHtml = `
-            <div class="d-flex flex-column">
-                <span class="text-decoration-line-through text-muted small" style="font-size:0.85em;">
-                    $${product.originalPrice.toFixed(2)}
-                </span>
-                <span class="text-danger fw-bold">
-                    $${product.sellingPrice.toFixed(2)}
-                </span>
-            </div>`;
+        <div class="d-flex align-items-center">
+            <span class="original-price">$${product.originalPrice.toFixed(2)}</span>
+            <span class="discounted-price">$${product.sellingPrice.toFixed(2)}</span>
+        </div>`;
     } else {
-        // No discount or Variant-based (Variant prices shown in variant modal)
-        // Fallback: if SellingPrice is 0 (e.g. variant), show Original
         var display = (product.sellingPrice > 0) ? product.sellingPrice : product.originalPrice;
-        priceHtml = `$${display.toFixed(2)}`;
+        priceHtml = `<span class="fw-bold">$${display.toFixed(2)}</span>`;
     }
 
-    var activeBadge = product.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+    var activeBadge = product.isActive ?
+        '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
     var variantBadge = product.isVariantBased ? '<span class="badge bg-info">Yes</span>' : '<span class="badge bg-light text-dark">No</span>';
 
     var variantButton = product.isVariantBased ?
@@ -811,43 +829,46 @@ function renderProductAttributeRow(attr) {
 }
 
 function renderVariantRow(variant) {
-    
-
-    var sellingPrice = (variant.price !== undefined && variant.price !== null) ? variant.price : variant.variantPrice;
-    var comparePrice = variant.compareAtPrice;
+    var sellingPrice = parseFloat(variant.price) || 0;
+    var comparePrice = variant.compareAtPrice; // can be null or number
 
     var priceHtml = '';
 
-    if (comparePrice && comparePrice > sellingPrice) {
+    if (comparePrice != null && comparePrice > sellingPrice) {
         priceHtml = `
-            <div class="d-flex flex-column align-items-end">
-                <span class="text-decoration-line-through text-muted small" style="font-size:0.85em;">$${comparePrice.toFixed(2)}</span>
-                <span class="text-danger fw-bold">$${sellingPrice.toFixed(2)}</span>
+            <div class="d-flex align-items-center justify-content-end">
+                <span class="original-price">
+                    $${Number(comparePrice).toFixed(2)}
+                </span>
+                <span class="discounted-price">
+                    $${sellingPrice.toFixed(2)}
+                </span>
             </div>`;
     } else {
-        // NORMAL
         priceHtml = `<span class="fw-bold">$${sellingPrice.toFixed(2)}</span>`;
     }
 
-    // ... (rest of the badge logic remains same)
+    var activeBadge = variant.isActive
+        ? '<span class="badge bg-success">Active</span>'
+        : '<span class="badge bg-secondary">Inactive</span>';
 
-    var activeBadge = variant.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
-    var stockBadge = variant.stockQty > 0 ? `<span class="badge bg-success">${variant.stockQty}</span>` : `<span class="badge bg-danger">0</span>`;
+    var stockBadge = variant.stockQty > 0
+        ? `<span class="badge bg-success">${variant.stockQty}</span>`
+        : `<span class="badge bg-danger">0</span>`;
 
     return `
         <tr id="variant-row-${variant.id}">
             <td>${escapeHTML(variant.variantName)}</td>
             <td>${escapeHTML(variant.sku)}</td>
-            <td>${priceHtml}</td>
-            <td>${stockBadge}</td>
-            <td>${activeBadge}</td>
+            <td class="text-end">${priceHtml}</td>
+            <td class="text-center">${stockBadge}</td>
+            <td class="text-center">${activeBadge}</td>
             <td class="text-end">
                 <button class="btn btn-sm btn-outline-primary" onclick="editVariant(${variant.id})">Edit</button>
                 <button class="btn btn-sm btn-outline-danger" onclick="deleteVariant(${variant.id}, this)">Delete</button>
             </td>
         </tr>`;
 }
-
 function populateCategoryDropdown(categories, selectedId) {
     var dropdown = $("#CategoryId");
     dropdown.empty().append('<option value="">Select Category</option>');

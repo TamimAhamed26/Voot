@@ -373,7 +373,18 @@ small.text-muted {
 .table td:last-child {
     text-align: right;
 }
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    margin-right: 8px;
+    font-size: 0.9em;
+}
 
+.discounted-price {
+    color: #e74c3c;
+    font-weight: bold;
+    font-size: 1.1em;
+}
 /* Empty State */
 .empty-state {
     padding: 3rem 1rem;

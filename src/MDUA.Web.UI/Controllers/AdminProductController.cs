@@ -1,12 +1,13 @@
-﻿#nullable disable
-using MDUA.Entities;
+﻿using MDUA.Entities;
 using MDUA.Entities.Bases;
 using MDUA.Entities.List;
-using MDUA.Facade;
 using MDUA.Facade.Interface;
 using MDUA.Web.UI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static MDUA.Entities.ProductDiscount;
 
 namespace MDUA.Web.UI.Controllers
@@ -19,13 +20,12 @@ namespace MDUA.Web.UI.Controllers
         private readonly IProductVariantFacade _productVariantFacade;
         private readonly ILogger<AdminProductController> _logger;
         private readonly IVariantPriceStockFacade _variantPriceStockFacade;
-
-        // --- 1. Inject all new Facades ---
         private readonly IProductAttributeFacade _productAttributeFacade;
         private readonly IAttributeNameFacade _attributeNameFacade;
         private readonly IAttributeValueFacade _attributeValueFacade;
         private readonly IVariantAttributeValueFacade _variantAttributeValueFacade;
         private readonly IProductDiscountFacade _productDiscountFacade;
+
         public AdminProductController(
             IProductFacade productFacade,
             IProductCategoryFacade productCategoryFacade,
@@ -35,9 +35,8 @@ namespace MDUA.Web.UI.Controllers
             IAttributeNameFacade attributeNameFacade,
             IAttributeValueFacade attributeValueFacade,
             IVariantPriceStockFacade variantPriceStockFacade,
-
-            IVariantAttributeValueFacade variantAttributeValueFacade, IProductDiscountFacade productDiscountFacade)
-
+            IVariantAttributeValueFacade variantAttributeValueFacade,
+            IProductDiscountFacade productDiscountFacade)
         {
             _productFacade = productFacade;
             _productCategoryFacade = productCategoryFacade;
@@ -65,7 +64,6 @@ namespace MDUA.Web.UI.Controllers
                                 .Where(msg => !string.IsNullOrWhiteSpace(msg))
                                 .ToArray()
                 );
-
             return new
             {
                 success = false,
@@ -73,13 +71,169 @@ namespace MDUA.Web.UI.Controllers
                 errors = errors
             };
         }
-
-        /// <summary>
-        /// Checks if a variant with the same attribute combination already exists
-        /// </summary>
         #endregion
 
-        #region --- Attribute Management  ---
+        #region Product Shell & List 
+        public IActionResult Index()
+        {
+            if (!IsPermitted(Permission.Product.View))
+            {
+                ViewData["TaskName"] = "View Products";
+                return View("AccessDenied", "Account");
+            }
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GetProducts()
+        {
+            if (!IsPermitted(Permission.Product.View)) return StatusCode(403, new { success = false });
+
+            try
+            {
+                var products = _productFacade.GetAll();
+                var resultList = new List<ProductListViewModel>();
+
+                foreach (var p in products)
+                {
+                    // Use unified facade to compute selling price & active discount for product
+                    Product productWithPrice = _productFacade.GetProductWithPrice(p.Id);
+
+                    var vm = new ProductListViewModel
+                    {
+                        Id = p.Id,
+                        ProductName = p.ProductName,
+                        Slug = p.Slug,
+                        IsVariantBased = p.IsVariantBased ?? false,
+                        IsActive = p.IsActive,
+                        SellingPrice = productWithPrice?.SellingPrice ?? (p.BasePrice ?? 0),
+                        OriginalPrice = p.BasePrice ?? 0,
+                        HasDiscount = (productWithPrice?.SellingPrice ?? (p.BasePrice ?? 0)) < (p.BasePrice ?? 0)
+                    };
+
+                    resultList.Add(vm);
+                }
+
+                return Json(new { success = true, products = resultList });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting products");
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+        #endregion
+
+        #region Product CRUD 
+        [HttpGet]
+        public IActionResult GetProduct(int id)
+        {
+            if (!IsPermitted(Permission.Product.View))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            var product = _productFacade.GetProductWithPrice(id); // returns product with SellingPrice & ActiveDiscount
+            if (product == null)
+                return StatusCode(404, new { success = false, message = "Product not found" });
+
+            // additionally include variants in the product payload if needed by UI
+            return Json(new { success = true, product = product });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(ProductCreateViewModel model)
+        {
+            if (!IsPermitted(Permission.Product.Create))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+            if (!ModelState.IsValid)
+                return StatusCode(400, GetModelStateErrors());
+
+            Product product = new Product
+            {
+                ProductName = model.ProductName,
+                Slug = model.Slug,
+                Description = model.Description,
+                BasePrice = model.BasePrice,
+                Barcode = model.Barcode,
+                ReorderLevel = model.ReorderLevel,
+                IsVariantBased = model.IsVariantBased,
+                CategoryId = model.CategoryId,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = User.Identity.Name,
+                CompanyId = 1
+            };
+            try
+            {
+                _productFacade.Insert(product);
+                // return with computed price
+                var created = _productFacade.GetProductWithPrice((int)product.Id);
+                return Json(new { success = true, product = created ?? product });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating product {ProductName}", model.ProductName);
+                return StatusCode(500, new { success = false, message = "An error occurred while saving the product." });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(ProductEditViewModel model)
+        {
+            if (!IsPermitted(Permission.Product.Edit))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+            if (!ModelState.IsValid)
+                return StatusCode(400, GetModelStateErrors());
+
+            var product = _productFacade.Get(model.Id);
+            if (product == null)
+                return StatusCode(404, new { success = false, message = "Product not found." });
+
+            product.ProductName = model.ProductName;
+            product.Slug = model.Slug;
+            product.Description = model.Description;
+            product.BasePrice = model.BasePrice;
+            product.Barcode = model.Barcode;
+            product.ReorderLevel = model.ReorderLevel;
+            product.IsVariantBased = model.IsVariantBased;
+            product.CategoryId = model.CategoryId;
+            product.IsActive = model.IsActive;
+            product.UpdatedAt = DateTime.UtcNow;
+            product.UpdatedBy = User.Identity.Name;
+            try
+            {
+                _productFacade.Update(product);
+                var updated = _productFacade.GetProductWithPrice(product.Id);
+                return Json(new { success = true, product = updated ?? product });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating product {ProductName}", model.ProductName);
+                return StatusCode(500, new { success = false, message = "An error occurred while saving the product." });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteProduct(int id)
+        {
+            if (!IsPermitted(Permission.Product.Delete))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+            try
+            {
+                _productFacade.Delete(id);
+                return Json(new { success = true, message = "Product deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting product {ProductId}", id);
+                return StatusCode(500, new { success = false, message = "An error occurred. The product might be in use on an order." });
+            }
+        }
+        #endregion
+
+        #region Attribute Management 
 
         //
         // GET: /AdminProduct/GetProductAttributes?productId=1
@@ -210,220 +364,7 @@ namespace MDUA.Web.UI.Controllers
 
         #endregion
 
-        #region Product Shell & List 
-        //
-        // GET: /AdminProduct/
-        //
-        public IActionResult Index()
-        {
-            if (!IsPermitted(Permission.Product.View))
-            {
-                ViewData["TaskName"] = "View Products";
-                return View("AccessDenied", "Account");
-            }
-            return View();
-        }
-
-        //
-        // GET: /AdminProduct/GetProducts 
-        //
-        [HttpGet]
-        public IActionResult GetProducts()
-        {
-            if (!IsPermitted(Permission.Product.View)) return StatusCode(403, new { success = false });
-
-            try
-            {
-                var products = _productFacade.GetAll();
-                var allDiscounts = _productDiscountFacade.GetAll(); // Fetch all discounts once (Optimization)
-                var resultList = new List<ProductListViewModel>();
-                var now = DateTime.UtcNow;
-
-                foreach (var p in products)
-                {
-                    var vm = new ProductListViewModel
-                    {
-                        Id = p.Id,
-                        ProductName = p.ProductName,
-                        Slug = p.Slug,
-                        IsVariantBased = p.IsVariantBased ?? false,
-                        IsActive = p.IsActive,
-                        OriginalPrice = p.BasePrice ?? 0
-                    };
-
-                    // Only calculate discount for Simple Products for the main grid
-                    if (!vm.IsVariantBased)
-                    {
-                        // Find active discounts for this product
-                        var activeDiscounts = allDiscounts
-                            .Where(d => d.ProductId == p.Id && d.IsActive && d.EffectiveFrom <= now && (d.EffectiveTo == null || d.EffectiveTo >= now))
-                            .ToList();
-
-                        decimal bestPrice = vm.OriginalPrice;
-                        if (activeDiscounts.Any())
-                        {
-                            foreach (var d in activeDiscounts)
-                            {
-                                decimal calc = CalculateNewPrice(vm.OriginalPrice, d.DiscountType, d.DiscountValue);
-                                if (calc < bestPrice) bestPrice = calc;
-                            }
-                        }
-
-                        vm.SellingPrice = bestPrice;
-                        vm.HasDiscount = bestPrice < vm.OriginalPrice;
-                    }
-                    else
-                    {
-                        // For variant products, just show the base price in grid usually
-                        vm.SellingPrice = vm.OriginalPrice;
-                        vm.HasDiscount = false;
-                    }
-
-                    resultList.Add(vm);
-                }
-
-                return Json(new { success = true, products = resultList });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error getting products");
-                return StatusCode(500, new { success = false, message = ex.Message });
-            }
-        }
-        #endregion
-
-        #region Product CRUD 
-        //
-        // GET: /AdminProduct/GetProduct/5 
-        //
-        [HttpGet]
-        public IActionResult GetProduct(int id)
-        {
-            if (!IsPermitted(Permission.Product.View))
-            {
-                return StatusCode(403, new { success = false, message = "Access Denied" });
-            }
-            var product = _productFacade.Get(id);
-            if (product == null)
-            {
-                return StatusCode(404, new { success = false, message = "Product not found" });
-            }
-            return Json(new { success = true, product = product });
-        }
-
-        //
-        // POST: /AdminProduct/Create 
-        //
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(ProductCreateViewModel model)
-        {
-            if (!IsPermitted(Permission.Product.Create))
-            {
-                return StatusCode(403, new { success = false, message = "Access Denied" });
-            }
-            if (!ModelState.IsValid)
-            {
-                return StatusCode(400, GetModelStateErrors());
-            }
-            Product product = new Product
-            {
-                ProductName = model.ProductName,
-                Slug = model.Slug,
-                Description = model.Description,
-                BasePrice = model.BasePrice,
-                Barcode = model.Barcode,
-                ReorderLevel = model.ReorderLevel,
-                IsVariantBased = model.IsVariantBased,
-                CategoryId = model.CategoryId,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                CreatedBy = User.Identity.Name,
-                CompanyId = 1
-            };
-            try
-            {
-                _productFacade.Insert(product);
-                return Json(new { success = true, product = product });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating product {ProductName}", model.ProductName);
-                return StatusCode(500, new { success = false, message = "An error occurred while saving the product." });
-            }
-        }
-
-        //
-        // POST: /AdminProduct/Edit 
-        //
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(ProductEditViewModel model)
-        {
-            if (!IsPermitted(Permission.Product.Edit))
-            {
-                return StatusCode(403, new { success = false, message = "Access Denied" });
-            }
-            if (!ModelState.IsValid)
-            {
-                return StatusCode(400, GetModelStateErrors());
-            }
-            var product = _productFacade.Get(model.Id);
-            if (product == null)
-            {
-                return StatusCode(404, new { success = false, message = "Product not found." });
-            }
-            product.ProductName = model.ProductName;
-            product.Slug = model.Slug;
-            product.Description = model.Description;
-            product.BasePrice = model.BasePrice;
-            product.Barcode = model.Barcode;
-            product.ReorderLevel = model.ReorderLevel;
-            product.IsVariantBased = model.IsVariantBased;
-            product.CategoryId = model.CategoryId;
-            product.IsActive = model.IsActive;
-            product.UpdatedAt = DateTime.UtcNow;
-            product.UpdatedBy = User.Identity.Name;
-            try
-            {
-                _productFacade.Update(product);
-                return Json(new { success = true, product = product });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating product {ProductName}", model.ProductName);
-                return StatusCode(500, new { success = false, message = "An error occurred while saving the product." });
-            }
-        }
-
-        //
-        // POST: /AdminProduct/Delete 
-        //
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteProduct(int id)
-        {
-            if (!IsPermitted(Permission.Product.Delete))
-            {
-                return StatusCode(403, new { success = false, message = "Access Denied" });
-            }
-            try
-            {
-                _productFacade.Delete(id);
-                return Json(new { success = true, message = "Product deleted successfully." });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting product {ProductId}", id);
-                return StatusCode(500, new { success = false, message = "An error occurred. The product might be in use on an order." });
-            }
-        }
-        #endregion
-
         #region Category Quick-Add 
-        //
-        // GET: /AdminProduct/GetCategories 
-        //
         [HttpGet]
         public IActionResult GetCategories()
         {
@@ -436,13 +377,9 @@ namespace MDUA.Web.UI.Controllers
         public IActionResult CreateCategory(string categoryName)
         {
             if (!IsPermitted(Permission.Product.Category_Create))
-            {
                 return StatusCode(403, new { success = false, message = "Access Denied" });
-            }
             if (string.IsNullOrWhiteSpace(categoryName))
-            {
                 return StatusCode(400, new { success = false, message = "Category name cannot be empty." });
-            }
             var category = new ProductCategory { Name = categoryName };
             try
             {
@@ -457,32 +394,21 @@ namespace MDUA.Web.UI.Controllers
         }
         #endregion
 
-        #region --- DYNAMIC VARIANT ACTIONS  ---
-
-        //
-        // "FETCH DATA" 
-        // GET: /AdminProduct/GetProductOptions?productId=1
-        //
+        #region DYNAMIC VARIANT ACTIONS 
         [HttpGet]
         public IActionResult GetProductOptions(int productId)
         {
             if (!IsPermitted(Permission.Product.View))
-            {
                 return StatusCode(403, new { success = false, message = "Access Denied" });
-            }
-
             try
             {
                 var options = new List<ProductOption1DTO>();
-
                 var productAttributes = _productAttributeFacade.GetByProductId(productId);
 
                 foreach (var attr in productAttributes.OrderBy(a => a.DisplayOrder))
                 {
                     var attrName = _attributeNameFacade.Get(attr.AttributeId);
-
                     var attrValues = _attributeValueFacade.GetByAttributeId(attr.AttributeId);
-
                     if (attrName != null && attrValues.Count > 0)
                     {
                         options.Add(new ProductOption1DTO
@@ -493,8 +419,6 @@ namespace MDUA.Web.UI.Controllers
                         });
                     }
                 }
-
-                // 4. Send the complete list of options to the JavaScript
                 return Json(new { success = true, options = options });
             }
             catch (Exception ex)
@@ -504,27 +428,40 @@ namespace MDUA.Web.UI.Controllers
             }
         }
 
-        //
-        // GET: /AdminProduct/GetVariants?productId=1
-        //
         [HttpGet]
         public IActionResult GetVariants(int productId)
         {
             if (!IsPermitted(Permission.Product.View))
                 return StatusCode(403, new { success = false, message = "Access Denied" });
 
+            // Get variants
             var variants = _productVariantFacade.GetByProductId(productId);
-
             var variantsWithStock = variants.Select(v =>
             {
                 var priceStock = _variantPriceStockFacade.Get(v.Id);
+
+                // compute original price (variant-specific if available)
+                decimal originalPrice = priceStock?.Price ?? v.VariantPrice ?? 0;
+                decimal sellingPrice = originalPrice;
+
+                // Use the product-discount facade to choose the single best discount and calculate the new price
+                var bestDiscount = _productDiscountFacade.GetBestDiscount(productId, originalPrice);
+                if (bestDiscount != null)
+                {
+                    sellingPrice = _productDiscountFacade.CalculateNewPrice(originalPrice, bestDiscount.DiscountType, bestDiscount.DiscountValue);
+                }
+
+                bool hasDiscount = sellingPrice < originalPrice;
+
                 return new
                 {
                     id = v.Id,
                     productId = v.ProductId,
                     variantName = v.VariantName,
                     sku = v.SKU,
-                    variantPrice = v.VariantPrice,
+                    price = Math.Max(sellingPrice, 0), // final price shown in UI
+                    compareAtPrice = hasDiscount ? originalPrice : (decimal?)null,
+                    variantPrice = originalPrice, // raw stored price
                     isActive = v.IsActive,
                     stockQty = priceStock?.StockQty ?? 0,
                     trackInventory = priceStock?.TrackInventory ?? true,
@@ -535,51 +472,51 @@ namespace MDUA.Web.UI.Controllers
             return Json(new { success = true, variants = variantsWithStock });
         }
 
-
-        //
-        // GET: /AdminProduct/GetVariant/5
-        //
         [HttpGet]
         public IActionResult GetVariant(int id)
         {
             if (!IsPermitted(Permission.Product.View))
                 return StatusCode(403, new { success = false, message = "Access Denied" });
-
             var variant = _productVariantFacade.Get(id);
             if (variant == null)
                 return StatusCode(404, new { success = false, message = "Variant not found" });
 
             var links = _variantAttributeValueFacade.GetByVariantId(id);
             var selectedValueIds = links.Select(l => l.AttributeValueId).ToList();
-
             var priceStock = _variantPriceStockFacade.Get(id);
+
+            // compute price & compareAtPrice for this variant
+            decimal originalPrice = priceStock?.Price ?? variant.VariantPrice ?? 0;
+            var bestDiscount = _productDiscountFacade.GetBestDiscount(variant.ProductId, originalPrice);
+            decimal sellingPrice = originalPrice;
+            if (bestDiscount != null)
+            {
+                sellingPrice = _productDiscountFacade.CalculateNewPrice(originalPrice, bestDiscount.DiscountType, bestDiscount.DiscountValue);
+            }
+            bool hasDiscount = sellingPrice < originalPrice;
 
             return Json(new
             {
                 success = true,
                 variant = variant,
                 selectedValueIds = selectedValueIds,
-                priceStock = priceStock
+                priceStock = priceStock,
+                price = Math.Max(sellingPrice, 0),
+                compareAtPrice = hasDiscount ? originalPrice : (decimal?)null
             });
         }
 
-        //
-        // CREATE
-        //
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateVariant(ProductVariantSaveModl model)
         {
             if (!IsPermitted(Permission.Product.Create))
                 return StatusCode(403, new { success = false, message = "Access Denied" });
-
             if (!ModelState.IsValid || model.SelectedAttributeValueIds == null || !model.SelectedAttributeValueIds.Any())
                 return StatusCode(400, GetModelStateErrors());
-
             try
             {
                 var result = _productVariantFacade.CreateVariantWithAttributes(model, User.Identity!.Name);
-
                 return Json(new { success = true, message = "Variant created successfully.", variant = result });
             }
             catch (Exception ex)
@@ -589,20 +526,18 @@ namespace MDUA.Web.UI.Controllers
             }
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UpdateVariant(ProductVariantSaveModl model)
         {
             if (!IsPermitted(Permission.Product.Edit))
                 return StatusCode(403, new { success = false, message = "Access Denied" });
-
             if (!ModelState.IsValid || model.Id == 0)
                 return StatusCode(400, GetModelStateErrors());
-
             try
             {
                 var result = _productVariantFacade.UpdateVariantWithAttributes(model, User.Identity!.Name);
-
                 return Json(new { success = true, message = "Variant updated successfully.", variant = result });
             }
             catch (Exception ex)
@@ -611,16 +546,14 @@ namespace MDUA.Web.UI.Controllers
                 return StatusCode(400, new { success = false, message = ex.Message });
             }
         }
-        //
-        // DELETE
-        //
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteVariant(int id)
         {
             if (!IsPermitted(Permission.Product.Delete))
                 return StatusCode(403, new { success = false, message = "Access Denied" });
-
             try
             {
                 _productVariantFacade.Delete(id);
@@ -632,24 +565,9 @@ namespace MDUA.Web.UI.Controllers
                 return StatusCode(500, new { success = false, message = "Error deleting variant." });
             }
         }
-
         #endregion
 
-        #region -- Discounts Management --
-
-      
-
-        // Helper reused from Facade (or make this a shared utility)
-        private decimal CalculateNewPrice(decimal original, string type, decimal value)
-        {
-            if (type.Equals("Percentage", StringComparison.OrdinalIgnoreCase)) return original - (original * (value / 100));
-            else return Math.Max(0, original - value);
-        }
-
-        // -----------------------------------------------------------
-        // 2. DISCOUNT ENDPOINTS
-        // -----------------------------------------------------------
-
+        #region Discounts Management 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult ApplyDiscount(ProductDiscountViewModel model)
@@ -690,7 +608,7 @@ namespace MDUA.Web.UI.Controllers
             try
             {
                 _productDiscountFacade.DeleteDiscount(id, User.Identity?.Name ?? "Admin");
-                return Json(new { success = true, message = "Discount removed. Prices restored/recalculated." });
+                return Json(new { success = true, message = "Discount removed." });
             }
             catch (Exception ex)
             {
@@ -705,6 +623,6 @@ namespace MDUA.Web.UI.Controllers
             var result = discounts.OrderByDescending(d => d.CreatedAt).ToList();
             return Json(new { success = true, discounts = result });
         }
+        #endregion
     }
-    #endregion
 }
