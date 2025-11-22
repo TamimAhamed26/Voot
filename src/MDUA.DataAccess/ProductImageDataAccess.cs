@@ -1,17 +1,14 @@
-﻿using System;
+﻿using MDUA.DataAccess.Interface;
+using MDUA.Entities;
+using MDUA.Entities.List;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
-using MDUA.Framework;
-using MDUA.Framework.Exceptions;
-using MDUA.Entities;
-using MDUA.Entities.Bases;
-using MDUA.Entities.List;
-
 namespace MDUA.DataAccess
 {
-	public partial class ProductImageDataAccess
-	{
-		
-	}	
+    public partial class ProductImageDataAccess : IProductImageDataAccess
+    {
+
+    }
 }

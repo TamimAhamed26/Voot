@@ -1,0 +1,73 @@
+@{
+    // Helper to determine active state based on Controller/Action
+    string GetActiveClass(string controller, string action)
+    {
+        var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+        
+        if (string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) &&
+            (string.IsNullOrEmpty(action) || string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase)))
+        {
+            return "active";
+        }
+        return "";
+    }
+}
+
+<aside class="sidebar-wrapper">
+    <div class="sidebar glass-panel">
+        <div class="d-flex align-items-center mb-4 px-2">
+            <div class="brand-logo me-2">M</div>
+            <div>
+                <div class="brand-title">MDUA Admin</div>
+                <div class="brand-subtitle">Control Center</div>
+            </div>
+        </div>
+
+        <div class="mb-2 text-uppercase small text-muted fw-semibold px-2">Main</div>
+        <ul class="nav nav-pills flex-column mb-3" id="sidebarNav">
+            <li class="nav-item mb-1">
+                <a class="nav-link @GetActiveClass("Home", "Index")" asp-controller="Home" asp-action="Index">
+                    <span class="icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="nav-link @GetActiveClass("AdminProduct", "Index")" asp-controller="AdminProduct" asp-action="Index">
+                    <span class="icon">📦</span>
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item mb-1">
+                <a class="nav-link @GetActiveClass("Order", "Index")" asp-controller="Order" asp-action="Index">
+                    <span class="icon">🛒</span>
+                    <span>Orders</span>
+                    <span class="ms-auto nav-badge">12 new</span>
+                </a>
+            </li>
+             <li class="nav-item mb-1">
+                <a class="nav-link @GetActiveClass("Customer", "Index")" asp-controller="Customer" asp-action="Index">
+                    <span class="icon">👥</span>
+                    <span>Customers</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="mb-2 text-uppercase small text-muted fw-semibold px-2">System</div>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item mb-1">
+                <a class="nav-link @GetActiveClass("Settings", "Index")" asp-controller="Settings" asp-action="Index">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer mt-auto">
+            <div class="status-pill w-100 justify-content-center">
+                <span class="status-dot"></span>
+                <span>System Online</span>
+            </div>
+        </div>
+    </div>
+</aside>

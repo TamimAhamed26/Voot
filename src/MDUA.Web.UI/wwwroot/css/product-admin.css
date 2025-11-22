@@ -397,3 +397,8 @@ small.text-muted {
         margin-bottom: 1rem;
         opacity: 0.5;
     }
+
+#imageUploadModal {
+    z-index: 1065 !important; /* Bootstrap default is 1055 */
+}
+

@@ -8,7 +8,9 @@ namespace MDUA.Facade.Interface
     {
         Product GetProductWithPrice(int productId);
         ProductDiscount GetBestDiscountForProduct(int productId, decimal basePrice);
-
+        long AddImage(ProductImage image);
+        long DeleteImage(int imageId);
+        List<ProductImage> GetImages(int productId);
         ProductDetailsModel GetProductDetails(string slug);
     }
 }

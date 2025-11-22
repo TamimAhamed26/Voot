@@ -1,13 +1,18 @@
 ﻿// Global variables
-var productModal, deleteModal, categoryModal, variantModal, attributeModal, appToast;
+var productModal, deleteModal, categoryModal, variantModal, attributeModal, appToast, discountModal, imageModal;
 var categoryCache = [];
 var allAttributesCache = [];
+var cropper = null;
+var cropMode = false;
+// NEW: Temporary storage for attributes during product creation
+var tempSelectedAttributes = [];
 
 function getCsrfToken() {
     return $('input[name="__RequestVerificationToken"]').val();
 }
 
 $(function () {
+    // Initialize Modals
     productModal = new bootstrap.Modal(document.getElementById('productModal'));
     deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
     appToast = new bootstrap.Toast(document.getElementById('appToast'));
@@ -15,28 +20,56 @@ $(function () {
     variantModal = new bootstrap.Modal(document.getElementById('variantModal'));
     attributeModal = new bootstrap.Modal(document.getElementById('attributeModal'));
     discountModal = new bootstrap.Modal(document.getElementById('discountModal'));
-    // NEW: Handle modal backdrop cleanup
+    imageModal = new bootstrap.Modal(document.getElementById('imageUploadModal'));
+
+    // Handle modal backdrop cleanup
     $('#categoryModal').on('hidden.bs.modal', function () {
-        if ($('.modal.show').length > 0) {
-            $('body').addClass('modal-open');
-        }
+        if ($('.modal.show').length > 0) $('body').addClass('modal-open');
     });
 
     $('#attributeModal').on('hidden.bs.modal', function () {
-        if ($('.modal.show').length > 0) {
-            $('body').addClass('modal-open');
-        }
+        if ($('.modal.show').length > 0) $('body').addClass('modal-open');
     });
 
-    // NEW: Toggle Manage Attributes button visibility based on IsVariantBased checkbox
+    $('#imageUploadModal').on('hidden.bs.modal', function () {
+        cancelCrop();
+        $("#imageUploadForm")[0].reset();
+        if ($('.modal.show').length > 0) $('body').addClass('modal-open');
+    });
+
+    // Toggle Manage Attributes button visibility based on IsVariantBased checkbox
     $('#IsVariantBased').on('change', function () {
         toggleManageAttributesButton();
     });
 
+    // Image Handling Events
+    $("#btnToggleCrop").on('click', function () {
+        cropMode = !cropMode;
+        $("#cropStatus").text(cropMode ? "ON" : "OFF");
+        $(this).toggleClass("btn-outline-secondary btn-success");
+        $("#imageFiles").val('');
+        cancelCrop();
+    });
+
+    $("#imageFiles").on('change', function () {
+        if (this.files && this.files.length > 0) {
+            if (cropMode) {
+                startCropper(this.files[0]);
+            }
+        }
+    });
+
+    $("#imageUploadForm").on('submit', function (e) {
+        e.preventDefault();
+        if (!cropMode) uploadImagesBulk();
+    });
+
+    // Initial Data Load
     loadProducts();
     loadCategories();
     loadAllAttributes();
 
+    // Form Submissions
     $("#productForm").on('submit', function (e) { e.preventDefault(); saveProduct(); });
     $("#btnConfirmDelete").on('click', function () { deleteProduct($(this).data('id')); });
     $("#categoryForm").on('submit', function (e) { e.preventDefault(); saveCategory(); });
@@ -44,179 +77,419 @@ $(function () {
     $("#discountForm").on('submit', function (e) { e.preventDefault(); saveDiscount(); });
     $("#attributeAddForm").on('submit', function (e) { e.preventDefault(); saveProductAttribute(); });
 });
-function showDiscountModal(productId, productName) {
-    $("#discountForm")[0].reset();
 
-    // 1. Update the input used for reloading the list (Keep this)
-    $("#disc_ProductId").val(productId);
+// ==========================================
+// IMAGE MANAGEMENT LOGIC (Preserved)
+// ==========================================
 
-    // 2. ADD THIS: Update the input INSIDE the form (For the POST request)
-    $("#discountForm #ProductId").val(productId);
+function openProductImageModal(productId) {
+    configureImageModal("Product", productId, "Product Images");
+}
 
-    $("#discountErrorAlert").addClass("d-none");
+function openVariantImageModal(variantId) {
+    configureImageModal("Variant", variantId, "Variant Images");
+}
 
-    // Default Date logic...
-    var now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    $("#EffectiveFrom").val(now.toISOString().slice(0, 16));
+function configureImageModal(type, id, title) {
+    $("#imgModalTitle").text(title);
 
-    discountModal.show();
-    loadDiscountsList(productId);
-} function loadDiscountsList(productId) {
-    var tbody = $("#discountTableBody");
-    tbody.html('<tr><td colspan="3" class="text-center">Loading...</td></tr>');
+    // 1. Reset Form to clear old files
+    $("#imageUploadForm")[0].reset();
+
+    // 2. Set Hidden Fields (Crucial: do this AFTER reset)
+    $("#img_Type").val(type);
+    $("#img_ParentId").val(id);
+
+    // 3. Reset UI State
+    $("#existingImagesContainer").empty();
+    $("#noImagesMessage").addClass('d-none');
+    $("#existingImagesLoader").removeClass('d-none');
+
+    // 4. Reset Cropper
+    cropMode = false;
+    $("#btnToggleCrop").removeClass("btn-success").addClass("btn-outline-secondary");
+    $("#cropStatus").text("OFF");
+    cancelCrop();
+
+    imageModal.show();
+    loadExistingImages(type, id);
+}
+
+function loadExistingImages(type, id) {
+    var url = type === "Product" ? "/AdminProduct/GetProduct?id=" + id : "/AdminProduct/GetVariant?id=" + id;
 
     $.ajax({
-        url: `/AdminProduct/GetDiscounts?productId=${productId}`,
+        url: url,
         type: "GET",
         success: function (response) {
-            tbody.empty();
-            if (response.success && response.discounts.length > 0) {
-                response.discounts.forEach(d => {
-                    var valueDisplay = d.discountType === "Percentage" ? `${d.discountValue}%` : `$${d.discountValue}`;
-                    var fromDate = new Date(d.effectiveFrom).toLocaleDateString();
-
-                    var row = `
-                        <tr>
-                            <td><span class="badge bg-info text-dark">${valueDisplay}</span></td>
-                            <td><small>${fromDate}</small></td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteDiscount(${d.id})">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>`;
-                    tbody.append(row);
-                });
+            $("#existingImagesLoader").addClass('d-none');
+            if (response.success && response.images) {
+                renderImageGrid(response.images, type);
             } else {
-                tbody.append('<tr><td colspan="3" class="text-center text-muted small">No active discounts.</td></tr>');
+                $("#noImagesMessage").removeClass('d-none');
+            }
+        },
+        error: function () {
+            $("#existingImagesLoader").addClass('d-none');
+            showToast("Error", "Failed to load images", true);
+        }
+    });
+}
+
+function renderImageGrid(images, type) {
+    var container = $("#existingImagesContainer");
+    container.empty();
+
+    if (!images || images.length === 0) {
+        $("#noImagesMessage").removeClass('d-none');
+        return;
+    }
+
+    $("#noImagesMessage").addClass('d-none');
+
+    images.forEach(img => {
+        var deleteFn = type === "Product" ? `deleteProductImage(${img.id})` : `deleteVariantImage(${img.id})`;
+        var imgUrl = `/images/products/${img.imageUrl}`;
+
+        var html = `
+            <div class="col-6 col-md-3 col-lg-2 text-center">
+                <div class="card h-100 border shadow-sm">
+                    <div class="ratio ratio-1x1">
+                        <img src="${imgUrl}" class="card-img-top object-fit-cover" alt="Image">
+                    </div>
+                    <div class="card-body p-1">
+                        <button type="button" class="btn btn-danger btn-sm w-100" onclick="${deleteFn}">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        container.append(html);
+    });
+}
+
+function startCropper(file) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        $("#cropperImage").attr('src', e.target.result);
+        $("#uploadContainer").addClass('d-none');
+        $("#cropperContainer").removeClass('d-none');
+
+        if (cropper) cropper.destroy();
+
+        var image = document.getElementById('cropperImage');
+        cropper = new Cropper(image, {
+            viewMode: 1,
+            autoCropArea: 1,
+            // aspectRatio: 1, // Optional: Force square
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
+function cancelCrop() {
+    $("#cropperContainer").addClass('d-none');
+    $("#uploadContainer").removeClass('d-none');
+    $("#imageFiles").val('');
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+function uploadCroppedImage() {
+    if (!cropper) return;
+
+    // Get Custom Dimensions if entered
+    var w = parseInt($("#cropWidth").val()) || undefined;
+    var h = parseInt($("#cropHeight").val()) || undefined;
+
+    var canvas = cropper.getCroppedCanvas({ width: w, height: h });
+    if (!canvas) return;
+
+    canvas.toBlob(function (blob) {
+        var formData = new FormData();
+        var type = $("#img_Type").val();
+        var id = $("#img_ParentId").val();
+        var idParam = type === "Product" ? "productId" : "variantId";
+
+        formData.append(idParam, id);
+        formData.append("files", blob, "cropped-image.jpg");
+
+        performUpload(formData, type, id);
+    }, 'image/jpeg', 0.9);
+}
+
+function uploadImagesBulk() {
+    var type = $("#img_Type").val();
+    var id = $("#img_ParentId").val();
+    var idParam = type === "Product" ? "productId" : "variantId";
+
+    var formData = new FormData();
+    formData.append(idParam, id);
+
+    var files = $('#imageFiles')[0].files;
+    if (files.length === 0) {
+        alert("Please select a file first.");
+        return;
+    }
+
+    for (var i = 0; i < files.length; i++) {
+        formData.append("files", files[i]);
+    }
+
+    performUpload(formData, type, id);
+}
+
+function performUpload(formData, type, id) {
+    var url = type === "Product"
+        ? "/AdminProduct/UploadProductImages"
+        : "/AdminProduct/UploadVariantImages";
+
+    var uploadBtn = $("#btnDirectUpload");
+    uploadBtn.prop("disabled", true)
+        .html('<span class="spinner-border spinner-border-sm"></span> Uploading...');
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+
+        success: function (response) {
+            uploadBtn.prop("disabled", false)
+                .html('<i class="bi bi-cloud-upload"></i> Upload');
+
+            if (response.success) {
+                showToast("Success", "Uploaded successfully.");
+
+                $("#imageFiles").val('');
+                cancelCrop();
+
+                loadExistingImages(type, id);
+            } else {
+                showToast("Error", response.message, true);
+            }
+        },
+
+        error: function (xhr) {
+            uploadBtn.prop("disabled", false)
+                .html('<i class="bi bi-cloud-upload"></i> Upload');
+
+            showToast("Error", "Upload failed: " + xhr.statusText, true);
+        }
+    });
+}
+
+function deleteProductImage(id) {
+    if (!confirm("Delete this image?")) return;
+    $.ajax({
+        url: "/AdminProduct/DeleteProductImage",
+        type: "POST",
+        data: { imageId: id },
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                // Reload using the persistent ID in the hidden field
+                var productId = $("#img_ParentId").val();
+                loadExistingImages("Product", productId);
+            } else {
+                showToast("Error", response.message, true);
             }
         }
     });
 }
-function saveDiscount() {
-    var formData = $("#discountForm").serializeArray();
+
+function deleteVariantImage(id) {
+    if (!confirm("Delete this image?")) return;
+    $.ajax({
+        url: "/AdminProduct/DeleteVariantImage",
+        type: "POST",
+        data: { imageId: id },
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                var variantId = $("#img_ParentId").val();
+                loadExistingImages("Variant", variantId);
+            } else {
+                showToast("Error", response.message, true);
+            }
+        }
+    });
+}
+
+// ==========================================
+// CRUD & BUSINESS LOGIC
+// ==========================================
+
+function showCreateModal() {
+    $("#productForm")[0].reset();
+    $("#productModalLabel").text("Add New Product");
+    $("#Id").val("");
+
+    // Reset Temp Attributes for new product
+    tempSelectedAttributes = [];
+    renderTempAttributes();
+
+    $("#modalErrorAlert").addClass('d-none');
+    $("#IsActive").prop('checked', true);
+    $('#manageAttributesContainer').hide();
+    populateCategoryDropdown(categoryCache);
+    productModal.show();
+}
+
+function showEditModal(id) {
+    $("#productForm")[0].reset();
+    $("#productModalLabel").text("Edit Product");
+    $("#modalErrorAlert").addClass('d-none');
 
     $.ajax({
-        url: "/AdminProduct/ApplyDiscount",
+        url: "/AdminProduct/GetProduct?id=" + id,
+        type: "GET",
+        success: function (response) {
+            if (response.success) {
+                var p = response.product;
+                $("#Id").val(p.id);
+                $("#ProductName").val(p.productName);
+                $("#Slug").val(p.slug);
+                $("#Description").val(p.description);
+                $("#BasePrice").val(p.basePrice);
+                $("#Barcode").val(p.barcode);
+                $("#ReorderLevel").val(p.reorderLevel);
+                populateCategoryDropdown(categoryCache, p.categoryId);
+                $("#IsVariantBased").prop('checked', p.isVariantBased);
+                $("#IsActive").prop('checked', p.isActive);
+
+                toggleManageAttributesButton(); // Will handle switching to Edit mode view
+
+                productModal.show();
+            }
+        },
+        error: function (xhr) {
+            showToast("Error", "Could not load product. " + xhr.responseJSON?.message, true);
+        }
+    });
+}
+
+function saveProduct() {
+    var isCreate = $("#Id").val() === "";
+    var url = isCreate ? "/AdminProduct/Create" : "/AdminProduct/Edit";
+    var formData = $("#productForm").serializeArray();
+
+    if (!$("#IsVariantBased").is(":checked")) formData.push({ name: "IsVariantBased", value: "false" });
+    if (!$("#IsActive").is(":checked")) formData.push({ name: "IsActive", value: "false" });
+
+    // --- NEW: Append SelectedAttributeIds for Quick Add ---
+    if (isCreate && $("#IsVariantBased").is(":checked") && tempSelectedAttributes.length > 0) {
+        tempSelectedAttributes.forEach(attr => {
+            formData.push({ name: "SelectedAttributeIds", value: attr.id });
+        });
+    }
+    // -----------------------------------------------------
+
+    $.ajax({
+        url: url,
         type: "POST",
         data: $.param(formData),
         headers: { 'RequestVerificationToken': getCsrfToken() },
         success: function (response) {
             if (response.success) {
-                showToast("Success", response.message);
-                $("#discountForm")[0].reset();
-
-                // 1. Reload Discount List inside the modal
-                loadDiscountsList($("#disc_ProductId").val());
-
-                // 2. Reload Main Product Grid (Updates Simple Product Prices)
+                productModal.hide();
+                showToast("Success", "Product saved successfully.");
                 loadProducts();
-
-                // 3. Reload Variant Grid if that modal is open (Updates Variant Prices)
-                // FIXED: Check if modal is open, then use the new helper
-                if ($("#variantModal").hasClass('show')) {
-                    var variantProductId = $("#v_ProductId").val();
-                    if (variantProductId) {
-                        loadVariantsTable(variantProductId);
-                    }
+                var newRow = renderProductRow(response.product);
+                if (isCreate) {
+                    if (!$("#productTableBody").find('tr[id^="row-"]').length) $("#productTableBody").empty();
+                    $("#productTableBody").append(newRow);
+                } else {
+                    $("#row-" + response.product.id).replaceWith(newRow);
                 }
             }
         },
         error: function (xhr) {
-            $("#discountErrorAlert").text(xhr.responseJSON?.message || "Error").removeClass('d-none');
-        }
-    });
-}
-function deleteDiscount(id) {
-    if (!confirm("Remove this discount? Prices will update immediately.")) return; // Updated message
-
-    $.ajax({
-        url: "/AdminProduct/DeleteDiscount",
-        type: "POST",
-        data: { id: id },
-        headers: { 'RequestVerificationToken': getCsrfToken() },
-        success: function (response) {
-            if (response.success) {
-                showToast("Deleted", response.message);
-
-                // 1. Reload list
-                loadDiscountsList($("#disc_ProductId").val());
-
-                // 2. Reload Main Grid
-                loadProducts();
-
-                // 3. Reload Variant Grid if open
-                // FIXED: Use the new helper
-                if ($("#variantModal").hasClass('show')) {
-                    var variantProductId = $("#v_ProductId").val();
-                    if (variantProductId) {
-                        loadVariantsTable(variantProductId);
-                    }
-                }
-            }
-        },
-        error: function (xhr) {
-            alert(xhr.responseJSON?.message || "Error deleting discount");
+            $("#modalErrorAlert").text("An error occurred. " + (xhr.responseJSON?.message || "Check console.")).removeClass('d-none');
         }
     });
 }
 
-// NEW: Toggle Manage Attributes button visibility
+// --- QUICK ATTRIBUTE LOGIC (NEW) ---
+
 function toggleManageAttributesButton() {
-    if ($('#IsVariantBased').is(':checked')) {
+    var isVariant = $('#IsVariantBased').is(':checked');
+    var productId = $("#Id").val(); // Empty if Create, Value if Edit
+
+    if (isVariant) {
         $('#manageAttributesContainer').slideDown(200);
+
+        if (productId) {
+            // EDIT MODE
+            $("#editModeAttributes").removeClass('d-none');
+            $("#createModeAttributes").addClass('d-none');
+        } else {
+            // CREATE MODE
+            $("#editModeAttributes").addClass('d-none');
+            $("#createModeAttributes").removeClass('d-none');
+
+            // Populate the dropdown if empty
+            if ($("#createAttributeSelect option").length <= 1) {
+                var dropdown = $("#createAttributeSelect");
+                allAttributesCache.forEach(attr => {
+                    dropdown.append(`<option value="${attr.id}" data-name="${escapeHTML(attr.name)}">${escapeHTML(attr.name)}</option>`);
+                });
+            }
+        }
     } else {
         $('#manageAttributesContainer').slideUp(200);
     }
 }
 
-// NEW: Show attribute modal from product modal (for existing products only)
-function showAttributeModalFromProduct() {
-    var productId = $('#Id').val();
+function addTempAttribute() {
+    var select = $("#createAttributeSelect");
+    var id = select.val();
+    var name = select.find('option:selected').data('name');
 
-    if (!productId) {
-        alert('Please save the product first before managing attributes.');
+    if (!id) return;
+
+    // Check duplicate
+    if (tempSelectedAttributes.some(x => x.id == id)) {
+        alert("Attribute already added.");
         return;
     }
 
-    // Hide product modal temporarily
-    productModal.hide();
+    tempSelectedAttributes.push({ id: id, name: name });
+    renderTempAttributes();
+    select.val("");
+}
 
-    // Set up the attribute modal with product ID
-    $("#attr_ProductId").val(productId);
-    $("#attributeModalLabel").text(`Manage Attributes for Product ID: ${productId}`);
-    $("#attributeErrorAlert").addClass('d-none');
+function removeTempAttribute(id) {
+    tempSelectedAttributes = tempSelectedAttributes.filter(x => x.id != id);
+    renderTempAttributes();
+}
 
-    attributeModal.show();
+function renderTempAttributes() {
+    var list = $("#tempAttributeList");
+    list.empty();
 
-    var tableBody = $("#productAttributeTableBody");
-    tableBody.html('<tr><td>Loading...</td></tr>');
+    if (tempSelectedAttributes.length === 0) {
+        list.append('<li class="list-group-item bg-transparent text-muted fst-italic p-1">No attributes selected</li>');
+        return;
+    }
 
-    $.ajax({
-        url: `/AdminProduct/GetProductAttributes?productId=${productId}`,
-        type: "GET",
-        success: function (response) {
-            tableBody.empty();
-            if (response.success) {
-                if (response.attributes.length > 0) {
-                    response.attributes.forEach(attr => tableBody.append(renderProductAttributeRow(attr)));
-                } else {
-                    tableBody.append('<tr><td>No attributes assigned.</td></tr>');
-                }
-                populateAvailableAttributes(response.attributes);
-            }
-        },
-        error: function (xhr) {
-            tableBody.html(`<tr><td class="text-danger">Error: ${xhr.responseJSON?.message}</td></tr>`);
-        }
-    });
-
-    // When attribute modal closes, reopen product modal
-    $('#attributeModal').one('hidden.bs.modal', function () {
-        productModal.show();
+    tempSelectedAttributes.forEach(attr => {
+        list.append(`
+            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center p-1">
+                <span>${escapeHTML(attr.name)}</span>
+                <button type="button" class="btn btn-xs btn-link text-danger p-0" onclick="removeTempAttribute(${attr.id})">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+            </li>
+        `);
     });
 }
+
+// --- STANDARD CRUD & HELPERS ---
 
 function loadProducts() {
     var tableBody = $("#productTableBody");
@@ -225,7 +498,6 @@ function loadProducts() {
     $.ajax({
         url: "/AdminProduct/GetProducts",
         type: "GET",
-
         success: function (response) {
             tableBody.empty();
             if (response.success && response.products.length > 0) {
@@ -238,6 +510,51 @@ function loadProducts() {
             var msg = xhr.responseJSON?.message || "An unknown error occurred.";
             tableBody.empty().append(`<tr><td colspan="7" class="text-center text-danger">Error loading products: ${msg}</td></tr>`);
             showToast("Error", "Could not load products. " + msg, true);
+        }
+    });
+}
+
+function deleteProduct(id) {
+    $.ajax({
+        url: "/AdminProduct/DeleteProduct",
+        type: "POST",
+        data: { id: id },
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                deleteModal.hide();
+                showToast("Success", "Product deleted successfully.");
+                $("#row-" + id).fadeOut(500, function () {
+                    $(this).remove();
+                    if ($("#productTableBody tr").length === 0) {
+                        $("#productTableBody").append('<tr><td colspan="7" class="text-center">No products found.</td></tr>');
+                    }
+                });
+            }
+        },
+        error: function (xhr) {
+            $("#deleteErrorAlert").text("An error occurred. " + xhr.responseJSON?.message).removeClass('d-none');
+        }
+    });
+}
+
+function saveCategory() {
+    var categoryName = $("#categoryName").val();
+    $.ajax({
+        url: "/AdminProduct/CreateCategory",
+        type: "POST",
+        data: { categoryName: categoryName },
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                categoryCache.push(response.newCategory);
+                populateCategoryDropdown(categoryCache, response.newCategory.id);
+                categoryModal.hide();
+                showToast("Success", "Category created.");
+            }
+        },
+        error: function (xhr) {
+            $("#categoryErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none');
         }
     });
 }
@@ -272,49 +589,10 @@ function loadAllAttributes() {
     });
 }
 
-function showCreateModal() {
-    $("#productForm")[0].reset();
-    $("#productModalLabel").text("Add New Product");
-    $("#Id").val("");
-    $("#modalErrorAlert").addClass('d-none');
-    $("#IsActive").prop('checked', true);
-    $('#manageAttributesContainer').hide(); // Hide manage attributes for new products
-    populateCategoryDropdown(categoryCache);
-    productModal.show();
-}
-
-function showEditModal(id) {
-    $("#productForm")[0].reset();
-    $("#productModalLabel").text("Edit Product");
-    $("#modalErrorAlert").addClass('d-none');
-
-    $.ajax({
-        url: "/AdminProduct/GetProduct?id=" + id,
-        type: "GET",
-        success: function (response) {
-            if (response.success) {
-                var p = response.product;
-                $("#Id").val(p.id);
-                $("#ProductName").val(p.productName);
-                $("#Slug").val(p.slug);
-                $("#Description").val(p.description);
-                $("#BasePrice").val(p.basePrice);
-                $("#Barcode").val(p.barcode);
-                $("#ReorderLevel").val(p.reorderLevel);
-                populateCategoryDropdown(categoryCache, p.categoryId);
-                $("#IsVariantBased").prop('checked', p.isVariantBased);
-                $("#IsActive").prop('checked', p.isActive);
-
-                // Show/hide manage attributes button based on variant status
-                toggleManageAttributesButton();
-
-                productModal.show();
-            }
-        },
-        error: function (xhr) {
-            showToast("Error", "Could not load product. " + xhr.responseJSON?.message, true);
-        }
-    });
+function showCategoryModal() {
+    $("#categoryForm")[0].reset();
+    $("#categoryErrorAlert").addClass('d-none');
+    categoryModal.show();
 }
 
 function showDeleteModal(id, name) {
@@ -324,12 +602,243 @@ function showDeleteModal(id, name) {
     deleteModal.show();
 }
 
-function showCategoryModal() {
-    $("#categoryForm")[0].reset();
-    $("#categoryErrorAlert").addClass('d-none');
-    categoryModal.show();
+function populateCategoryDropdown(categories, selectedId) {
+    var dropdown = $("#CategoryId");
+    dropdown.empty().append('<option value="">Select Category</option>');
+    categories.forEach(cat => {
+        var selected = (cat.id === selectedId) ? "selected" : "";
+        dropdown.append(`<option value="${cat.id}" ${selected}>${escapeHTML(cat.name)}</option>`);
+    });
 }
-// NEW HELPER: Reusable function to load the variant table
+
+// --- VARIANT LOGIC ---
+
+function saveVariant() {
+    var isCreate = $("#v_VariantId").val() === "";
+    var url = isCreate ? "/AdminProduct/CreateVariant" : "/AdminProduct/UpdateVariant";
+
+    var formData = {
+        Id: $("#v_VariantId").val() || 0,
+        ProductId: $("#v_ProductId").val(),
+        SKU: $("#v_SKU").val(),
+        VariantPrice: $("#v_VariantPrice").val(),
+        IsActive: $("#v_IsActive").val() === "true",
+        Price: $("#v_Price").val() || 0,
+        CompareAtPrice: $("#v_CompareAtPrice").val() || null,
+        CostPrice: $("#v_CostPrice").val() || null,
+        StockQty: $("#v_StockQty").val() || 0,
+        TrackInventory: $("#v_TrackInventory").is(":checked"),
+        AllowBackorder: $("#v_AllowBackorder").is(":checked"),
+        WeightGrams: $("#v_WeightGrams").val() || null,
+        SelectedAttributeValueIds: []
+    };
+
+    var selectedTexts = [];
+    var allSelected = true;
+
+    $(".dynamic-attr-select").each(function () {
+        var valueId = $(this).val();
+        if (valueId) {
+            formData.SelectedAttributeValueIds.push(parseInt(valueId));
+            selectedTexts.push($(this).find('option:selected').text());
+        } else {
+            allSelected = false;
+        }
+    });
+
+    if (!allSelected && $(".dynamic-attr-select").length > 0) {
+        $("#variantErrorAlert").html("Please select a value for all attributes.").removeClass('d-none');
+        return;
+    }
+
+    formData.VariantName = `${$("#variantModal").data("productName")} - ${selectedTexts.join(" / ")}`;
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: formData,
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                var newRow = renderVariantRow(response.variant);
+                if (isCreate) {
+                    if (!$("#variantTableBody").find('tr[id^="variant-row-"]').length) $("#variantTableBody").empty();
+                    $("#variantTableBody").append(newRow);
+                } else {
+                    $("#variant-row-" + response.variant.id).replaceWith(newRow);
+                }
+                clearVariantForm();
+                showToast("Success", "Variant saved.");
+                $("#variantErrorAlert").addClass('d-none');
+                loadVariantsTable($("#v_ProductId").val());
+            }
+        },
+        error: function (xhr) {
+            var msg = "An unknown error occurred.";
+            if (xhr.responseJSON) {
+                msg = `<strong>${xhr.responseJSON.message}</strong>`;
+                if (xhr.responseJSON.errors) {
+                    var list = "<ul>";
+                    for (var key in xhr.responseJSON.errors) {
+                        if (key.includes("SelectedAttributeValueIds")) {
+                            list += `<li>Attributes: Please select a value for all options.</li>`;
+                        } else {
+                            xhr.responseJSON.errors[key].forEach(err => list += `<li>${escapeHTML(key)}: ${escapeHTML(err)}</li>`);
+                        }
+                    }
+                    msg += list + "</ul>";
+                }
+            }
+            $("#variantErrorAlert").html(msg).removeClass('d-none');
+        }
+    });
+}
+
+function editVariant(id) {
+    var container = $("#dynamic-variant-form-container");
+    container.html('<div class="col-12 text-center">Loading options...</div>');
+    var productId = $("#v_ProductId").val();
+
+    $.ajax({
+        url: "/AdminProduct/GetVariant?id=" + id,
+        type: "GET",
+        success: function (response) {
+            if (response.success) {
+                var v = response.variant;
+                $("#v_VariantId").val(v.id);
+                $("#v_SKU").val(v.sku);
+                $("#v_VariantPrice").val(v.variantPrice);
+                $("#v_IsActive").val(v.isActive.toString());
+
+                if (response.priceStock) {
+                    $("#v_Price").val(response.priceStock.price);
+                    $("#v_CompareAtPrice").val(response.priceStock.compareAtPrice || "");
+                    $("#v_CostPrice").val(response.priceStock.costPrice || "");
+                    $("#v_StockQty").val(response.priceStock.stockQty);
+                    $("#v_TrackInventory").prop('checked', response.priceStock.trackInventory);
+                    $("#v_AllowBackorder").prop('checked', response.priceStock.allowBackorder);
+                    $("#v_WeightGrams").val(response.priceStock.weightGrams || "");
+                }
+
+                $.ajax({
+                    url: `/AdminProduct/GetProductOptions?productId=${productId}`,
+                    type: "GET",
+                    success: function (optResp) {
+                        container.empty();
+                        $("#noAttributesWarning").addClass('d-none');
+
+                        if (optResp.success && optResp.options.length > 0) {
+                            optResp.options.forEach(opt => {
+                                var selectId = `attr-val-${opt.attributeId}`;
+                                var html = `<div class="col-sm-3 mb-3">
+                                    <label for="${selectId}" class="form-label">${escapeHTML(opt.attributeName)}</label>
+                                    <select id="${selectId}" class="form-select dynamic-attr-select" required>
+                                        <option value="">-- Select ${escapeHTML(opt.attributeName)} --</option>`;
+                                opt.values.forEach(val => html += `<option value="${val.id}">${escapeHTML(val.value)}</option>`);
+                                html += `</select></div>`;
+                                container.append(html);
+                            });
+
+                            response.selectedValueIds?.forEach(valId => {
+                                container.find(`option[value='${valId}']`).prop('selected', true);
+                            });
+
+                            $("#btnCancelEditVariant").removeClass("d-none");
+                        } else {
+                            $("#noAttributesWarning").removeClass('d-none');
+                        }
+                    },
+                    error: function (xhr) {
+                        container.html(`<div class="col-12 text-danger">Error: ${xhr.responseJSON?.message || "Unknown"}</div>`);
+                    }
+                });
+            }
+        },
+        error: function (xhr) {
+            $("#variantErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none');
+        }
+    });
+}
+
+function clearVariantForm() {
+    var productId = $("#v_ProductId").val();
+    $("#variantForm")[0].reset();
+    $("#v_ProductId").val(productId);
+    $("#v_VariantId").val("");
+
+    $("#v_Price").val("");
+    $("#v_CompareAtPrice").val("");
+    $("#v_CostPrice").val("");
+    $("#v_StockQty").val("0");
+    $("#v_TrackInventory").prop('checked', true);
+    $("#v_AllowBackorder").prop('checked', false);
+    $("#v_WeightGrams").val("");
+
+    $("#dynamic-variant-form-container").empty();
+    $("#btnCancelEditVariant").addClass("d-none");
+    $("#variantErrorAlert").addClass('d-none');
+    $("#noAttributesWarning").addClass('d-none');
+    loadDynamicVariantForm(productId);
+}
+
+function deleteVariant(id, btn) {
+    if (!confirm("Are you sure you want to delete this variant?")) return;
+
+    $.ajax({
+        url: "/AdminProduct/DeleteVariant",
+        type: "POST",
+        data: { id: id },
+        headers: { 'RequestVerificationToken': getCsrfToken() },
+        success: function (response) {
+            if (response.success) {
+                $(btn).closest('tr').fadeOut(300, function () {
+                    $(this).remove();
+                    if ($("#variantTableBody tr").length === 0) {
+                        $("#variantTableBody").append('<tr><td colspan="6" class="text-center">No variants found.</td></tr>');
+                    }
+                });
+                showToast("Success", "Variant deleted.");
+            }
+        },
+        error: function (xhr) {
+            $("#variantErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none');
+        }
+    });
+}
+
+function loadDynamicVariantForm(productId, callback) {
+    var container = $("#dynamic-variant-form-container");
+    container.html('<div class="col-12 text-center">Loading options...</div>');
+
+    $.ajax({
+        url: `/AdminProduct/GetProductOptions?productId=${productId}`,
+        type: "GET",
+        success: function (response) {
+            container.empty();
+            $("#noAttributesWarning").addClass('d-none');
+
+            if (response.success && response.options.length > 0) {
+                response.options.forEach(opt => {
+                    var selectId = `attr-val-${opt.attributeId}`;
+                    var html = `<div class="col-sm-3 mb-3">
+                        <label for="${selectId}" class="form-label">${escapeHTML(opt.attributeName)}</label>
+                        <select id="${selectId}" class="form-select dynamic-attr-select" required>
+                            <option value="">-- Select ${escapeHTML(opt.attributeName)} --</option>`;
+                    opt.values.forEach(val => html += `<option value="${val.id}">${escapeHTML(val.value)}</option>`);
+                    html += `</select></div>`;
+                    container.append(html);
+                });
+            } else {
+                $("#noAttributesWarning").removeClass('d-none');
+            }
+            if (callback) callback();
+        },
+        error: function (xhr) {
+            container.html(`<div class="col-12 text-danger">Error: ${xhr.responseJSON?.message || "Unknown"}</div>`);
+        }
+    });
+}
+
 function loadVariantsTable(productId) {
     var tableBody = $("#variantTableBody");
     tableBody.html('<tr><td colspan="6" class="text-center">Loading variants...</td></tr>');
@@ -351,20 +860,65 @@ function loadVariantsTable(productId) {
         }
     });
 }
+
 function showVariantModal(productId, productName) {
     $("#variantModalLabel").text(`Manage Variants for: ${productName}`);
     $("#v_ProductId").val(productId);
     $("#variantModal").data("productName", productName);
 
-    // 1. Load the Form Options
     loadDynamicVariantForm(productId, () => {
         clearVariantForm();
         variantModal.show();
     });
 
-    // 2. Load the Table (Using the new helper)
     loadVariantsTable(productId);
 }
+
+// --- ATTRIBUTE MANAGEMENT ---
+
+function showAttributeModalFromProduct() {
+    var productId = $('#Id').val();
+
+    if (!productId) {
+        alert('Please save the product first before managing attributes.');
+        return;
+    }
+
+    productModal.hide();
+
+    $("#attr_ProductId").val(productId);
+    $("#attributeModalLabel").text(`Manage Attributes for Product ID: ${productId}`);
+    $("#attributeErrorAlert").addClass('d-none');
+
+    attributeModal.show();
+
+    var tableBody = $("#productAttributeTableBody");
+    tableBody.html('<tr><td>Loading...</td></tr>');
+
+    $.ajax({
+        url: `/AdminProduct/GetProductAttributes?productId=${productId}`,
+        type: "GET",
+        success: function (response) {
+            tableBody.empty();
+            if (response.success) {
+                if (response.attributes.length > 0) {
+                    response.attributes.forEach(attr => tableBody.append(renderProductAttributeRow(attr)));
+                } else {
+                    tableBody.append('<tr><td>No attributes assigned.</td></tr>');
+                }
+                populateAvailableAttributes(response.attributes);
+            }
+        },
+        error: function (xhr) {
+            tableBody.html(`<tr><td class="text-danger">Error: ${xhr.responseJSON?.message}</td></tr>`);
+        }
+    });
+
+    $('#attributeModal').one('hidden.bs.modal', function () {
+        productModal.show();
+    });
+}
+
 function showAttributeModal() {
     var productId = $("#v_ProductId").val();
     var productName = $("#variantModal").data("productName");
@@ -470,312 +1024,113 @@ function deleteProductAttribute(productAttributeId, attributeId, btn) {
     });
 }
 
-function saveProduct() {
-    var isCreate = $("#Id").val() === "";
-    var url = isCreate ? "/AdminProduct/Create" : "/AdminProduct/Edit";
-    var formData = $("#productForm").serializeArray();
+// --- DISCOUNT LOGIC ---
 
-    if (!$("#IsVariantBased").is(":checked")) formData.push({ name: "IsVariantBased", value: "false" });
-    if (!$("#IsActive").is(":checked")) formData.push({ name: "IsActive", value: "false" });
+function showDiscountModal(productId, productName) {
+    $("#discountForm")[0].reset();
+    $("#disc_ProductId").val(productId);
+    $("#discountForm #ProductId").val(productId);
+    $("#discountErrorAlert").addClass("d-none");
+
+    var now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    $("#EffectiveFrom").val(now.toISOString().slice(0, 16));
+
+    discountModal.show();
+    loadDiscountsList(productId);
+}
+
+function loadDiscountsList(productId) {
+    var tbody = $("#discountTableBody");
+    tbody.html('<tr><td colspan="3" class="text-center">Loading...</td></tr>');
 
     $.ajax({
-        url: url,
+        url: `/AdminProduct/GetDiscounts?productId=${productId}`,
+        type: "GET",
+        success: function (response) {
+            tbody.empty();
+            if (response.success && response.discounts.length > 0) {
+                response.discounts.forEach(d => {
+                    var valueDisplay = d.discountType === "Percentage" ? `${d.discountValue}%` : `$${d.discountValue}`;
+                    var fromDate = new Date(d.effectiveFrom).toLocaleDateString();
+
+                    var row = `
+                        <tr>
+                            <td><span class="badge bg-info text-dark">${valueDisplay}</span></td>
+                            <td><small>${fromDate}</small></td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-danger py-0" onclick="deleteDiscount(${d.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                    tbody.append(row);
+                });
+            } else {
+                tbody.append('<tr><td colspan="3" class="text-center text-muted small">No active discounts.</td></tr>');
+            }
+        }
+    });
+}
+
+function saveDiscount() {
+    var formData = $("#discountForm").serializeArray();
+
+    $.ajax({
+        url: "/AdminProduct/ApplyDiscount",
         type: "POST",
         data: $.param(formData),
         headers: { 'RequestVerificationToken': getCsrfToken() },
         success: function (response) {
             if (response.success) {
-                productModal.hide();
-                showToast("Success", "Product saved successfully.");
-                loadProducts(); 
-                var newRow = renderProductRow(response.product);
-                if (isCreate) {
-                    if (!$("#productTableBody").find('tr[id^="row-"]').length) $("#productTableBody").empty();
-                    $("#productTableBody").append(newRow);
-                } else {
-                    $("#row-" + response.product.id).replaceWith(newRow);
+                showToast("Success", response.message);
+                $("#discountForm")[0].reset();
+                loadDiscountsList($("#disc_ProductId").val());
+                loadProducts();
+
+                if ($("#variantModal").hasClass('show')) {
+                    var variantProductId = $("#v_ProductId").val();
+                    if (variantProductId) {
+                        loadVariantsTable(variantProductId);
+                    }
                 }
             }
         },
         error: function (xhr) {
-            $("#modalErrorAlert").text("An error occurred. " + (xhr.responseJSON?.message || "Check console.")).removeClass('d-none');
+            $("#discountErrorAlert").text(xhr.responseJSON?.message || "Error").removeClass('d-none');
         }
     });
 }
 
-function deleteProduct(id) {
+function deleteDiscount(id) {
+    if (!confirm("Remove this discount? Prices will update immediately.")) return;
+
     $.ajax({
-        url: "/AdminProduct/DeleteProduct",
+        url: "/AdminProduct/DeleteDiscount",
         type: "POST",
         data: { id: id },
         headers: { 'RequestVerificationToken': getCsrfToken() },
         success: function (response) {
             if (response.success) {
-                deleteModal.hide();
-                showToast("Success", "Product deleted successfully.");
-                $("#row-" + id).fadeOut(500, function () {
-                    $(this).remove();
-                    if ($("#productTableBody tr").length === 0) {
-                        $("#productTableBody").append('<tr><td colspan="7" class="text-center">No products found.</td></tr>');
+                showToast("Deleted", response.message);
+                loadDiscountsList($("#disc_ProductId").val());
+                loadProducts();
+
+                if ($("#variantModal").hasClass('show')) {
+                    var variantProductId = $("#v_ProductId").val();
+                    if (variantProductId) {
+                        loadVariantsTable(variantProductId);
                     }
-                });
-            }
-        },
-        error: function (xhr) {
-            $("#deleteErrorAlert").text("An error occurred. " + xhr.responseJSON?.message).removeClass('d-none');
-        }
-    });
-}
-
-function saveCategory() {
-    var categoryName = $("#categoryName").val();
-    $.ajax({
-        url: "/AdminProduct/CreateCategory",
-        type: "POST",
-        data: { categoryName: categoryName },
-        headers: { 'RequestVerificationToken': getCsrfToken() },
-        success: function (response) {
-            if (response.success) {
-                categoryCache.push(response.newCategory);
-                populateCategoryDropdown(categoryCache, response.newCategory.id);
-                categoryModal.hide();
-                showToast("Success", "Category created.");
-            }
-        },
-        error: function (xhr) {
-            $("#categoryErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none');
-        }
-    });
-}
-
-function saveVariant() {
-    var isCreate = $("#v_VariantId").val() === "";
-    var url = isCreate ? "/AdminProduct/CreateVariant" : "/AdminProduct/UpdateVariant";
-
-    var formData = {
-        Id: $("#v_VariantId").val() || 0,
-        ProductId: $("#v_ProductId").val(),
-        SKU: $("#v_SKU").val(),
-        VariantPrice: $("#v_VariantPrice").val(),
-        IsActive: $("#v_IsActive").val() === "true",
-        // VariantPriceStock fields
-        Price: $("#v_Price").val() || 0,
-        CompareAtPrice: $("#v_CompareAtPrice").val() || null,
-        CostPrice: $("#v_CostPrice").val() || null,
-        StockQty: $("#v_StockQty").val() || 0,
-        TrackInventory: $("#v_TrackInventory").is(":checked"),
-        AllowBackorder: $("#v_AllowBackorder").is(":checked"),
-        WeightGrams: $("#v_WeightGrams").val() || null,
-        SelectedAttributeValueIds: []
-    };
-
-    var selectedTexts = [];
-    var allSelected = true;
-
-    $(".dynamic-attr-select").each(function () {
-        var valueId = $(this).val();
-        if (valueId) {
-            formData.SelectedAttributeValueIds.push(parseInt(valueId));
-            selectedTexts.push($(this).find('option:selected').text());
-        } else {
-            allSelected = false;
-        }
-    });
-
-    if (!allSelected && $(".dynamic-attr-select").length > 0) {
-        $("#variantErrorAlert").html("Please select a value for all attributes.").removeClass('d-none');
-        return;
-    }
-
-    formData.VariantName = `${$("#variantModal").data("productName")} - ${selectedTexts.join(" / ")}`;
-
-    $.ajax({
-        url: url,
-        type: "POST",
-        data: formData,
-        headers: { 'RequestVerificationToken': getCsrfToken() },
-        success: function (response) {
-            if (response.success) {
-                var newRow = renderVariantRow(response.variant);
-                if (isCreate) {
-                    if (!$("#variantTableBody").find('tr[id^="variant-row-"]').length) $("#variantTableBody").empty();
-                    $("#variantTableBody").append(newRow);
-                } else {
-                    $("#variant-row-" + response.variant.id).replaceWith(newRow);
-                }
-                clearVariantForm();
-                showToast("Success", "Variant saved.");
-                $("#variantErrorAlert").addClass('d-none');
-                loadVariantsTable($("#v_ProductId").val()); 
-            }
-        },
-        error: function (xhr) {
-            var msg = "An unknown error occurred.";
-            if (xhr.responseJSON) {
-                msg = `<strong>${xhr.responseJSON.message}</strong>`;
-                if (xhr.responseJSON.errors) {
-                    var list = "<ul>";
-                    for (var key in xhr.responseJSON.errors) {
-                        if (key.includes("SelectedAttributeValueIds")) {
-                            list += `<li>Attributes: Please select a value for all options.</li>`;
-                        } else {
-                            xhr.responseJSON.errors[key].forEach(err => list += `<li>${escapeHTML(key)}: ${escapeHTML(err)}</li>`);
-                        }
-                    }
-                    msg += list + "</ul>";
                 }
             }
-            $("#variantErrorAlert").html(msg).removeClass('d-none');
-        }
-    });
-}
-
-function editVariant(id) {
-    var container = $("#dynamic-variant-form-container");
-    container.html('<div class="col-12 text-center">Loading options...</div>');
-    var productId = $("#v_ProductId").val();
-
-    $.ajax({
-        url: "/AdminProduct/GetVariant?id=" + id,
-        type: "GET",
-        success: function (response) {
-            if (response.success) {
-                var v = response.variant;
-                $("#v_VariantId").val(v.id);
-                $("#v_SKU").val(v.sku);
-                $("#v_VariantPrice").val(v.variantPrice);
-                $("#v_IsActive").val(v.isActive.toString());
-
-                // Populate VariantPriceStock fields
-                if (response.priceStock) {
-                    $("#v_Price").val(response.priceStock.price);
-                    $("#v_CompareAtPrice").val(response.priceStock.compareAtPrice || "");
-                    $("#v_CostPrice").val(response.priceStock.costPrice || "");
-                    $("#v_StockQty").val(response.priceStock.stockQty);
-                    $("#v_TrackInventory").prop('checked', response.priceStock.trackInventory);
-                    $("#v_AllowBackorder").prop('checked', response.priceStock.allowBackorder);
-                    $("#v_WeightGrams").val(response.priceStock.weightGrams || "");
-                }
-
-                $.ajax({
-                    url: `/AdminProduct/GetProductOptions?productId=${productId}`,
-                    type: "GET",
-                    success: function (optResp) {
-                        container.empty();
-                        $("#noAttributesWarning").addClass('d-none');
-
-                        if (optResp.success && optResp.options.length > 0) {
-                            optResp.options.forEach(opt => {
-                                var selectId = `attr-val-${opt.attributeId}`;
-                                var html = `<div class="col-sm-3 mb-3">
-                                    <label for="${selectId}" class="form-label">${escapeHTML(opt.attributeName)}</label>
-                                    <select id="${selectId}" class="form-select dynamic-attr-select" required>
-                                        <option value="">-- Select ${escapeHTML(opt.attributeName)} --</option>`;
-                                opt.values.forEach(val => html += `<option value="${val.id}">${escapeHTML(val.value)}</option>`);
-                                html += `</select></div>`;
-                                container.append(html);
-                            });
-
-                            response.selectedValueIds?.forEach(valId => {
-                                container.find(`option[value='${valId}']`).prop('selected', true);
-                            });
-
-                            $("#btnCancelEditVariant").removeClass("d-none");
-                        } else {
-                            $("#noAttributesWarning").removeClass('d-none');
-                        }
-                    },
-                    error: function (xhr) {
-                        container.html(`<div class="col-12 text-danger">Error: ${xhr.responseJSON?.message || "Unknown"}</div>`);
-                    }
-                });
-            }
         },
         error: function (xhr) {
-            $("#variantErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none');
+            alert(xhr.responseJSON?.message || "Error deleting discount");
         }
     });
 }
 
-function clearVariantForm() {
-    var productId = $("#v_ProductId").val();
-    $("#variantForm")[0].reset();
-    $("#v_ProductId").val(productId);
-    $("#v_VariantId").val("");
-
-    // Reset VariantPriceStock fields to defaults
-    $("#v_Price").val("");
-    $("#v_CompareAtPrice").val("");
-    $("#v_CostPrice").val("");
-    $("#v_StockQty").val("0");
-    $("#v_TrackInventory").prop('checked', true);
-    $("#v_AllowBackorder").prop('checked', false);
-    $("#v_WeightGrams").val("");
-
-    $("#dynamic-variant-form-container").empty();
-    $("#btnCancelEditVariant").addClass("d-none");
-    $("#variantErrorAlert").addClass('d-none');
-    $("#noAttributesWarning").addClass('d-none');
-    loadDynamicVariantForm(productId);
-}
-
-function deleteVariant(id, btn) {
-    if (!confirm("Are you sure you want to delete this variant?")) return;
-
-    $.ajax({
-        url: "/AdminProduct/DeleteVariant",
-        type: "POST",
-        data: { id: id },
-        headers: { 'RequestVerificationToken': getCsrfToken() },
-        success: function (response) {
-            if (response.success) {
-                $(btn).closest('tr').fadeOut(300, function () {
-                    $(this).remove();
-                    if ($("#variantTableBody tr").length === 0) {
-                        $("#variantTableBody").append('<tr><td colspan="6" class="text-center">No variants found.</td></tr>');
-                    }
-                });
-                showToast("Success", "Variant deleted.");
-            }
-        },
-        error: function (xhr) {
-            $("#variantErrorAlert").text(xhr.responseJSON?.message).removeClass('d-none');
-        }
-    });
-}
-
-function loadDynamicVariantForm(productId, callback) {
-    var container = $("#dynamic-variant-form-container");
-    container.html('<div class="col-12 text-center">Loading options...</div>');
-
-    $.ajax({
-        url: `/AdminProduct/GetProductOptions?productId=${productId}`,
-        type: "GET",
-        success: function (response) {
-            container.empty();
-            $("#noAttributesWarning").addClass('d-none');
-
-            if (response.success && response.options.length > 0) {
-                response.options.forEach(opt => {
-                    var selectId = `attr-val-${opt.attributeId}`;
-                    var html = `<div class="col-sm-3 mb-3">
-                        <label for="${selectId}" class="form-label">${escapeHTML(opt.attributeName)}</label>
-                        <select id="${selectId}" class="form-select dynamic-attr-select" required>
-                            <option value="">-- Select ${escapeHTML(opt.attributeName)} --</option>`;
-                    opt.values.forEach(val => html += `<option value="${val.id}">${escapeHTML(val.value)}</option>`);
-                    html += `</select></div>`;
-                    container.append(html);
-                });
-            } else {
-                $("#noAttributesWarning").removeClass('d-none');
-            }
-            if (callback) callback();
-        },
-        error: function (xhr) {
-            container.html(`<div class="col-12 text-danger">Error: ${xhr.responseJSON?.message || "Unknown"}</div>`);
-        }
-    });
-}
+// --- RENDER HELPERS ---
 
 function renderProductRow(product) {
     var priceHtml = '';
@@ -807,6 +1162,10 @@ function renderProductRow(product) {
             <td>${variantBadge}</td>
             <td>${activeBadge}</td>
             <td class="text-end">
+                <button class="btn btn-sm btn-outline-secondary me-1" onclick="openProductImageModal(${product.id})" title="Manage Images">
+                    <i class="bi bi-images"></i>
+                </button>
+                
                 <button class="btn btn-sm btn-outline-warning me-1" onclick="showDiscountModal(${product.id}, '${escapeQuote(product.productName)}')">
                     <i class="bi bi-tag"></i> Discount
                 </button>
@@ -816,6 +1175,7 @@ function renderProductRow(product) {
             </td>
         </tr>`;
 }
+
 function renderProductAttributeRow(attr) {
     return `
         <tr id="product-attr-row-${attr.productAttributeId}">
@@ -830,7 +1190,7 @@ function renderProductAttributeRow(attr) {
 
 function renderVariantRow(variant) {
     var sellingPrice = parseFloat(variant.price) || 0;
-    var comparePrice = variant.compareAtPrice; // can be null or number
+    var comparePrice = variant.compareAtPrice;
 
     var priceHtml = '';
 
@@ -864,18 +1224,14 @@ function renderVariantRow(variant) {
             <td class="text-center">${stockBadge}</td>
             <td class="text-center">${activeBadge}</td>
             <td class="text-end">
+                <button class="btn btn-sm btn-outline-secondary me-1" onclick="openVariantImageModal(${variant.id})" title="Manage Images">
+                    <i class="bi bi-images"></i>
+                </button>
+
                 <button class="btn btn-sm btn-outline-primary" onclick="editVariant(${variant.id})">Edit</button>
                 <button class="btn btn-sm btn-outline-danger" onclick="deleteVariant(${variant.id}, this)">Delete</button>
             </td>
         </tr>`;
-}
-function populateCategoryDropdown(categories, selectedId) {
-    var dropdown = $("#CategoryId");
-    dropdown.empty().append('<option value="">Select Category</option>');
-    categories.forEach(cat => {
-        var selected = (cat.id === selectedId) ? "selected" : "";
-        dropdown.append(`<option value="${cat.id}" ${selected}>${escapeHTML(cat.name)}</option>`);
-    });
 }
 
 function showToast(title, message, isError = false) {

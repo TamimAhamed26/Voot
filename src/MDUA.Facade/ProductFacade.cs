@@ -4,6 +4,7 @@ using MDUA.Entities.Bases;
 using MDUA.Entities.List;
 using MDUA.Facade.Interface;
 using MDUA.Framework;
+using System.Collections.Generic;
 
 namespace MDUA.Facade
 {
@@ -11,14 +12,17 @@ namespace MDUA.Facade
     {
         private readonly IProductDataAccess _productDataAccess;
         private readonly IProductDiscountFacade _productDiscountFacade;
+        private readonly IProductImageDataAccess _productImageDataAccess;
 
         public ProductFacade(
             IProductDataAccess productDataAccess,
-            IProductDiscountFacade productDiscountFacade
+            IProductDiscountFacade productDiscountFacade,
+            IProductImageDataAccess productImageDataAccess
         )
         {
             _productDataAccess = productDataAccess;
             _productDiscountFacade = productDiscountFacade;
+            _productImageDataAccess = productImageDataAccess;
         }
 
         // =============================================================
@@ -48,8 +52,6 @@ namespace MDUA.Facade
 
             return product;
         }
-
-       
 
         // Helper for variants (controller-friendly)
         public ProductDiscount GetBestDiscountForProduct(int productId, decimal basePrice)
@@ -98,6 +100,25 @@ namespace MDUA.Facade
         public long Delete(int id)
         {
             return _productDataAccess.Delete(id);
+        }
+
+        // =============================================================
+        // IMAGE MANAGEMENT
+        // =============================================================
+        public long AddImage(ProductImage image)
+        {
+            return _productImageDataAccess.Insert(image);
+        }
+
+        public long DeleteImage(int imageId)
+        {
+            return _productImageDataAccess.Delete(imageId);
+        }
+
+        public List<ProductImage> GetImages(int productId)
+        {
+            // Returns ProductImageList which inherits from List<ProductImage>
+            return _productImageDataAccess.GetByProductId(productId);
         }
     }
 }

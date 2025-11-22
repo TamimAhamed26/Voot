@@ -42,6 +42,7 @@
 </div>
 
 <partial name="_ProductDiscountModal" />
+<partial name="_ImageUploadModal" />
 
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -166,12 +167,36 @@
                                     </div>
 
                                     <div class="mb-3 ps-3 border-start border-3 border-warning" id="manageAttributesContainer" style="display: none;">
-                                        <button type="button" class="btn btn-warning w-100 text-dark" onclick="showAttributeModalFromProduct()">
-                                            <i class="bi bi-gear-fill"></i> Manage Attributes
-                                        </button>
-                                        <small class="text-muted d-block mt-2">
-                                            Configure product attributes (Color, Size, etc.)
-                                        </small>
+
+                                        <div id="editModeAttributes" class="d-none">
+                                            <button type="button" class="btn btn-warning w-100 text-dark" onclick="showAttributeModalFromProduct()">
+                                                <i class="bi bi-gear-fill"></i> Manage Attributes
+                                            </button>
+                                            <small class="text-muted d-block mt-2">
+                                                Configure product attributes (Color, Size, etc.)
+                                            </small>
+                                        </div>
+
+                                        <div id="createModeAttributes" class="d-none">
+                                            <label class="form-label small fw-bold">Assign Attributes Now:</label>
+                                            <div class="input-group input-group-sm mb-2">
+                                                <select id="createAttributeSelect" class="form-select">
+                                                    <option value="">Select Attribute</option>
+                                                </select>
+                                                <button type="button" class="btn btn-secondary" onclick="addTempAttribute()">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="card bg-light border-0">
+                                                <ul class="list-group list-group-flush small bg-transparent" id="tempAttributeList">
+                                                </ul>
+                                            </div>
+                                            <small class="text-muted d-block mt-2">
+                                                Select attributes needed for variants (e.g. Color, Size).
+                                            </small>
+                                        </div>
+
                                     </div>
 
                                     <hr />

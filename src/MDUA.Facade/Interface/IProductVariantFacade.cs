@@ -9,7 +9,9 @@ namespace MDUA.Facade.Interface
     public interface IProductVariantFacade : ICommonFacade<ProductVariant, ProductVariantList, ProductVariantBase>
     {
         ProductVariantList GetByProductId(int _ProductId);
-
+        long AddImage(VariantImage image);
+        long DeleteImage(int imageId);
+        List<VariantImage> GetImages(int variantId);
         ProductVariantViewModel CreateVariantWithAttributes(ProductVariantSaveModl model, string user);
         ProductVariantViewModel UpdateVariantWithAttributes(ProductVariantSaveModl model, string user);
 

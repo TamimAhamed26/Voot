@@ -1,11 +1,11 @@
-﻿using MDUA.DataAccess; // Needed for concrete DAOs inside transaction
+﻿using MDUA.DataAccess;
 using MDUA.DataAccess.Interface;
 using MDUA.Entities;
 using MDUA.Entities.Bases;
 using MDUA.Entities.List;
 using MDUA.Facade.Interface;
 using MDUA.Framework;
-using MDUA.Framework.DataAccess; // Needed for BaseDataAccess transactions
+using MDUA.Framework.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -17,13 +17,16 @@ namespace MDUA.Facade
     {
         private readonly IProductVariantDataAccess _productVariantDataAccess;
         private readonly IVariantAttributeValueDataAccess _variantAttributeValueDataAccess;
+        private readonly IVariantImageDataAccess _variantImageDataAccess; // New Dependency
 
         public ProductVariantFacade(
             IProductVariantDataAccess productVariantDataAccess,
-            IVariantAttributeValueDataAccess variantAttributeValueDataAccess)
+            IVariantAttributeValueDataAccess variantAttributeValueDataAccess,
+            IVariantImageDataAccess variantImageDataAccess)
         {
             _productVariantDataAccess = productVariantDataAccess;
             _variantAttributeValueDataAccess = variantAttributeValueDataAccess;
+            _variantImageDataAccess = variantImageDataAccess;
         }
 
         public ProductVariantList GetByProductId(int _ProductId)
@@ -33,9 +36,6 @@ namespace MDUA.Facade
 
         #region Business Logic (Transactions)
 
-        /// <summary>
-        /// Creates a Variant, its Price/Stock info, and Attribute Links in a single Transaction.
-        /// </summary>
         public ProductVariantViewModel CreateVariantWithAttributes(ProductVariantSaveModl model, string user)
         {
             if (CheckVariantExists(model.ProductId, model.SelectedAttributeValueIds))
@@ -95,7 +95,6 @@ namespace MDUA.Facade
 
                     BaseDataAccess.CloseTransaction(true, transaction);
 
-                    // Construct Return Object
                     return new ProductVariantViewModel
                     {
                         Id = variant.Id,
@@ -166,7 +165,6 @@ namespace MDUA.Facade
                         WeightGrams = model.WeightGrams
                     };
 
-                    // Check existence inside transaction to determine update vs insert
                     var existingStock = priceStockDao.Get(model.Id);
                     if (existingStock != null)
                         priceStockDao.Update(priceStock);
@@ -196,7 +194,6 @@ namespace MDUA.Facade
 
                     BaseDataAccess.CloseTransaction(true, transaction);
 
-                    // Construct Return Object matching the JS requirements
                     return new ProductVariantViewModel
                     {
                         Id = variant.Id,
@@ -219,12 +216,8 @@ namespace MDUA.Facade
             }
         }
 
-        /// <summary>
-        /// Checks if a specific combination of attributes already exists for a product.
-        /// </summary>
         private bool CheckVariantExists(int productId, List<int> attributeValueIds, int? excludeVariantId = null)
         {
-            // This is a read-only check, so we use the standard injected DAO
             var variants = _productVariantDataAccess.GetByProductId(productId);
 
             foreach (var v in variants)
@@ -246,26 +239,19 @@ namespace MDUA.Facade
 
         public long Delete(int _Id)
         {
-            // Wrap Delete in transaction to clean up children manually if Cascade Delete is not set in DB
             using (SqlTransaction transaction = BaseDataAccess.BeginTransaction())
             {
                 try
                 {
-                    // 1. Setup DAOs
                     var variantDao = new ProductVariantDataAccess(transaction);
                     var priceDao = new VariantPriceStockDataAccess(transaction);
                     var attrLinkDao = new VariantAttributeValueDataAccess(transaction);
+                    // Images cascade delete in DB, but good practice to include if needed
 
-                    // 2. Delete Children (Attributes)
-                    // Optimization: In real world, you'd add DeleteByVariantId to DAO. 
-                    // Here we iterate (less efficient but safe without changing DAO interface).
                     var links = _variantAttributeValueDataAccess.GetByVariantId(_Id);
                     foreach (var link in links) attrLinkDao.Delete(link.Id);
 
-                    // 3. Delete Price/Stock
                     priceDao.Delete(_Id);
-
-                    // 4. Delete Variant
                     long result = variantDao.Delete(_Id);
 
                     BaseDataAccess.CloseTransaction(true, transaction);
@@ -287,5 +273,23 @@ namespace MDUA.Facade
         public long Update(ProductVariantBase Object) => _productVariantDataAccess.Update(Object);
 
         #endregion
+
+        // =============================================================
+        // IMAGE MANAGEMENT
+        // =============================================================
+        public long AddImage(VariantImage image)
+        {
+            return _variantImageDataAccess.Insert(image);
+        }
+
+        public long DeleteImage(int imageId)
+        {
+            return _variantImageDataAccess.Delete(imageId);
+        }
+
+        public List<VariantImage> GetImages(int variantId)
+        {
+            return _variantImageDataAccess.GetByVariantId(variantId);
+        }
     }
 }

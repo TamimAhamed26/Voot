@@ -66,6 +66,6 @@ namespace MDUA.Web.UI.Models
 
         [Display(Name = "Category")]
         public int? CategoryId { get; set; }
-
+        public List<int> SelectedAttributeIds { get; set; }
     }
 }

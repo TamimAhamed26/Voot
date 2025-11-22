@@ -9,6 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static MDUA.Entities.ProductDiscount;
+using System.IO;                       // For Path, FileStream, Directory
+using System.Threading.Tasks;          // For Task, async, await
+using Microsoft.AspNetCore.Hosting;    // For IWebHostEnvironment
+using Microsoft.AspNetCore.Http;       // For IFormFile
 
 namespace MDUA.Web.UI.Controllers
 {
@@ -25,6 +29,7 @@ namespace MDUA.Web.UI.Controllers
         private readonly IAttributeValueFacade _attributeValueFacade;
         private readonly IVariantAttributeValueFacade _variantAttributeValueFacade;
         private readonly IProductDiscountFacade _productDiscountFacade;
+        private readonly IWebHostEnvironment _webHostEnvironment; // NEW: For file saving
 
         public AdminProductController(
             IProductFacade productFacade,
@@ -36,7 +41,8 @@ namespace MDUA.Web.UI.Controllers
             IAttributeValueFacade attributeValueFacade,
             IVariantPriceStockFacade variantPriceStockFacade,
             IVariantAttributeValueFacade variantAttributeValueFacade,
-            IProductDiscountFacade productDiscountFacade)
+            IProductDiscountFacade productDiscountFacade,
+            IWebHostEnvironment webHostEnvironment) 
         {
             _productFacade = productFacade;
             _productCategoryFacade = productCategoryFacade;
@@ -48,6 +54,7 @@ namespace MDUA.Web.UI.Controllers
             _variantPriceStockFacade = variantPriceStockFacade;
             _productDiscountFacade = productDiscountFacade;
             _variantAttributeValueFacade = variantAttributeValueFacade;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         #region Helper: GetModelStateErrors
@@ -70,6 +77,26 @@ namespace MDUA.Web.UI.Controllers
                 message = "Invalid data. Please check errors.",
                 errors = errors
             };
+        }
+        #endregion
+
+        #region File Helper
+        private async Task<string> SaveImageFile(IFormFile file)
+        {
+            if (file == null || file.Length == 0) return null;
+
+            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products");
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            return uniqueFileName;
         }
         #endregion
 
@@ -134,9 +161,9 @@ namespace MDUA.Web.UI.Controllers
             var product = _productFacade.GetProductWithPrice(id); // returns product with SellingPrice & ActiveDiscount
             if (product == null)
                 return StatusCode(404, new { success = false, message = "Product not found" });
-
+            var images = _productFacade.GetImages(id);
             // additionally include variants in the product payload if needed by UI
-            return Json(new { success = true, product = product });
+            return Json(new { success = true, product = product, images = images });
         }
 
         [HttpPost]
@@ -145,6 +172,8 @@ namespace MDUA.Web.UI.Controllers
         {
             if (!IsPermitted(Permission.Product.Create))
                 return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            // Note: SelectedAttributeIds validation is optional, so ModelState is likely fine
             if (!ModelState.IsValid)
                 return StatusCode(400, GetModelStateErrors());
 
@@ -163,10 +192,28 @@ namespace MDUA.Web.UI.Controllers
                 CreatedBy = User.Identity.Name,
                 CompanyId = 1
             };
+
             try
             {
+                // 1. Insert Product
                 _productFacade.Insert(product);
-                // return with computed price
+
+                // 2. Insert Attributes (if any selected)
+                if (model.IsVariantBased && model.SelectedAttributeIds != null && model.SelectedAttributeIds.Any())
+                {
+                    foreach (var attrId in model.SelectedAttributeIds)
+                    {
+                        var pa = new ProductAttribute
+                        {
+                            ProductId = (int)product.Id,
+                            AttributeId = attrId,
+                            DisplayOrder = 0
+                        };
+                        _productAttributeFacade.Insert(pa);
+                    }
+                }
+
+                // 3. Return result
                 var created = _productFacade.GetProductWithPrice((int)product.Id);
                 return Json(new { success = true, product = created ?? product });
             }
@@ -480,6 +527,7 @@ namespace MDUA.Web.UI.Controllers
             var variant = _productVariantFacade.Get(id);
             if (variant == null)
                 return StatusCode(404, new { success = false, message = "Variant not found" });
+            var images = _productVariantFacade.GetImages(id);
 
             var links = _variantAttributeValueFacade.GetByVariantId(id);
             var selectedValueIds = links.Select(l => l.AttributeValueId).ToList();
@@ -497,10 +545,13 @@ namespace MDUA.Web.UI.Controllers
 
             return Json(new
             {
+
                 success = true,
                 variant = variant,
                 selectedValueIds = selectedValueIds,
                 priceStock = priceStock,
+                images = images,        // 🔥 Add this
+
                 price = Math.Max(sellingPrice, 0),
                 compareAtPrice = hasDiscount ? originalPrice : (decimal?)null
             });
@@ -624,5 +675,114 @@ namespace MDUA.Web.UI.Controllers
             return Json(new { success = true, discounts = result });
         }
         #endregion
+
+
+        #region Image Management (Product & Variant)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadProductImages(int productId, List<IFormFile> files)
+        {
+            if (!IsPermitted(Permission.Product.Edit)) return StatusCode(403);
+
+            try
+            {
+                var uploadedImages = new List<object>();
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        string fileName = await SaveImageFile(file);
+                        var img = new ProductImage
+                        {
+                            ProductId = productId,
+                            ImageUrl = fileName,
+                            IsPrimary = false, // Can implement logic to set first one as primary
+                            SortOrder = 0,
+                            CreatedAt = DateTime.UtcNow,
+                            CreatedBy = User.Identity.Name
+                        };
+                        _productFacade.AddImage(img);
+                        uploadedImages.Add(img);
+                    }
+                }
+                // Return the new list of images for this product
+                var currentImages = _productFacade.GetImages(productId);
+                return Json(new { success = true, message = "Images uploaded.", images = currentImages });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Upload Product Images Error");
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteProductImage(int imageId)
+        {
+            if (!IsPermitted(Permission.Product.Edit)) return StatusCode(403);
+            try
+            {
+                // Optional: Retrieve image URL first to delete physical file if desired
+                _productFacade.DeleteImage(imageId);
+                return Json(new { success = true, message = "Image deleted." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadVariantImages(int variantId, List<IFormFile> files)
+        {
+            if (!IsPermitted(Permission.Product.Edit)) return StatusCode(403);
+
+            try
+            {
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        string fileName = await SaveImageFile(file);
+                        var img = new VariantImage
+                        {
+                            VariantId = variantId,
+                            ImageUrl = fileName,
+                            DisplayOrder = 0
+                        };
+                        _productVariantFacade.AddImage(img);
+                    }
+                }
+                var currentImages = _productVariantFacade.GetImages(variantId);
+                return Json(new { success = true, message = "Variant images uploaded.", images = currentImages });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Upload Variant Images Error");
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteVariantImage(int imageId)
+        {
+            if (!IsPermitted(Permission.Product.Edit)) return StatusCode(403);
+            try
+            {
+                _productVariantFacade.DeleteImage(imageId);
+                return Json(new { success = true, message = "Image deleted." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
+
+        #endregion
+
     }
 }
