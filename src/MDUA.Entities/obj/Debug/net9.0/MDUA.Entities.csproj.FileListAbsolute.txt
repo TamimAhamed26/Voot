@@ -1,7 +1,5 @@
 C:\Voot-master\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.csproj.AssemblyReference.cache
 C:\Voot-master\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.GeneratedMSBuildEditorConfig.editorconfig
-C:\Voot-master\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.AssemblyInfoInputs.cache
-C:\Voot-master\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.AssemblyInfo.cs
 C:\Voot-master\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.csproj.CoreCompileInputs.cache
 C:\Voot-master\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.deps.json
 C:\Voot-master\src\MDUA.Entities\bin\Debug\net9.0\MDUA.Entities.dll
@@ -26,3 +24,5 @@ F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.dll
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\refint\MDUA.Entities.dll
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.pdb
 F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\ref\MDUA.Entities.dll
+C:\Voot-master\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.sourcelink.json
+F:\bd-mayer-dua\src\MDUA.Entities\obj\Debug\net9.0\MDUA.Entities.sourcelink.json

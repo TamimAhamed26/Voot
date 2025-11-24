@@ -112,8 +112,6 @@ C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Fa
 C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll
 C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.AssemblyReference.cache
 C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.GeneratedMSBuildEditorConfig.editorconfig
-C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfoInputs.cache
-C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfo.cs
 C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.CoreCompileInputs.cache
 C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.dll
 C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\refint\MDUA.Facade.dll
@@ -129,3 +127,5 @@ C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.pdb
 C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.pdb
 C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Fac.AC19CD99.Up2Date
 C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.sourcelink.json
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.sourcelink.json

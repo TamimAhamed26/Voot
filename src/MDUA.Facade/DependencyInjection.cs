@@ -16,13 +16,16 @@ public static class DependencyInjection
         services.AddScoped<IUserPermissionDataAccess, UserPermissionDataAccess>();
         services.AddScoped<IUserPermissionFacade, UserPermissionFacade>();
         services.AddScoped<IProductCategoryDataAccess, ProductCategoryDataAccess>();
-        services.AddScoped<IProductDiscountDataAccess, ProductDiscountDataAccess>(); services.AddScoped<IVariantPriceStockDataAccess, VariantPriceStockDataAccess>();
+        services.AddScoped<IProductDiscountDataAccess, ProductDiscountDataAccess>();
+        services.AddScoped<IVariantPriceStockDataAccess, VariantPriceStockDataAccess>();
         services.AddScoped<IProductImageDataAccess, ProductImageDataAccess>();
         services.AddScoped<IVariantImageDataAccess, VariantImageDataAccess>();
         services.AddScoped<IAttributeNameDataAccess, AttributeNameDataAccess>();
         services.AddScoped<IAttributeValueDataAccess, AttributeValueDataAccess>();
         services.AddScoped<IProductAttributeDataAccess, ProductAttributeDataAccess>();
         services.AddScoped<IVariantAttributeValueDataAccess, VariantAttributeValueDataAccess>();
+        services.AddScoped<ICompanyDataAccess, CompanyDataAccess>();
+
         services.AddServiceFacade();
 
         return services;
@@ -30,7 +33,6 @@ public static class DependencyInjection
 
     private static void AddServiceFacade(this IServiceCollection services)
     {
-
         services.AddScoped<IUserLoginFacade, UserLoginFacade>();
         services.AddScoped<IProductFacade, ProductFacade>();
         services.AddScoped<IProductCategoryFacade, ProductCategoryFacade>();
@@ -41,5 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IAttributeValueFacade, AttributeValueFacade>();
         services.AddScoped<IProductAttributeFacade, ProductAttributeFacade>();
         services.AddScoped<IVariantAttributeValueFacade, VariantAttributeValueFacade>();
+        services.AddScoped<IOrderFacade, OrderFacade>();
+        services.AddScoped<ICompanyFacade, CompanyFacade>();
     }
 }

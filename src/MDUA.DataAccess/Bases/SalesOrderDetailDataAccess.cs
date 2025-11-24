@@ -35,26 +35,32 @@ namespace MDUA.DataAccess
 		public SalesOrderDetailDataAccess(SqlTransaction transaction) : base(transaction) { }
 		public SalesOrderDetailDataAccess(SqlTransaction transaction, ClientContext context) : base(transaction, context) { }
         #endregion
-				
-		#region AddCommonParams Method
+
+        #region AddCommonParams Method
         /// <summary>
         /// Add common parameters before calling a procedure
         /// </summary>
         /// <param name="cmd">command object, where parameters will be added</param>
         /// <param name="salesOrderDetailObject"></param>
-		private void AddCommonParams(SqlCommand cmd, SalesOrderDetailBase salesOrderDetailObject)
-		{	
-			AddParameter(cmd, pInt32(SalesOrderDetailBase.Property_SalesOrderId, salesOrderDetailObject.SalesOrderId));
-			AddParameter(cmd, pInt32(SalesOrderDetailBase.Property_ProductId, salesOrderDetailObject.ProductId));
-			AddParameter(cmd, pInt32(SalesOrderDetailBase.Property_Quantity, salesOrderDetailObject.Quantity));
-			AddParameter(cmd, pDecimal(SalesOrderDetailBase.Property_UnitPrice, 9, salesOrderDetailObject.UnitPrice));
-			AddParameter(cmd, pDecimal(SalesOrderDetailBase.Property_LineTotal, 17, salesOrderDetailObject.LineTotal));
-			AddParameter(cmd, pDecimal(SalesOrderDetailBase.Property_ProfitAmount, 9, salesOrderDetailObject.ProfitAmount));
-			AddParameter(cmd, pNVarChar(SalesOrderDetailBase.Property_CreatedBy, 100, salesOrderDetailObject.CreatedBy));
-			AddParameter(cmd, pDateTime(SalesOrderDetailBase.Property_CreatedAt, salesOrderDetailObject.CreatedAt));
-			AddParameter(cmd, pNVarChar(SalesOrderDetailBase.Property_UpdatedBy, 100, salesOrderDetailObject.UpdatedBy));
-			AddParameter(cmd, pDateTime(SalesOrderDetailBase.Property_UpdatedAt, salesOrderDetailObject.UpdatedAt));
-		}
+        // File: src/MDUA.DataAccess/Bases/SalesOrderDetailDataAccess.cs
+
+        private void AddCommonParams(SqlCommand cmd, SalesOrderDetailBase salesOrderDetailObject)
+        {
+            AddParameter(cmd, pInt32(SalesOrderDetailBase.Property_SalesOrderId, salesOrderDetailObject.SalesOrderId));
+            AddParameter(cmd, pInt32(SalesOrderDetailBase.Property_ProductId, salesOrderDetailObject.ProductId));
+            AddParameter(cmd, pInt32(SalesOrderDetailBase.Property_Quantity, salesOrderDetailObject.Quantity));
+            AddParameter(cmd, pDecimal(SalesOrderDetailBase.Property_UnitPrice, 9, salesOrderDetailObject.UnitPrice));
+
+            // --- FIX: COMMENT OUT COMPUTED COLUMN ---
+            // AddParameter(cmd, pDecimal(SalesOrderDetailBase.Property_LineTotal, 17, salesOrderDetailObject.LineTotal));
+            // ----------------------------------------
+
+            AddParameter(cmd, pDecimal(SalesOrderDetailBase.Property_ProfitAmount, 9, salesOrderDetailObject.ProfitAmount));
+            AddParameter(cmd, pNVarChar(SalesOrderDetailBase.Property_CreatedBy, 100, salesOrderDetailObject.CreatedBy));
+            AddParameter(cmd, pDateTime(SalesOrderDetailBase.Property_CreatedAt, salesOrderDetailObject.CreatedAt));
+            AddParameter(cmd, pNVarChar(SalesOrderDetailBase.Property_UpdatedBy, 100, salesOrderDetailObject.UpdatedBy));
+            AddParameter(cmd, pDateTime(SalesOrderDetailBase.Property_UpdatedAt, salesOrderDetailObject.UpdatedAt));
+        }		
 		#endregion
 		
 		#region Insert Method

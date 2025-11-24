@@ -52,6 +52,7 @@ F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery\dist\jquery.slim.min.js
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\data\bd-postcodes.json
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation\LICENSE.md
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
 F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.js
@@ -70,13 +71,17 @@ wwwroot\css\dashboard.css
 wwwroot\css\product-admin.css
 wwwroot\css\product-page.css
 wwwroot\css\site.css
+wwwroot\data\bd-postcodes.json
 wwwroot\favicon.ico
+wwwroot\images\1\logo\logo.png
 wwwroot\images\products\0a1858fa-2483-405f-afe2-94c319f2807d_WhatsApp Image 2025-11-22 at 11.09.04 (2).jpeg
 wwwroot\images\products\0b726fe3-a04d-43d6-851b-9012a26b5650_WhatsApp Image 2025-..._imresizer.jpg
 wwwroot\images\products\0f5ddc4d-a7da-430d-9e1f-f0f415f6390c_61zxWgmwF0L.jpg
 wwwroot\images\products\19aa98e3-8c37-4339-a018-3d2b948b6da4_WhatsApp Image 2025-11-22 at 11.09.02 (2).jpeg
 wwwroot\images\products\1f17bb9d-2e06-40cf-a66e-12b3f78e3015_WhatsApp Image 2025-11-22 at 11.09.05.jpeg
+wwwroot\images\products\216daa0885b648feb98861c1356ab3d0.jpg
 wwwroot\images\products\217f8fee-e6d0-4461-8656-e957237c5d8e_WhatsApp Image 2025-11-22 at 11.09.05.jpeg
+wwwroot\images\products\25a39e968f264845826f54fb1a11bae5.webp
 wwwroot\images\products\2ac13128-7ee4-494a-966d-b7c365125322_WhatsApp Image 2025-11-21 at 22.07.31.jpeg
 wwwroot\images\products\2ecddbf8-3a45-45b5-b92b-87215c9631b2_20251012015618.png
 wwwroot\images\products\3\b36e1709757543d68718cb9f7866f7e4.jpg
@@ -111,10 +116,10 @@ wwwroot\images\products\f2bc9864-250c-47a4-b53b-4e0b9b664a5e_WhatsApp Image 2025
 wwwroot\images\products\f486bd72-60c5-4a57-bdce-87172ea5565a_cropped-image.jpg
 wwwroot\images\products\f6924c3d-d9c3-47da-80f9-0cd4553ec868_20251012015618.png
 wwwroot\images\products\f7436ef3-b227-4f3f-9c47-98fca991e1c0_20251012015618.png
+wwwroot\images\products\f9c78d3614fc4b36bfc1bdc6112977c1.png
 wwwroot\images\products\hoodie1.jpg
 wwwroot\images\products\hoodie2.jpg
 wwwroot\images\products\hoodie3.jpg
-wwwroot\images\products\logo.png
 wwwroot\images\variants\1\327c4f26ca3640529ccc7d2f7438c742.jpg
 wwwroot\images\variants\1\4dbe1690a04442fcb95a01cf98cbb6f2.jpeg
 wwwroot\images\variants\1\5572c9d7186a49c08d77bfcf9a436e93.jpeg

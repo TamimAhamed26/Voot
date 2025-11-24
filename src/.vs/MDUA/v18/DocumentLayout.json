@@ -1,0 +1,277 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Voot-master\\src\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|c:\\voot-master\\src\\mdua.web.ui\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|solutionrelative:mdua.web.ui\\controllers\\productcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|c:\\voot-master\\src\\mdua.web.ui\\views\\product\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|solutionrelative:mdua.web.ui\\views\\product\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|c:\\voot-master\\src\\mdua.web.ui\\wwwroot\\js\\product-page.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|solutionrelative:mdua.web.ui\\wwwroot\\js\\product-page.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|c:\\voot-master\\src\\mdua.web.ui\\wwwroot\\css\\product-page.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|solutionrelative:mdua.web.ui\\wwwroot\\css\\product-page.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|c:\\voot-master\\src\\mdua.web.ui\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|solutionrelative:mdua.web.ui\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|c:\\voot-master\\src\\mdua.web.ui\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{29822D09-CEF4-4C8F-A7F0-DE5A768E188F}|MDUA.Web.UI\\MDUA.Web.UI.csproj|solutionrelative:mdua.web.ui\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F35493B1-3AD7-468B-9DA6-38015882CB17}|MDUA.DataAccess\\MDUA.DataAccess.csproj|c:\\voot-master\\src\\mdua.dataaccess\\bases\\salesorderdetaildataaccess.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F35493B1-3AD7-468B-9DA6-38015882CB17}|MDUA.DataAccess\\MDUA.DataAccess.csproj|solutionrelative:mdua.dataaccess\\bases\\salesorderdetaildataaccess.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{69469D95-06F8-4950-81D3-D3DF2776CF61}|MDUA.Facade\\MDUA.Facade.csproj|c:\\voot-master\\src\\mdua.facade\\orderfacade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{69469D95-06F8-4950-81D3-D3DF2776CF61}|MDUA.Facade\\MDUA.Facade.csproj|solutionrelative:mdua.facade\\orderfacade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F35493B1-3AD7-468B-9DA6-38015882CB17}|MDUA.DataAccess\\MDUA.DataAccess.csproj|c:\\voot-master\\src\\mdua.dataaccess\\bases\\salesorderheaderdataaccess.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F35493B1-3AD7-468B-9DA6-38015882CB17}|MDUA.DataAccess\\MDUA.DataAccess.csproj|solutionrelative:mdua.dataaccess\\bases\\salesorderheaderdataaccess.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{69469D95-06F8-4950-81D3-D3DF2776CF61}|MDUA.Facade\\MDUA.Facade.csproj|c:\\voot-master\\src\\mdua.facade\\interface\\iorderfacade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{69469D95-06F8-4950-81D3-D3DF2776CF61}|MDUA.Facade\\MDUA.Facade.csproj|solutionrelative:mdua.facade\\interface\\iorderfacade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{69469D95-06F8-4950-81D3-D3DF2776CF61}|MDUA.Facade\\MDUA.Facade.csproj|c:\\voot-master\\src\\mdua.facade\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{69469D95-06F8-4950-81D3-D3DF2776CF61}|MDUA.Facade\\MDUA.Facade.csproj|solutionrelative:mdua.facade\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{840AD573-C716-43B9-A5A5-43A5A3D3206D}|MDUA.Entities\\MDUA.Entities.csproj|c:\\voot-master\\src\\mdua.entities\\bases\\address.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{840AD573-C716-43B9-A5A5-43A5A3D3206D}|MDUA.Entities\\MDUA.Entities.csproj|solutionrelative:mdua.entities\\bases\\address.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{840AD573-C716-43B9-A5A5-43A5A3D3206D}|MDUA.Entities\\MDUA.Entities.csproj|c:\\voot-master\\src\\mdua.entities\\productpageordermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{840AD573-C716-43B9-A5A5-43A5A3D3206D}|MDUA.Entities\\MDUA.Entities.csproj|solutionrelative:mdua.entities\\productpageordermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{69469D95-06F8-4950-81D3-D3DF2776CF61}|MDUA.Facade\\MDUA.Facade.csproj|c:\\voot-master\\src\\mdua.facade\\companyfacade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{69469D95-06F8-4950-81D3-D3DF2776CF61}|MDUA.Facade\\MDUA.Facade.csproj|solutionrelative:mdua.facade\\companyfacade.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 11,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "product-page.css",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Web.UI\\wwwroot\\css\\product-page.css",
+              "RelativeDocumentMoniker": "MDUA.Web.UI\\wwwroot\\css\\product-page.css",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Web.UI\\wwwroot\\css\\product-page.css",
+              "RelativeToolTip": "MDUA.Web.UI\\wwwroot\\css\\product-page.css",
+              "ViewState": "AgIAAJ8DAAAAAAAAAAAAALEDAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-11-24T11:32:55.848Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Web.UI\\Views\\Product\\Index.cshtml",
+              "RelativeDocumentMoniker": "MDUA.Web.UI\\Views\\Product\\Index.cshtml",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Web.UI\\Views\\Product\\Index.cshtml",
+              "RelativeToolTip": "MDUA.Web.UI\\Views\\Product\\Index.cshtml",
+              "ViewState": "AgIAANwAAAAAAAAAAAAIwCwBAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-24T11:35:05.454Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Web.UI\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "MDUA.Web.UI\\Controllers\\HomeController.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Web.UI\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "MDUA.Web.UI\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAA5wBcAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T10:40:15.112Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Address.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Entities\\Bases\\Address.cs",
+              "RelativeDocumentMoniker": "MDUA.Entities\\Bases\\Address.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Entities\\Bases\\Address.cs",
+              "RelativeToolTip": "MDUA.Entities\\Bases\\Address.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAwDcAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T07:41:17.801Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ProductController.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Web.UI\\Controllers\\ProductController.cs",
+              "RelativeDocumentMoniker": "MDUA.Web.UI\\Controllers\\ProductController.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Web.UI\\Controllers\\ProductController.cs",
+              "RelativeToolTip": "MDUA.Web.UI\\Controllers\\ProductController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHoAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T07:17:23.587Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "product-page.js",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Web.UI\\wwwroot\\js\\product-page.js",
+              "RelativeDocumentMoniker": "MDUA.Web.UI\\wwwroot\\js\\product-page.js",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Web.UI\\wwwroot\\js\\product-page.js",
+              "RelativeToolTip": "MDUA.Web.UI\\wwwroot\\js\\product-page.js",
+              "ViewState": "AgIAAJkBAAAAAAAAAAAwwKoBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-11-24T05:55:24.866Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "SalesOrderHeaderDataAccess.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.DataAccess\\Bases\\SalesOrderHeaderDataAccess.cs",
+              "RelativeDocumentMoniker": "MDUA.DataAccess\\Bases\\SalesOrderHeaderDataAccess.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.DataAccess\\Bases\\SalesOrderHeaderDataAccess.cs",
+              "RelativeToolTip": "MDUA.DataAccess\\Bases\\SalesOrderHeaderDataAccess.cs",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAIwE0AAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T09:54:32.312Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "SalesOrderDetailDataAccess.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.DataAccess\\Bases\\SalesOrderDetailDataAccess.cs",
+              "RelativeDocumentMoniker": "MDUA.DataAccess\\Bases\\SalesOrderDetailDataAccess.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.DataAccess\\Bases\\SalesOrderDetailDataAccess.cs",
+              "RelativeToolTip": "MDUA.DataAccess\\Bases\\SalesOrderDetailDataAccess.cs",
+              "ViewState": "AgIAADEAAAAAAAAAAAAcwD8AAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T09:57:22.555Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Web.UI\\Program.cs",
+              "RelativeDocumentMoniker": "MDUA.Web.UI\\Program.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Web.UI\\Program.cs",
+              "RelativeToolTip": "MDUA.Web.UI\\Program.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAAAAADAAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T10:38:47.155Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "OrderFacade.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Facade\\OrderFacade.cs",
+              "RelativeDocumentMoniker": "MDUA.Facade\\OrderFacade.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Facade\\OrderFacade.cs",
+              "RelativeToolTip": "MDUA.Facade\\OrderFacade.cs",
+              "ViewState": "AgIAAJEAAAAAAAAAAAAIwKIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T07:04:01.114Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "IOrderFacade.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Facade\\Interface\\IOrderFacade.cs",
+              "RelativeDocumentMoniker": "MDUA.Facade\\Interface\\IOrderFacade.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Facade\\Interface\\IOrderFacade.cs",
+              "RelativeToolTip": "MDUA.Facade\\Interface\\IOrderFacade.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T07:03:31.092Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "DependencyInjection.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Facade\\DependencyInjection.cs",
+              "RelativeDocumentMoniker": "MDUA.Facade\\DependencyInjection.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Facade\\DependencyInjection.cs",
+              "RelativeToolTip": "MDUA.Facade\\DependencyInjection.cs",
+              "ViewState": "AgIAACsAAAAAAAAAAAAIwDAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T05:46:05.51Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ProductPageOrderModel.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Entities\\ProductPageOrderModel.cs",
+              "RelativeDocumentMoniker": "MDUA.Entities\\ProductPageOrderModel.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Entities\\ProductPageOrderModel.cs",
+              "RelativeToolTip": "MDUA.Entities\\ProductPageOrderModel.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAQwBgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T07:02:42.429Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "CompanyFacade.cs",
+              "DocumentMoniker": "C:\\Voot-master\\src\\MDUA.Facade\\CompanyFacade.cs",
+              "RelativeDocumentMoniker": "MDUA.Facade\\CompanyFacade.cs",
+              "ToolTip": "C:\\Voot-master\\src\\MDUA.Facade\\CompanyFacade.cs",
+              "RelativeToolTip": "MDUA.Facade\\CompanyFacade.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAcwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-24T05:46:02.285Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

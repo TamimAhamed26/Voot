@@ -1,0 +1,2789 @@
+USE [AA4]
+
+GO
+
+
+
+/****** Object:  Table [dbo].[SalesOrderDetail]    Script Date: 24-Nov-25 12:10:06 PM ******/
+
+SET ANSI_NULLS ON
+
+GO
+
+
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+
+
+CREATE TABLE [dbo].[SalesOrderDetail](
+
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+
+	[SalesOrderId] [int] NOT NULL,
+
+	[ProductId] [int] NOT NULL,
+
+	[Quantity] [int] NOT NULL,
+
+	[UnitPrice] [decimal](18, 2) NOT NULL,
+
+	[LineTotal]  AS ([Quantity]*[UnitPrice]) PERSISTED,
+
+	[ProfitAmount] [decimal](18, 2) NULL,
+
+	[CreatedBy] [nvarchar](100) NULL,
+
+	[CreatedAt] [datetime] NOT NULL,
+
+	[UpdatedBy] [nvarchar](100) NULL,
+
+	[UpdatedAt] [datetime] NULL,
+
+PRIMARY KEY CLUSTERED 
+
+(
+
+	[Id] ASC
+
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+
+) ON [PRIMARY]
+
+GO
+
+
+
+ALTER TABLE [dbo].[SalesOrderDetail] ADD  CONSTRAINT [DF_SOD_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+
+GO
+
+
+
+ALTER TABLE [dbo].[SalesOrderDetail] ADD  CONSTRAINT [DF_SOD_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+
+GO
+
+
+
+ALTER TABLE [dbo].[SalesOrderDetail]  WITH CHECK ADD  CONSTRAINT [FK_SOD_Header] FOREIGN KEY([SalesOrderId])
+
+REFERENCES [dbo].[SalesOrderHeader] ([Id])
+
+ON DELETE CASCADE
+
+GO
+
+
+
+ALTER TABLE [dbo].[SalesOrderDetail] CHECK CONSTRAINT [FK_SOD_Header]
+
+GO
+
+
+
+ALTER TABLE [dbo].[SalesOrderDetail]  WITH CHECK ADD  CONSTRAINT [FK_SOD_Product] FOREIGN KEY([ProductId])
+
+REFERENCES [dbo].[Product] ([Id])
+
+GO
+
+
+
+ALTER TABLE [dbo].[SalesOrderDetail] CHECK CONSTRAINT [FK_SOD_Product]
+
+GO
+
+
+
+ALTER TABLE [dbo].[SalesOrderDetail]  WITH CHECK ADD  CONSTRAINT [CHK_SOD_Qty] CHECK  (([Quantity]>(0)))
+
+GO
+
+
+
+ALTER TABLE [dbo].[SalesOrderDetail] CHECK CONSTRAINT [CHK_SOD_Qty]
+
+GO
+
+
+
+
+
+
+
+USE AA4
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo]..InsertSalesOrderDetail    Script Date: 11/11/2025 9:56:17 AM ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertSalesOrderDetail]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[InsertSalesOrderDetail]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE InsertSalesOrderDetail
+
+(
+
+	@Id int OUTPUT,
+
+	@SalesOrderId int,
+
+	@ProductId int,
+
+	@Quantity int,
+
+	@UnitPrice decimal(18, 2),
+
+	@LineTotal decimal(29, 2),
+
+	@ProfitAmount decimal(18, 2),
+
+	@CreatedBy nvarchar(100),
+
+	@CreatedAt datetime,
+
+	@UpdatedBy nvarchar(100),
+
+	@UpdatedAt datetime
+
+)
+
+AS
+
+    INSERT INTO [dbo].[SalesOrderDetail] 
+
+	(
+
+	[SalesOrderId],
+
+	[ProductId],
+
+	[Quantity],
+
+	[UnitPrice],
+
+	[LineTotal],
+
+	[ProfitAmount],
+
+	[CreatedBy],
+
+	[CreatedAt],
+
+	[UpdatedBy],
+
+	[UpdatedAt]
+
+    ) 
+
+	VALUES 
+
+	(
+
+	@SalesOrderId,
+
+	@ProductId,
+
+	@Quantity,
+
+	@UnitPrice,
+
+	@LineTotal,
+
+	@ProfitAmount,
+
+	@CreatedBy,
+
+	@CreatedAt,
+
+	@UpdatedBy,
+
+	@UpdatedAt
+
+    )
+
+	DECLARE @Err int
+
+	DECLARE @Result int
+
+
+
+	SET @Result = @@ROWCOUNT
+
+	SET @Err = @@ERROR 
+
+	If @Err <> 0 
+
+	BEGIN
+
+		SET @Id = -1
+
+		RETURN @Err
+
+	END
+
+	ELSE
+
+	BEGIN
+
+		If @Result = 1 
+
+		BEGIN
+
+			-- Everything is OK
+
+			SET @Id = @@IDENTITY
+
+		END
+
+		ELSE
+
+		BEGIN
+
+			SET @Id = -1
+
+			RETURN 0
+
+		END
+
+	END
+
+
+
+	RETURN @Id
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].UpdateSalesOrderDetail    Script Date: 11/11/2025 9:56:17 AM ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdateSalesOrderDetail]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[UpdateSalesOrderDetail]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE UpdateSalesOrderDetail
+
+(
+
+	@Id int,
+
+	@SalesOrderId int,
+
+	@ProductId int,
+
+	@Quantity int,
+
+	@UnitPrice decimal(18, 2),
+
+	@LineTotal decimal(29, 2),
+
+	@ProfitAmount decimal(18, 2),
+
+	@CreatedBy nvarchar(100),
+
+	@CreatedAt datetime,
+
+	@UpdatedBy nvarchar(100),
+
+	@UpdatedAt datetime
+
+)
+
+AS
+
+    UPDATE [dbo].[SalesOrderDetail] 
+
+	SET
+
+	[SalesOrderId] = @SalesOrderId,
+
+	[ProductId] = @ProductId,
+
+	[Quantity] = @Quantity,
+
+	[UnitPrice] = @UnitPrice,
+
+	[LineTotal] = @LineTotal,
+
+	[ProfitAmount] = @ProfitAmount,
+
+	[CreatedBy] = @CreatedBy,
+
+	[CreatedAt] = @CreatedAt,
+
+	[UpdatedBy] = @UpdatedBy,
+
+	[UpdatedAt] = @UpdatedAt
+
+	WHERE ( Id = @Id )
+
+
+
+	DECLARE @Err int
+
+	DECLARE @Result int
+
+	SET @Result = @@ROWCOUNT
+
+	SET @Err = @@ERROR 
+
+
+
+	If @Err <> 0 
+
+	BEGIN
+
+		SET @Result = -1
+
+	END
+
+
+
+	RETURN @Result
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].DeleteSalesOrderDetail    Script Date: 11/11/2025 9:56:17 AM ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DeleteSalesOrderDetail]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[DeleteSalesOrderDetail]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE DeleteSalesOrderDetail
+
+(
+
+	@Id int
+
+)
+
+AS
+
+	DELETE [dbo].[SalesOrderDetail] 
+
+
+
+    WHERE ( Id = @Id )
+
+
+
+	DECLARE @Err int
+
+	DECLARE @Result int
+
+
+
+	SET @Result = @@ROWCOUNT
+
+	SET @Err = @@ERROR 
+
+
+
+	If @Err <> 0 
+
+	BEGIN
+
+		SET @Result = -1
+
+	END
+
+
+
+	RETURN @Result
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].GetAllSalesOrderDetail    Script Date: 11/11/2025 9:56:17 AM  ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetAllSalesOrderDetail]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[GetAllSalesOrderDetail]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE GetAllSalesOrderDetail
+
+AS
+
+	SELECT *		
+
+	FROM
+
+		[dbo].[SalesOrderDetail]
+
+
+
+RETURN @@ROWCOUNT
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].GetSalesOrderDetailById    Script Date: 11/11/2025 9:56:17 AM  ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderDetailById]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[GetSalesOrderDetailById]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE GetSalesOrderDetailById
+
+(
+
+	@Id int
+
+)
+
+AS
+
+	SELECT *		
+
+	FROM
+
+		[dbo].[SalesOrderDetail]
+
+	WHERE ( Id = @Id )
+
+
+
+RETURN @@ROWCOUNT
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].GetAllSalesOrderDetailBySalesOrderId    Script Date: 11/11/2025 9:56:17 AM  ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderDetailBySalesOrderId]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[GetSalesOrderDetailBySalesOrderId]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE GetSalesOrderDetailBySalesOrderId
+
+(
+
+	@SalesOrderId int
+
+)
+
+AS
+
+	SELECT *		
+
+	FROM
+
+		[dbo].[SalesOrderDetail]
+
+	WHERE ( SalesOrderId = @SalesOrderId  )
+
+
+
+RETURN @@ROWCOUNT
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].GetAllSalesOrderDetailByProductId    Script Date: 11/11/2025 9:56:17 AM  ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderDetailByProductId]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[GetSalesOrderDetailByProductId]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE GetSalesOrderDetailByProductId
+
+(
+
+	@ProductId int
+
+)
+
+AS
+
+	SELECT *		
+
+	FROM
+
+		[dbo].[SalesOrderDetail]
+
+	WHERE ( ProductId = @ProductId  )
+
+
+
+RETURN @@ROWCOUNT
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].GetSalesOrderDetailMaximumId    Script Date: 11/11/2025 9:56:17 AM  ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderDetailMaximumId]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[GetSalesOrderDetailMaximumId]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE GetSalesOrderDetailMaximumId
+
+AS
+
+	DECLARE @Result int
+
+	SET @Result = 0
+
+	
+
+	SELECT @Result = MAX(Id) 		
+
+	FROM
+
+		[dbo].[SalesOrderDetail]
+
+
+
+	If @Result > 0 
+
+		BEGIN
+
+			-- Everything is OK
+
+			RETURN @Result
+
+		END
+
+		ELSE
+
+		BEGIN
+
+			RETURN 0
+
+		END
+
+RETURN @Result
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].GetSalesOrderDetailRowCount    Script Date: 11/11/2025 9:56:17 AM  ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderDetailRowCount]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[GetSalesOrderDetailRowCount]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE GetSalesOrderDetailRowCount
+
+AS
+
+	DECLARE @Result int
+
+	SET @Result = 0
+
+	SELECT @Result = COUNT(*) 		
+
+	FROM
+
+		[dbo].[SalesOrderDetail]
+
+		
+
+RETURN @Result
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].GetPagedSalesOrderDetail    Script Date: 11/11/2025 9:56:17 AM  ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPagedSalesOrderDetail]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[GetPagedSalesOrderDetail]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE GetPagedSalesOrderDetail
+
+(
+
+	@TotalRows		int	OUTPUT,
+
+	@PageIndex	int,
+
+	@RowPerPage		int,
+
+	@WhereClause	nvarchar(4000),
+
+	@SortColumn		nvarchar(128),
+
+	@SortOrder		nvarchar(4)
+
+)
+
+AS
+
+BEGIN 
+
+
+
+SET @PageIndex = isnull(@PageIndex, -1)
+
+SET @RowPerPage = isnull(@RowPerPage, -1)
+
+SET @WhereClause = isnull(@WhereClause, '')
+
+SET @SortColumn = isnull(@SortColumn, '')
+
+SET @SortOrder = isnull(@SortOrder, '')
+
+SET @TotalRows = 0
+
+SET @RowPerPage = @RowPerPage -1
+
+DECLARE @SQL1 nvarchar(4000)
+
+DECLARE @SQL2 nvarchar(4000)
+
+
+
+IF (@WhereClause != '')
+
+BEGIN
+
+	SET @WhereClause = 'WHERE ' + char(13) + @WhereClause	
+
+END
+
+
+
+IF (@SortColumn != '')
+
+BEGIN
+
+	SET @SortColumn = 'ORDER BY ' + @SortColumn
+
+
+
+	IF (@SortOrder != '')
+
+	BEGIN
+
+		SET @SortColumn = @SortColumn + ' ' + @SortOrder
+
+	END
+
+END
+
+ELSE
+
+BEGIN
+
+	SET @SortColumn = @SortColumn + ' ORDER BY [Id] ASC'
+
+END
+
+
+
+SET @SQL1 = 'WITH SalesOrderDetailEntries AS (
+
+			SELECT ROW_NUMBER() OVER ('+ @SortColumn +')AS Row,
+
+	[Id],
+
+	[SalesOrderId],
+
+	[ProductId],
+
+	[Quantity],
+
+	[UnitPrice],
+
+	[LineTotal],
+
+	[ProfitAmount],
+
+	[CreatedBy],
+
+	[CreatedAt],
+
+	[UpdatedBy],
+
+	[UpdatedAt]
+
+				FROM 
+
+				[dbo].[SalesOrderDetail]
+
+					'+ @WhereClause +'
+
+				)
+
+				SELECT 
+
+	[Id],
+
+	[SalesOrderId],
+
+	[ProductId],
+
+	[Quantity],
+
+	[UnitPrice],
+
+	[LineTotal],
+
+	[ProfitAmount],
+
+	[CreatedBy],
+
+	[CreatedAt],
+
+	[UpdatedBy],
+
+	[UpdatedAt]
+
+				FROM 
+
+					SalesOrderDetailEntries
+
+				WHERE 
+
+					Row between '+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) + 1) +'And ('+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) +@RowPerPage+ 1) +')'
+
+	
+
+
+
+SET @SQL2 =		' SELECT @TotalRows = COUNT(*) 
+
+				FROM 
+
+				[dbo].[SalesOrderDetail] ' + @WhereClause
+
+								
+
+EXEC sp_executesql @SQL2, N'@TotalRows int output', @TotalRows = @TotalRows output
+
+
+
+EXEC sp_executesql @SQL1
+
+
+
+RETURN @@ROWCOUNT
+
+END
+
+GO
+
+
+
+/****** Object:  StoredProcedure [dbo].GetSalesOrderDetailByQuery    Script Date: 11/11/2025 9:56:17 AM  ******/
+
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderDetailByQuery]') AND type in (N'P', N'PC'))
+
+DROP PROCEDURE [dbo].[GetSalesOrderDetailByQuery]
+
+GO
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+CREATE PROCEDURE GetSalesOrderDetailByQuery
+
+(
+
+	@Query	nvarchar(4000)
+
+)
+
+AS
+
+BEGIN 
+
+
+
+SET @Query = isnull(@Query, '')
+
+DECLARE @SQL1 nvarchar(4000)
+
+
+
+IF (@Query != '')
+
+BEGIN
+
+	SET @Query = 'WHERE ' + char(13) + @Query	
+
+END
+
+
+
+SET @SQL1 =		'SELECT * 
+
+				FROM 
+
+				[dbo].[SalesOrderDetail] ' + @Query
+
+								
+
+EXEC sp_executesql @SQL1
+
+
+
+RETURN @@ROWCOUNT
+
+END
+
+GO
+
+USE AA4
+GO
+
+/****** Object:  StoredProcedure [dbo]..InsertSalesChannel    Script Date: 11/11/2025 9:56:17 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertSalesChannel]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[InsertSalesChannel]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE InsertSalesChannel
+(
+	@Id int OUTPUT,
+	@Name nvarchar(50),
+	@CreatedBy nvarchar(100),
+	@CreatedAt datetime,
+	@UpdatedBy nvarchar(100),
+	@UpdatedAt datetime
+)
+AS
+    INSERT INTO [dbo].[SalesChannel] 
+	(
+	[Name],
+	[CreatedBy],
+	[CreatedAt],
+	[UpdatedBy],
+	[UpdatedAt]
+    ) 
+	VALUES 
+	(
+	@Name,
+	@CreatedBy,
+	@CreatedAt,
+	@UpdatedBy,
+	@UpdatedAt
+    )
+	DECLARE @Err int
+	DECLARE @Result int
+
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+	If @Err <> 0 
+	BEGIN
+		SET @Id = -1
+		RETURN @Err
+	END
+	ELSE
+	BEGIN
+		If @Result = 1 
+		BEGIN
+			-- Everything is OK
+			SET @Id = @@IDENTITY
+		END
+		ELSE
+		BEGIN
+			SET @Id = -1
+			RETURN 0
+		END
+	END
+
+	RETURN @Id
+GO
+
+/****** Object:  StoredProcedure [dbo].UpdateSalesChannel    Script Date: 11/11/2025 9:56:17 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdateSalesChannel]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[UpdateSalesChannel]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE UpdateSalesChannel
+(
+	@Id int,
+	@Name nvarchar(50),
+	@CreatedBy nvarchar(100),
+	@CreatedAt datetime,
+	@UpdatedBy nvarchar(100),
+	@UpdatedAt datetime
+)
+AS
+    UPDATE [dbo].[SalesChannel] 
+	SET
+	[Name] = @Name,
+	[CreatedBy] = @CreatedBy,
+	[CreatedAt] = @CreatedAt,
+	[UpdatedBy] = @UpdatedBy,
+	[UpdatedAt] = @UpdatedAt
+	WHERE ( Id = @Id )
+
+	DECLARE @Err int
+	DECLARE @Result int
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+
+	If @Err <> 0 
+	BEGIN
+		SET @Result = -1
+	END
+
+	RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].DeleteSalesChannel    Script Date: 11/11/2025 9:56:17 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DeleteSalesChannel]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[DeleteSalesChannel]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE DeleteSalesChannel
+(
+	@Id int
+)
+AS
+	DELETE [dbo].[SalesChannel] 
+
+    WHERE ( Id = @Id )
+
+	DECLARE @Err int
+	DECLARE @Result int
+
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+
+	If @Err <> 0 
+	BEGIN
+		SET @Result = -1
+	END
+
+	RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetAllSalesChannel    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetAllSalesChannel]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetAllSalesChannel]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetAllSalesChannel
+AS
+	SELECT *		
+	FROM
+		[dbo].[SalesChannel]
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetSalesChannelById    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesChannelById]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesChannelById]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesChannelById
+(
+	@Id int
+)
+AS
+	SELECT *		
+	FROM
+		[dbo].[SalesChannel]
+	WHERE ( Id = @Id )
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetSalesChannelMaximumId    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesChannelMaximumId]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesChannelMaximumId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesChannelMaximumId
+AS
+	DECLARE @Result int
+	SET @Result = 0
+	
+	SELECT @Result = MAX(Id) 		
+	FROM
+		[dbo].[SalesChannel]
+
+	If @Result > 0 
+		BEGIN
+			-- Everything is OK
+			RETURN @Result
+		END
+		ELSE
+		BEGIN
+			RETURN 0
+		END
+RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetSalesChannelRowCount    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesChannelRowCount]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesChannelRowCount]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesChannelRowCount
+AS
+	DECLARE @Result int
+	SET @Result = 0
+	SELECT @Result = COUNT(*) 		
+	FROM
+		[dbo].[SalesChannel]
+		
+RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetPagedSalesChannel    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPagedSalesChannel]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetPagedSalesChannel]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetPagedSalesChannel
+(
+	@TotalRows		int	OUTPUT,
+	@PageIndex	int,
+	@RowPerPage		int,
+	@WhereClause	nvarchar(4000),
+	@SortColumn		nvarchar(128),
+	@SortOrder		nvarchar(4)
+)
+AS
+BEGIN 
+
+SET @PageIndex = isnull(@PageIndex, -1)
+SET @RowPerPage = isnull(@RowPerPage, -1)
+SET @WhereClause = isnull(@WhereClause, '')
+SET @SortColumn = isnull(@SortColumn, '')
+SET @SortOrder = isnull(@SortOrder, '')
+SET @TotalRows = 0
+SET @RowPerPage = @RowPerPage -1
+DECLARE @SQL1 nvarchar(4000)
+DECLARE @SQL2 nvarchar(4000)
+
+IF (@WhereClause != '')
+BEGIN
+	SET @WhereClause = 'WHERE ' + char(13) + @WhereClause	
+END
+
+IF (@SortColumn != '')
+BEGIN
+	SET @SortColumn = 'ORDER BY ' + @SortColumn
+
+	IF (@SortOrder != '')
+	BEGIN
+		SET @SortColumn = @SortColumn + ' ' + @SortOrder
+	END
+END
+ELSE
+BEGIN
+	SET @SortColumn = @SortColumn + ' ORDER BY [Id] ASC'
+END
+
+SET @SQL1 = 'WITH SalesChannelEntries AS (
+			SELECT ROW_NUMBER() OVER ('+ @SortColumn +')AS Row,
+	[Id],
+	[Name],
+	[CreatedBy],
+	[CreatedAt],
+	[UpdatedBy],
+	[UpdatedAt]
+				FROM 
+				[dbo].[SalesChannel]
+					'+ @WhereClause +'
+				)
+				SELECT 
+	[Id],
+	[Name],
+	[CreatedBy],
+	[CreatedAt],
+	[UpdatedBy],
+	[UpdatedAt]
+				FROM 
+					SalesChannelEntries
+				WHERE 
+					Row between '+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) + 1) +'And ('+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) +@RowPerPage+ 1) +')'
+	
+
+SET @SQL2 =		' SELECT @TotalRows = COUNT(*) 
+				FROM 
+				[dbo].[SalesChannel] ' + @WhereClause
+								
+EXEC sp_executesql @SQL2, N'@TotalRows int output', @TotalRows = @TotalRows output
+
+EXEC sp_executesql @SQL1
+
+RETURN @@ROWCOUNT
+END
+GO
+
+/****** Object:  StoredProcedure [dbo].GetSalesChannelByQuery    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesChannelByQuery]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesChannelByQuery]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesChannelByQuery
+(
+	@Query	nvarchar(4000)
+)
+AS
+BEGIN 
+
+SET @Query = isnull(@Query, '')
+DECLARE @SQL1 nvarchar(4000)
+
+IF (@Query != '')
+BEGIN
+	SET @Query = 'WHERE ' + char(13) + @Query	
+END
+
+SET @SQL1 =		'SELECT * 
+				FROM 
+				[dbo].[SalesChannel] ' + @Query
+								
+EXEC sp_executesql @SQL1
+
+RETURN @@ROWCOUNT
+END
+GO
+
+USE AA4
+GO
+
+/****** Object:  StoredProcedure [dbo]..InsertSalesOrderHeader    Script Date: 11/11/2025 9:56:17 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertSalesOrderHeader]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[InsertSalesOrderHeader]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE InsertSalesOrderHeader
+(
+	@Id int OUTPUT,
+	@CompanyCustomerId int,
+	@AddressId int,
+	@SalesChannelId int,
+	@SalesOrderId varchar(10),
+	@OnlineOrderId varchar(10),
+	@DirectOrderId varchar(10),
+	@OrderDate datetime,
+	@TotalAmount decimal(18, 2),
+	@DiscountAmount decimal(18, 2),
+	@NetAmount decimal(19, 2),
+	@SessionId nvarchar(100),
+	@IPAddress varchar(45),
+	@Status nvarchar(30),
+	@IsActive bit,
+	@Confirmed bit,
+	@CreatedBy nvarchar(100),
+	@CreatedAt datetime,
+	@UpdatedBy nvarchar(100),
+	@UpdatedAt datetime
+)
+AS
+    INSERT INTO [dbo].[SalesOrderHeader] 
+	(
+	[CompanyCustomerId],
+	[AddressId],
+	[SalesChannelId],
+	[SalesOrderId],
+	[OnlineOrderId],
+	[DirectOrderId],
+	[OrderDate],
+	[TotalAmount],
+	[DiscountAmount],
+	[NetAmount],
+	[SessionId],
+	[IPAddress],
+	[Status],
+	[IsActive],
+	[Confirmed],
+	[CreatedBy],
+	[CreatedAt],
+	[UpdatedBy],
+	[UpdatedAt]
+    ) 
+	VALUES 
+	(
+	@CompanyCustomerId,
+	@AddressId,
+	@SalesChannelId,
+	@SalesOrderId,
+	@OnlineOrderId,
+	@DirectOrderId,
+	@OrderDate,
+	@TotalAmount,
+	@DiscountAmount,
+	@NetAmount,
+	@SessionId,
+	@IPAddress,
+	@Status,
+	@IsActive,
+	@Confirmed,
+	@CreatedBy,
+	@CreatedAt,
+	@UpdatedBy,
+	@UpdatedAt
+    )
+	DECLARE @Err int
+	DECLARE @Result int
+
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+	If @Err <> 0 
+	BEGIN
+		SET @Id = -1
+		RETURN @Err
+	END
+	ELSE
+	BEGIN
+		If @Result = 1 
+		BEGIN
+			-- Everything is OK
+			SET @Id = @@IDENTITY
+		END
+		ELSE
+		BEGIN
+			SET @Id = -1
+			RETURN 0
+		END
+	END
+
+	RETURN @Id
+GO
+
+/****** Object:  StoredProcedure [dbo].UpdateSalesOrderHeader    Script Date: 11/11/2025 9:56:17 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdateSalesOrderHeader]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[UpdateSalesOrderHeader]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE UpdateSalesOrderHeader
+(
+	@Id int,
+	@CompanyCustomerId int,
+	@AddressId int,
+	@SalesChannelId int,
+	@SalesOrderId varchar(10),
+	@OnlineOrderId varchar(10),
+	@DirectOrderId varchar(10),
+	@OrderDate datetime,
+	@TotalAmount decimal(18, 2),
+	@DiscountAmount decimal(18, 2),
+	@NetAmount decimal(19, 2),
+	@SessionId nvarchar(100),
+	@IPAddress varchar(45),
+	@Status nvarchar(30),
+	@IsActive bit,
+	@Confirmed bit,
+	@CreatedBy nvarchar(100),
+	@CreatedAt datetime,
+	@UpdatedBy nvarchar(100),
+	@UpdatedAt datetime
+)
+AS
+    UPDATE [dbo].[SalesOrderHeader] 
+	SET
+	[CompanyCustomerId] = @CompanyCustomerId,
+	[AddressId] = @AddressId,
+	[SalesChannelId] = @SalesChannelId,
+	[SalesOrderId] = @SalesOrderId,
+	[OnlineOrderId] = @OnlineOrderId,
+	[DirectOrderId] = @DirectOrderId,
+	[OrderDate] = @OrderDate,
+	[TotalAmount] = @TotalAmount,
+	[DiscountAmount] = @DiscountAmount,
+	[NetAmount] = @NetAmount,
+	[SessionId] = @SessionId,
+	[IPAddress] = @IPAddress,
+	[Status] = @Status,
+	[IsActive] = @IsActive,
+	[Confirmed] = @Confirmed,
+	[CreatedBy] = @CreatedBy,
+	[CreatedAt] = @CreatedAt,
+	[UpdatedBy] = @UpdatedBy,
+	[UpdatedAt] = @UpdatedAt
+	WHERE ( Id = @Id )
+
+	DECLARE @Err int
+	DECLARE @Result int
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+
+	If @Err <> 0 
+	BEGIN
+		SET @Result = -1
+	END
+
+	RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].DeleteSalesOrderHeader    Script Date: 11/11/2025 9:56:17 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DeleteSalesOrderHeader]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[DeleteSalesOrderHeader]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE DeleteSalesOrderHeader
+(
+	@Id int
+)
+AS
+	DELETE [dbo].[SalesOrderHeader] 
+
+    WHERE ( Id = @Id )
+
+	DECLARE @Err int
+	DECLARE @Result int
+
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+
+	If @Err <> 0 
+	BEGIN
+		SET @Result = -1
+	END
+
+	RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetAllSalesOrderHeader    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetAllSalesOrderHeader]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetAllSalesOrderHeader]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetAllSalesOrderHeader
+AS
+	SELECT *		
+	FROM
+		[dbo].[SalesOrderHeader]
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetSalesOrderHeaderById    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderHeaderById]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesOrderHeaderById]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesOrderHeaderById
+(
+	@Id int
+)
+AS
+	SELECT *		
+	FROM
+		[dbo].[SalesOrderHeader]
+	WHERE ( Id = @Id )
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetAllSalesOrderHeaderByCompanyCustomerId    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderHeaderByCompanyCustomerId]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesOrderHeaderByCompanyCustomerId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesOrderHeaderByCompanyCustomerId
+(
+	@CompanyCustomerId int
+)
+AS
+	SELECT *		
+	FROM
+		[dbo].[SalesOrderHeader]
+	WHERE ( CompanyCustomerId = @CompanyCustomerId  )
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetAllSalesOrderHeaderByAddressId    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderHeaderByAddressId]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesOrderHeaderByAddressId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesOrderHeaderByAddressId
+(
+	@AddressId int
+)
+AS
+	SELECT *		
+	FROM
+		[dbo].[SalesOrderHeader]
+	WHERE ( AddressId = @AddressId  )
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetAllSalesOrderHeaderBySalesChannelId    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderHeaderBySalesChannelId]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesOrderHeaderBySalesChannelId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesOrderHeaderBySalesChannelId
+(
+	@SalesChannelId int
+)
+AS
+	SELECT *		
+	FROM
+		[dbo].[SalesOrderHeader]
+	WHERE ( SalesChannelId = @SalesChannelId  )
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetSalesOrderHeaderMaximumId    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderHeaderMaximumId]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesOrderHeaderMaximumId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesOrderHeaderMaximumId
+AS
+	DECLARE @Result int
+	SET @Result = 0
+	
+	SELECT @Result = MAX(Id) 		
+	FROM
+		[dbo].[SalesOrderHeader]
+
+	If @Result > 0 
+		BEGIN
+			-- Everything is OK
+			RETURN @Result
+		END
+		ELSE
+		BEGIN
+			RETURN 0
+		END
+RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetSalesOrderHeaderRowCount    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderHeaderRowCount]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesOrderHeaderRowCount]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesOrderHeaderRowCount
+AS
+	DECLARE @Result int
+	SET @Result = 0
+	SELECT @Result = COUNT(*) 		
+	FROM
+		[dbo].[SalesOrderHeader]
+		
+RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetPagedSalesOrderHeader    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPagedSalesOrderHeader]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetPagedSalesOrderHeader]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetPagedSalesOrderHeader
+(
+	@TotalRows		int	OUTPUT,
+	@PageIndex	int,
+	@RowPerPage		int,
+	@WhereClause	nvarchar(4000),
+	@SortColumn		nvarchar(128),
+	@SortOrder		nvarchar(4)
+)
+AS
+BEGIN 
+
+SET @PageIndex = isnull(@PageIndex, -1)
+SET @RowPerPage = isnull(@RowPerPage, -1)
+SET @WhereClause = isnull(@WhereClause, '')
+SET @SortColumn = isnull(@SortColumn, '')
+SET @SortOrder = isnull(@SortOrder, '')
+SET @TotalRows = 0
+SET @RowPerPage = @RowPerPage -1
+DECLARE @SQL1 nvarchar(4000)
+DECLARE @SQL2 nvarchar(4000)
+
+IF (@WhereClause != '')
+BEGIN
+	SET @WhereClause = 'WHERE ' + char(13) + @WhereClause	
+END
+
+IF (@SortColumn != '')
+BEGIN
+	SET @SortColumn = 'ORDER BY ' + @SortColumn
+
+	IF (@SortOrder != '')
+	BEGIN
+		SET @SortColumn = @SortColumn + ' ' + @SortOrder
+	END
+END
+ELSE
+BEGIN
+	SET @SortColumn = @SortColumn + ' ORDER BY [Id] ASC'
+END
+
+SET @SQL1 = 'WITH SalesOrderHeaderEntries AS (
+			SELECT ROW_NUMBER() OVER ('+ @SortColumn +')AS Row,
+	[Id],
+	[CompanyCustomerId],
+	[AddressId],
+	[SalesChannelId],
+	[SalesOrderId],
+	[OnlineOrderId],
+	[DirectOrderId],
+	[OrderDate],
+	[TotalAmount],
+	[DiscountAmount],
+	[NetAmount],
+	[SessionId],
+	[IPAddress],
+	[Status],
+	[IsActive],
+	[Confirmed],
+	[CreatedBy],
+	[CreatedAt],
+	[UpdatedBy],
+	[UpdatedAt]
+				FROM 
+				[dbo].[SalesOrderHeader]
+					'+ @WhereClause +'
+				)
+				SELECT 
+	[Id],
+	[CompanyCustomerId],
+	[AddressId],
+	[SalesChannelId],
+	[SalesOrderId],
+	[OnlineOrderId],
+	[DirectOrderId],
+	[OrderDate],
+	[TotalAmount],
+	[DiscountAmount],
+	[NetAmount],
+	[SessionId],
+	[IPAddress],
+	[Status],
+	[IsActive],
+	[Confirmed],
+	[CreatedBy],
+	[CreatedAt],
+	[UpdatedBy],
+	[UpdatedAt]
+				FROM 
+					SalesOrderHeaderEntries
+				WHERE 
+					Row between '+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) + 1) +'And ('+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) +@RowPerPage+ 1) +')'
+	
+
+SET @SQL2 =		' SELECT @TotalRows = COUNT(*) 
+				FROM 
+				[dbo].[SalesOrderHeader] ' + @WhereClause
+								
+EXEC sp_executesql @SQL2, N'@TotalRows int output', @TotalRows = @TotalRows output
+
+EXEC sp_executesql @SQL1
+
+RETURN @@ROWCOUNT
+END
+GO
+
+/****** Object:  StoredProcedure [dbo].GetSalesOrderHeaderByQuery    Script Date: 11/11/2025 9:56:17 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSalesOrderHeaderByQuery]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSalesOrderHeaderByQuery]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetSalesOrderHeaderByQuery
+(
+	@Query	nvarchar(4000)
+)
+AS
+BEGIN 
+
+SET @Query = isnull(@Query, '')
+DECLARE @SQL1 nvarchar(4000)
+
+IF (@Query != '')
+BEGIN
+	SET @Query = 'WHERE ' + char(13) + @Query	
+END
+
+SET @SQL1 =		'SELECT * 
+				FROM 
+				[dbo].[SalesOrderHeader] ' + @Query
+								
+EXEC sp_executesql @SQL1
+
+RETURN @@ROWCOUNT
+END
+GO
+
+USE AA4
+GO
+
+/****** Object:  StoredProcedure [dbo]..InsertCompanyCustomer    Script Date: 11/11/2025 9:56:16 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertCompanyCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[InsertCompanyCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE InsertCompanyCustomer
+(
+	@Id int OUTPUT,
+	@CompanyId int,
+	@CustomerId int
+)
+AS
+    INSERT INTO [dbo].[CompanyCustomer] 
+	(
+	[CompanyId],
+	[CustomerId]
+    ) 
+	VALUES 
+	(
+	@CompanyId,
+	@CustomerId
+    )
+	DECLARE @Err int
+	DECLARE @Result int
+
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+	If @Err <> 0 
+	BEGIN
+		SET @Id = -1
+		RETURN @Err
+	END
+	ELSE
+	BEGIN
+		If @Result = 1 
+		BEGIN
+			-- Everything is OK
+			SET @Id = @@IDENTITY
+		END
+		ELSE
+		BEGIN
+			SET @Id = -1
+			RETURN 0
+		END
+	END
+
+	RETURN @Id
+GO
+
+/****** Object:  StoredProcedure [dbo].UpdateCompanyCustomer    Script Date: 11/11/2025 9:56:16 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdateCompanyCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[UpdateCompanyCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE UpdateCompanyCustomer
+(
+	@Id int,
+	@CompanyId int,
+	@CustomerId int
+)
+AS
+    UPDATE [dbo].[CompanyCustomer] 
+	SET
+	[CompanyId] = @CompanyId,
+	[CustomerId] = @CustomerId
+	WHERE ( Id = @Id )
+
+	DECLARE @Err int
+	DECLARE @Result int
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+
+	If @Err <> 0 
+	BEGIN
+		SET @Result = -1
+	END
+
+	RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].DeleteCompanyCustomer    Script Date: 11/11/2025 9:56:16 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DeleteCompanyCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[DeleteCompanyCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE DeleteCompanyCustomer
+(
+	@Id int
+)
+AS
+	DELETE [dbo].[CompanyCustomer] 
+
+    WHERE ( Id = @Id )
+
+	DECLARE @Err int
+	DECLARE @Result int
+
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+
+	If @Err <> 0 
+	BEGIN
+		SET @Result = -1
+	END
+
+	RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetAllCompanyCustomer    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetAllCompanyCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetAllCompanyCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetAllCompanyCustomer
+AS
+	SELECT *		
+	FROM
+		[dbo].[CompanyCustomer]
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetCompanyCustomerById    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyCustomerById]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCompanyCustomerById]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCompanyCustomerById
+(
+	@Id int
+)
+AS
+	SELECT *		
+	FROM
+		[dbo].[CompanyCustomer]
+	WHERE ( Id = @Id )
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetAllCompanyCustomerByCompanyId    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyCustomerByCompanyId]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCompanyCustomerByCompanyId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCompanyCustomerByCompanyId
+(
+	@CompanyId int
+)
+AS
+	SELECT *		
+	FROM
+		[dbo].[CompanyCustomer]
+	WHERE ( CompanyId = @CompanyId  )
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetAllCompanyCustomerByCustomerId    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyCustomerByCustomerId]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCompanyCustomerByCustomerId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCompanyCustomerByCustomerId
+(
+	@CustomerId int
+)
+AS
+	SELECT *		
+	FROM
+		[dbo].[CompanyCustomer]
+	WHERE ( CustomerId = @CustomerId  )
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetCompanyCustomerMaximumId    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyCustomerMaximumId]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCompanyCustomerMaximumId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCompanyCustomerMaximumId
+AS
+	DECLARE @Result int
+	SET @Result = 0
+	
+	SELECT @Result = MAX(Id) 		
+	FROM
+		[dbo].[CompanyCustomer]
+
+	If @Result > 0 
+		BEGIN
+			-- Everything is OK
+			RETURN @Result
+		END
+		ELSE
+		BEGIN
+			RETURN 0
+		END
+RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetCompanyCustomerRowCount    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyCustomerRowCount]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCompanyCustomerRowCount]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCompanyCustomerRowCount
+AS
+	DECLARE @Result int
+	SET @Result = 0
+	SELECT @Result = COUNT(*) 		
+	FROM
+		[dbo].[CompanyCustomer]
+		
+RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetPagedCompanyCustomer    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPagedCompanyCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetPagedCompanyCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetPagedCompanyCustomer
+(
+	@TotalRows		int	OUTPUT,
+	@PageIndex	int,
+	@RowPerPage		int,
+	@WhereClause	nvarchar(4000),
+	@SortColumn		nvarchar(128),
+	@SortOrder		nvarchar(4)
+)
+AS
+BEGIN 
+
+SET @PageIndex = isnull(@PageIndex, -1)
+SET @RowPerPage = isnull(@RowPerPage, -1)
+SET @WhereClause = isnull(@WhereClause, '')
+SET @SortColumn = isnull(@SortColumn, '')
+SET @SortOrder = isnull(@SortOrder, '')
+SET @TotalRows = 0
+SET @RowPerPage = @RowPerPage -1
+DECLARE @SQL1 nvarchar(4000)
+DECLARE @SQL2 nvarchar(4000)
+
+IF (@WhereClause != '')
+BEGIN
+	SET @WhereClause = 'WHERE ' + char(13) + @WhereClause	
+END
+
+IF (@SortColumn != '')
+BEGIN
+	SET @SortColumn = 'ORDER BY ' + @SortColumn
+
+	IF (@SortOrder != '')
+	BEGIN
+		SET @SortColumn = @SortColumn + ' ' + @SortOrder
+	END
+END
+ELSE
+BEGIN
+	SET @SortColumn = @SortColumn + ' ORDER BY [Id] ASC'
+END
+
+SET @SQL1 = 'WITH CompanyCustomerEntries AS (
+			SELECT ROW_NUMBER() OVER ('+ @SortColumn +')AS Row,
+	[Id],
+	[CompanyId],
+	[CustomerId]
+				FROM 
+				[dbo].[CompanyCustomer]
+					'+ @WhereClause +'
+				)
+				SELECT 
+	[Id],
+	[CompanyId],
+	[CustomerId]
+				FROM 
+					CompanyCustomerEntries
+				WHERE 
+					Row between '+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) + 1) +'And ('+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) +@RowPerPage+ 1) +')'
+	
+
+SET @SQL2 =		' SELECT @TotalRows = COUNT(*) 
+				FROM 
+				[dbo].[CompanyCustomer] ' + @WhereClause
+								
+EXEC sp_executesql @SQL2, N'@TotalRows int output', @TotalRows = @TotalRows output
+
+EXEC sp_executesql @SQL1
+
+RETURN @@ROWCOUNT
+END
+GO
+
+/****** Object:  StoredProcedure [dbo].GetCompanyCustomerByQuery    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyCustomerByQuery]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCompanyCustomerByQuery]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCompanyCustomerByQuery
+(
+	@Query	nvarchar(4000)
+)
+AS
+BEGIN 
+
+SET @Query = isnull(@Query, '')
+DECLARE @SQL1 nvarchar(4000)
+
+IF (@Query != '')
+BEGIN
+	SET @Query = 'WHERE ' + char(13) + @Query	
+END
+
+SET @SQL1 =		'SELECT * 
+				FROM 
+				[dbo].[CompanyCustomer] ' + @Query
+								
+EXEC sp_executesql @SQL1
+
+RETURN @@ROWCOUNT
+END
+GO
+
+USE AA4
+GO
+
+/****** Object:  StoredProcedure [dbo]..InsertCustomer    Script Date: 11/11/2025 9:56:16 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InsertCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[InsertCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE InsertCustomer
+(
+	@Id int OUTPUT,
+	@CustomerName nvarchar(150),
+	@Email nvarchar(255),
+	@Phone varchar(20),
+	@IsActive bit,
+	@DateOfBirth datetime,
+	@Gender nvarchar(10),
+	@Notes nvarchar(500),
+	@CreatedBy nvarchar(100),
+	@CreatedAt datetime,
+	@UpdatedBy nvarchar(100),
+	@UpdatedAt datetime
+)
+AS
+    INSERT INTO [dbo].[Customer] 
+	(
+	[CustomerName],
+	[Email],
+	[Phone],
+	[IsActive],
+	[DateOfBirth],
+	[Gender],
+	[Notes],
+	[CreatedBy],
+	[CreatedAt],
+	[UpdatedBy],
+	[UpdatedAt]
+    ) 
+	VALUES 
+	(
+	@CustomerName,
+	@Email,
+	@Phone,
+	@IsActive,
+	@DateOfBirth,
+	@Gender,
+	@Notes,
+	@CreatedBy,
+	@CreatedAt,
+	@UpdatedBy,
+	@UpdatedAt
+    )
+	DECLARE @Err int
+	DECLARE @Result int
+
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+	If @Err <> 0 
+	BEGIN
+		SET @Id = -1
+		RETURN @Err
+	END
+	ELSE
+	BEGIN
+		If @Result = 1 
+		BEGIN
+			-- Everything is OK
+			SET @Id = @@IDENTITY
+		END
+		ELSE
+		BEGIN
+			SET @Id = -1
+			RETURN 0
+		END
+	END
+
+	RETURN @Id
+GO
+
+/****** Object:  StoredProcedure [dbo].UpdateCustomer    Script Date: 11/11/2025 9:56:16 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[UpdateCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[UpdateCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE UpdateCustomer
+(
+	@Id int,
+	@CustomerName nvarchar(150),
+	@Email nvarchar(255),
+	@Phone varchar(20),
+	@IsActive bit,
+	@DateOfBirth datetime,
+	@Gender nvarchar(10),
+	@Notes nvarchar(500),
+	@CreatedBy nvarchar(100),
+	@CreatedAt datetime,
+	@UpdatedBy nvarchar(100),
+	@UpdatedAt datetime
+)
+AS
+    UPDATE [dbo].[Customer] 
+	SET
+	[CustomerName] = @CustomerName,
+	[Email] = @Email,
+	[Phone] = @Phone,
+	[IsActive] = @IsActive,
+	[DateOfBirth] = @DateOfBirth,
+	[Gender] = @Gender,
+	[Notes] = @Notes,
+	[CreatedBy] = @CreatedBy,
+	[CreatedAt] = @CreatedAt,
+	[UpdatedBy] = @UpdatedBy,
+	[UpdatedAt] = @UpdatedAt
+	WHERE ( Id = @Id )
+
+	DECLARE @Err int
+	DECLARE @Result int
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+
+	If @Err <> 0 
+	BEGIN
+		SET @Result = -1
+	END
+
+	RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].DeleteCustomer    Script Date: 11/11/2025 9:56:16 AM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[DeleteCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[DeleteCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE DeleteCustomer
+(
+	@Id int
+)
+AS
+	DELETE [dbo].[Customer] 
+
+    WHERE ( Id = @Id )
+
+	DECLARE @Err int
+	DECLARE @Result int
+
+	SET @Result = @@ROWCOUNT
+	SET @Err = @@ERROR 
+
+	If @Err <> 0 
+	BEGIN
+		SET @Result = -1
+	END
+
+	RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetAllCustomer    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetAllCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetAllCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetAllCustomer
+AS
+	SELECT *		
+	FROM
+		[dbo].[Customer]
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetCustomerById    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCustomerById]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCustomerById]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCustomerById
+(
+	@Id int
+)
+AS
+	SELECT *		
+	FROM
+		[dbo].[Customer]
+	WHERE ( Id = @Id )
+
+RETURN @@ROWCOUNT
+GO
+
+/****** Object:  StoredProcedure [dbo].GetCustomerMaximumId    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCustomerMaximumId]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCustomerMaximumId]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCustomerMaximumId
+AS
+	DECLARE @Result int
+	SET @Result = 0
+	
+	SELECT @Result = MAX(Id) 		
+	FROM
+		[dbo].[Customer]
+
+	If @Result > 0 
+		BEGIN
+			-- Everything is OK
+			RETURN @Result
+		END
+		ELSE
+		BEGIN
+			RETURN 0
+		END
+RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetCustomerRowCount    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCustomerRowCount]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCustomerRowCount]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCustomerRowCount
+AS
+	DECLARE @Result int
+	SET @Result = 0
+	SELECT @Result = COUNT(*) 		
+	FROM
+		[dbo].[Customer]
+		
+RETURN @Result
+GO
+
+/****** Object:  StoredProcedure [dbo].GetPagedCustomer    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPagedCustomer]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetPagedCustomer]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetPagedCustomer
+(
+	@TotalRows		int	OUTPUT,
+	@PageIndex	int,
+	@RowPerPage		int,
+	@WhereClause	nvarchar(4000),
+	@SortColumn		nvarchar(128),
+	@SortOrder		nvarchar(4)
+)
+AS
+BEGIN 
+
+SET @PageIndex = isnull(@PageIndex, -1)
+SET @RowPerPage = isnull(@RowPerPage, -1)
+SET @WhereClause = isnull(@WhereClause, '')
+SET @SortColumn = isnull(@SortColumn, '')
+SET @SortOrder = isnull(@SortOrder, '')
+SET @TotalRows = 0
+SET @RowPerPage = @RowPerPage -1
+DECLARE @SQL1 nvarchar(4000)
+DECLARE @SQL2 nvarchar(4000)
+
+IF (@WhereClause != '')
+BEGIN
+	SET @WhereClause = 'WHERE ' + char(13) + @WhereClause	
+END
+
+IF (@SortColumn != '')
+BEGIN
+	SET @SortColumn = 'ORDER BY ' + @SortColumn
+
+	IF (@SortOrder != '')
+	BEGIN
+		SET @SortColumn = @SortColumn + ' ' + @SortOrder
+	END
+END
+ELSE
+BEGIN
+	SET @SortColumn = @SortColumn + ' ORDER BY [Id] ASC'
+END
+
+SET @SQL1 = 'WITH CustomerEntries AS (
+			SELECT ROW_NUMBER() OVER ('+ @SortColumn +')AS Row,
+	[Id],
+	[CustomerName],
+	[Email],
+	[Phone],
+	[IsActive],
+	[DateOfBirth],
+	[Gender],
+	[Notes],
+	[CreatedBy],
+	[CreatedAt],
+	[UpdatedBy],
+	[UpdatedAt]
+				FROM 
+				[dbo].[Customer]
+					'+ @WhereClause +'
+				)
+				SELECT 
+	[Id],
+	[CustomerName],
+	[Email],
+	[Phone],
+	[IsActive],
+	[DateOfBirth],
+	[Gender],
+	[Notes],
+	[CreatedBy],
+	[CreatedAt],
+	[UpdatedBy],
+	[UpdatedAt]
+				FROM 
+					CustomerEntries
+				WHERE 
+					Row between '+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) + 1) +'And ('+ CONVERT(nvarchar(10), (@PageIndex * @RowPerPage) +@RowPerPage+ 1) +')'
+	
+
+SET @SQL2 =		' SELECT @TotalRows = COUNT(*) 
+				FROM 
+				[dbo].[Customer] ' + @WhereClause
+								
+EXEC sp_executesql @SQL2, N'@TotalRows int output', @TotalRows = @TotalRows output
+
+EXEC sp_executesql @SQL1
+
+RETURN @@ROWCOUNT
+END
+GO
+
+/****** Object:  StoredProcedure [dbo].GetCustomerByQuery    Script Date: 11/11/2025 9:56:16 AM  ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCustomerByQuery]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCustomerByQuery]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE GetCustomerByQuery
+(
+	@Query	nvarchar(4000)
+)
+AS
+BEGIN 
+
+SET @Query = isnull(@Query, '')
+DECLARE @SQL1 nvarchar(4000)
+
+IF (@Query != '')
+BEGIN
+	SET @Query = 'WHERE ' + char(13) + @Query	
+END
+
+SET @SQL1 =		'SELECT * 
+				FROM 
+				[dbo].[Customer] ' + @Query
+								
+EXEC sp_executesql @SQL1
+
+RETURN @@ROWCOUNT
+END
+GO
+
+USE [AA4]
+GO
+
+/****** Object:  Table [dbo].[SalesChannel]    Script Date: 24-Nov-25 12:17:26 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[SalesChannel](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__SalesCha__3214EC07BD1C02AE] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [UQ__SalesCha__737584F6E479F025] UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[SalesChannel] ADD  CONSTRAINT [DF_SalesChannel_CreatedAt]  DEFAULT (sysdatetime()) FOR [CreatedAt]
+GO
+
+ALTER TABLE [dbo].[SalesChannel] ADD  CONSTRAINT [DF_SalesChannel_UpdatedAt]  DEFAULT (sysdatetime()) FOR [UpdatedAt]
+GO
+
+
+USE [AA4]
+GO
+
+/****** Object:  Table [dbo].[SalesOrderHeader]    Script Date: 24-Nov-25 12:18:40 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[SalesOrderHeader](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CompanyCustomerId] [int] NOT NULL,
+	[AddressId] [int] NOT NULL,
+	[SalesChannelId] [int] NOT NULL,
+	[SalesOrderId]  AS (case when [SalesChannelId]=(2) OR [Confirmed]=(1) then 'SO'+right('00000000'+CONVERT([varchar](8),[Id]),(8))  end) PERSISTED,
+	[OnlineOrderId]  AS (case when [SalesChannelId]=(1) then 'ON'+right('00000000'+CONVERT([varchar](8),[Id]),(8))  end) PERSISTED,
+	[DirectOrderId]  AS (case when [SalesChannelId]=(2) then 'DO'+right('00000000'+CONVERT([varchar](8),[Id]),(8))  end) PERSISTED,
+	[OrderDate] [datetime] NOT NULL,
+	[TotalAmount] [decimal](18, 2) NOT NULL,
+	[DiscountAmount] [decimal](18, 2) NOT NULL,
+	[NetAmount]  AS ([TotalAmount]-[DiscountAmount]) PERSISTED,
+	[SessionId] [nvarchar](100) NULL,
+	[IPAddress] [varchar](45) NULL,
+	[Status] [nvarchar](30) NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[Confirmed] [bit] NOT NULL,
+	[CreatedBy] [nvarchar](100) NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__SalesOrd__3214EC070A447194] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF__SalesOrde__Order__4B7734FF]  DEFAULT (getdate()) FOR [OrderDate]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF__SalesOrde__Disco__4C6B5938]  DEFAULT ((0)) FOR [DiscountAmount]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF__SalesOrde__Statu__4D5F7D71]  DEFAULT ('Draft') FOR [Status]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF_SOH_IsActive]  DEFAULT ((1)) FOR [IsActive]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF_SOH_Confirmed]  DEFAULT ((0)) FOR [Confirmed]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF_SOH_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] ADD  CONSTRAINT [DF_SOH_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader]  WITH CHECK ADD  CONSTRAINT [FK_SOH_Address] FOREIGN KEY([AddressId])
+REFERENCES [dbo].[Address] ([Id])
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] CHECK CONSTRAINT [FK_SOH_Address]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader]  WITH CHECK ADD  CONSTRAINT [FK_SOH_Channel] FOREIGN KEY([SalesChannelId])
+REFERENCES [dbo].[SalesChannel] ([Id])
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] CHECK CONSTRAINT [FK_SOH_Channel]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader]  WITH CHECK ADD  CONSTRAINT [FK_SOH_Customer] FOREIGN KEY([CompanyCustomerId])
+REFERENCES [dbo].[CompanyCustomer] ([Id])
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] CHECK CONSTRAINT [FK_SOH_Customer]
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader]  WITH CHECK ADD  CONSTRAINT [CHK_SOH_Status] CHECK  (([Status]='Returned' OR [Status]='Cancelled' OR [Status]='Delivered' OR [Status]='Shipped' OR [Status]='Confirmed' OR [Status]='Draft'))
+GO
+
+ALTER TABLE [dbo].[SalesOrderHeader] CHECK CONSTRAINT [CHK_SOH_Status]
+GO
+
+
+USE [AA4]
+GO
+
+/****** Object:  Table [dbo].[CompanyCustomer]    Script Date: 24-Nov-25 12:19:07 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[CompanyCustomer](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CompanyId] [int] NOT NULL,
+	[CustomerId] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [UQ_Company_Customer] UNIQUE NONCLUSTERED 
+(
+	[CompanyId] ASC,
+	[CustomerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[CompanyCustomer]  WITH CHECK ADD  CONSTRAINT [FK_CompanyCustomer_Company] FOREIGN KEY([CompanyId])
+REFERENCES [dbo].[Company] ([Id])
+GO
+
+ALTER TABLE [dbo].[CompanyCustomer] CHECK CONSTRAINT [FK_CompanyCustomer_Company]
+GO
+
+ALTER TABLE [dbo].[CompanyCustomer]  WITH CHECK ADD  CONSTRAINT [FK_CompanyCustomer_Customer] FOREIGN KEY([CustomerId])
+REFERENCES [dbo].[Customer] ([Id])
+GO
+
+ALTER TABLE [dbo].[CompanyCustomer] CHECK CONSTRAINT [FK_CompanyCustomer_Customer]
+GO
+
+
+USE [AA4]
+GO
+
+/****** Object:  Table [dbo].[Address]    Script Date: 24-Nov-25 12:20:35 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Address](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CustomerId] [int] NOT NULL,
+	[Street] [nvarchar](255) NOT NULL,
+	[City] [nvarchar](100) NOT NULL,
+	[Divison] [nvarchar](100) NULL,
+	[PostalCode] [varchar](20) NOT NULL,
+	[ZipCode] [nchar](50) NOT NULL,
+	[Country] [nvarchar](100) NULL,
+	[AddressType] [nvarchar](50) NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__Address__3214EC07E85A3C4F] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Address] ADD  CONSTRAINT [DF_Address_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+
+ALTER TABLE [dbo].[Address] ADD  CONSTRAINT [DF_Address_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+
+ALTER TABLE [dbo].[Address]  WITH CHECK ADD  CONSTRAINT [FK_Address_Customer] FOREIGN KEY([CustomerId])
+REFERENCES [dbo].[Customer] ([Id])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[Address] CHECK CONSTRAINT [FK_Address_Customer]
+GO
+
+
+USE [AA4]
+GO
+
+/****** Object:  Table [dbo].[Customer]    Script Date: 24-Nov-25 12:21:02 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Customer](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CustomerName] [nvarchar](150) NOT NULL,
+	[Email] [nvarchar](255) NOT NULL,
+	[Phone] [varchar](20) NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[DateOfBirth] [datetime] NULL,
+	[Gender] [nvarchar](10) NULL,
+	[Notes] [nvarchar](500) NULL,
+	[CreatedBy] [nvarchar](100) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[UpdatedBy] [nvarchar](100) NULL,
+	[UpdatedAt] [datetime] NULL,
+ CONSTRAINT [PK__Customer__3214EC07ACAD2787] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [UQ__Customer__5C7E359EA262BBB1] UNIQUE NONCLUSTERED 
+(
+	[Phone] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+ CONSTRAINT [UQ__Customer__A9D10534F05F04BE] UNIQUE NONCLUSTERED 
+(
+	[Email] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Customer] ADD  CONSTRAINT [DF_Customer_IsActive]  DEFAULT ((0)) FOR [IsActive]
+GO
+
+ALTER TABLE [dbo].[Customer] ADD  CONSTRAINT [DF_Customer_CreatedBy]  DEFAULT (suser_sname()) FOR [CreatedBy]
+GO
+
+ALTER TABLE [dbo].[Customer] ADD  CONSTRAINT [DF_Customer_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
+
+

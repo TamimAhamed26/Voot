@@ -80,29 +80,7 @@ namespace MDUA.Web.UI.Controllers
         }
         #endregion
 
-        #region File Helper
-        private async Task<string> SaveImageFile(IFormFile file, string targetFolder)
-        {
-            if (file == null || file.Length == 0)
-                return null;
-
-            if (!Directory.Exists(targetFolder))
-                Directory.CreateDirectory(targetFolder);
-
-            string ext = Path.GetExtension(file.FileName);
-            string fileName = $"{Guid.NewGuid():N}{ext}";
-
-            string filePath = Path.Combine(targetFolder, fileName);
-
-            using (var fs = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fs);
-            }
-
-            return fileName;
-        }
-
-        #endregion
+        
 
         #region Product Shell & List 
         public IActionResult Index()
@@ -681,12 +659,264 @@ namespace MDUA.Web.UI.Controllers
         #endregion
 
 
+        #region File Helper
+        private async Task<string> SaveImageFile(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return null;
+
+            // Define target folder - adjust path as needed for your project structure
+            string webRootPath = _webHostEnvironment.WebRootPath;
+            string targetFolder = Path.Combine(webRootPath, "images", "products");
+
+            if (!Directory.Exists(targetFolder))
+                Directory.CreateDirectory(targetFolder);
+
+            string ext = Path.GetExtension(file.FileName);
+            string fileName = $"{Guid.NewGuid():N}{ext}";
+            string filePath = Path.Combine(targetFolder, fileName);
+
+            using (var fs = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fs);
+            }
+
+            return fileName;
+        }
+        #endregion
+
         #region Image Management (Product & Variant)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadProductImages(int productId, List<IFormFile> files)
+        {
+            if (!IsPermitted(Permission.Product.Edit))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            try
+            {
+                if (files == null || files.Count == 0)
+                    return Json(new { success = false, message = "No files selected" });
+
+                var product = _productFacade.Get(productId);
+                if (product == null)
+                    return Json(new { success = false, message = "Product not found" });
+
+                // Get existing images to determine next sort order
+                var existingImages = _productFacade.GetImages(productId);
+                int nextSortOrder = existingImages.Any() ? existingImages.Max(i => i.SortOrder) + 1 : 1;
+                bool hasExistingPrimary = existingImages.Any(i => i.IsPrimary);
+
+                var uploadedImages = new List<object>();
+
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        string fileName = await SaveImageFile(file);
+
+                        if (string.IsNullOrEmpty(fileName))
+                            continue;
+
+                        var img = new ProductImage
+                        {
+                            ProductId = productId,
+                            ImageUrl = fileName,
+                            IsPrimary = !hasExistingPrimary && uploadedImages.Count == 0, // First image becomes primary if none exists
+                            SortOrder = nextSortOrder++,
+                            CreatedAt = DateTime.UtcNow,
+                            CreatedBy = User.Identity?.Name ?? "System"
+                        };
+
+                        _productFacade.AddImage(img);
+                        uploadedImages.Add(new
+                        {
+                            id = img.Id,
+                            imageUrl = img.ImageUrl,
+                            isPrimary = img.IsPrimary,
+                            sortOrder = img.SortOrder
+                        });
+                    }
+                }
+
+                if (uploadedImages.Count == 0)
+                    return Json(new { success = false, message = "No images were uploaded successfully" });
+
+                // Return the updated list of images for this product
+                var currentImages = _productFacade.GetImages(productId);
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"{uploadedImages.Count} image(s) uploaded successfully.",
+                    images = currentImages
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Upload Product Images Error for ProductId: {ProductId}", productId);
+                return StatusCode(500, new { success = false, message = "Failed to upload images: " + ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteProductImage(int imageId)
+        {
+            if (!IsPermitted(Permission.Product.Edit))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            try
+            {
+                var image = _productFacade.GetImage(imageId);
+                if (image == null)
+                    return Json(new { success = false, message = "Image not found" });
+
+                // Optional: Delete physical file from disk
+                try
+                {
+                    string webRootPath = _webHostEnvironment.WebRootPath;
+                    string filePath = Path.Combine(webRootPath, "images", "products", image.ImageUrl);
+
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+                catch (Exception fileEx)
+                {
+                    _logger.LogWarning(fileEx, "Could not delete physical file: {FileName}", image.ImageUrl);
+                    // Continue with database deletion even if file deletion fails
+                }
+
+                _productFacade.DeleteImage(imageId);
+
+                return Json(new { success = true, message = "Image deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Delete Product Image Error: {ImageId}", imageId);
+                return StatusCode(500, new { success = false, message = "Failed to delete image: " + ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadVariantImages(int variantId, List<IFormFile> files)
+        {
+            if (!IsPermitted(Permission.Product.Edit))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            try
+            {
+                if (files == null || files.Count == 0)
+                    return Json(new { success = false, message = "No files selected" });
+
+                var variant = _productVariantFacade.Get(variantId);
+                if (variant == null)
+                    return Json(new { success = false, message = "Variant not found" });
+
+                // Get existing images to determine next display order
+                var existingImages = _productVariantFacade.GetImages(variantId);
+                int nextDisplayOrder = existingImages.Any() ? existingImages.Max(i => i.DisplayOrder) + 1 : 1;
+
+                var uploadedImages = new List<object>();
+
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        string fileName = await SaveImageFile(file);
+
+                        if (string.IsNullOrEmpty(fileName))
+                            continue;
+
+                        var img = new VariantImage
+                        {
+                            VariantId = variantId,
+                            ImageUrl = fileName,
+                            DisplayOrder = nextDisplayOrder++,
+                            AltText = $"{variant.VariantName} - Image {nextDisplayOrder}"
+                        };
+
+                        _productVariantFacade.AddImage(img);
+                        uploadedImages.Add(new
+                        {
+                            id = img.Id,
+                            imageUrl = img.ImageUrl,
+                            displayOrder = img.DisplayOrder
+                        });
+                    }
+                }
+
+                if (uploadedImages.Count == 0)
+                    return Json(new { success = false, message = "No images were uploaded successfully" });
+
+                var currentImages = _productVariantFacade.GetImages(variantId);
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"{uploadedImages.Count} variant image(s) uploaded successfully.",
+                    images = currentImages
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Upload Variant Images Error for VariantId: {VariantId}", variantId);
+                return StatusCode(500, new { success = false, message = "Failed to upload variant images: " + ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteVariantImage(int imageId)
+        {
+            if (!IsPermitted(Permission.Product.Edit))
+                return StatusCode(403, new { success = false, message = "Access Denied" });
+
+            try
+            {
+                var image = _productVariantFacade.GetImage(imageId);
+                if (image == null)
+                    return Json(new { success = false, message = "Image not found" });
+
+                // Optional: Delete physical file from disk
+                try
+                {
+                    string webRootPath = _webHostEnvironment.WebRootPath;
+                    string filePath = Path.Combine(webRootPath, "images", "products", image.ImageUrl);
+
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+                catch (Exception fileEx)
+                {
+                    _logger.LogWarning(fileEx, "Could not delete physical file: {FileName}", image.ImageUrl);
+                    // Continue with database deletion even if file deletion fails
+                }
+
+                _productVariantFacade.DeleteImage(imageId);
+
+                return Json(new { success = true, message = "Variant image deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Delete Variant Image Error: {ImageId}", imageId);
+                return StatusCode(500, new { success = false, message = "Failed to delete image: " + ex.Message });
+            }
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult SetPrimaryProductImage(int imageId)
         {
+            if (!IsPermitted(Permission.Product.Edit))
+                return Json(new { success = false, message = "Access Denied" });
+
             try
             {
                 var image = _productFacade.GetImage(imageId);
@@ -709,21 +939,22 @@ namespace MDUA.Web.UI.Controllers
                 image.IsPrimary = true;
                 _productFacade.UpdateImage(image);
 
-                return Json(new { success = true, message = "Primary image updated" });
+                return Json(new { success = true, message = "Primary image updated successfully" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Set Primary Image Error: {ImageId}", imageId);
+                return Json(new { success = false, message = "Failed to set primary image: " + ex.Message });
             }
         }
 
-        // ============================================
-        // UPDATE SINGLE IMAGE ORDER
-        // ============================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult UpdateProductImageOrder(int imageId, int order)
         {
+            if (!IsPermitted(Permission.Product.Edit))
+                return Json(new { success = false, message = "Access Denied" });
+
             try
             {
                 var image = _productFacade.GetImage(imageId);
@@ -731,13 +962,16 @@ namespace MDUA.Web.UI.Controllers
                     return Json(new { success = false, message = "Image not found" });
 
                 image.SortOrder = order;
+                image.UpdatedAt = DateTime.UtcNow;
+                image.UpdatedBy = User.Identity?.Name ?? "System";
                 _productFacade.UpdateImage(image);
 
-                return Json(new { success = true });
+                return Json(new { success = true, message = "Order updated" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Update Product Image Order Error: {ImageId}", imageId);
+                return Json(new { success = false, message = "Failed to update order: " + ex.Message });
             }
         }
 
@@ -745,6 +979,9 @@ namespace MDUA.Web.UI.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult UpdateVariantImageOrder(int imageId, int order)
         {
+            if (!IsPermitted(Permission.Product.Edit))
+                return Json(new { success = false, message = "Access Denied" });
+
             try
             {
                 var image = _productVariantFacade.GetImage(imageId);
@@ -754,38 +991,45 @@ namespace MDUA.Web.UI.Controllers
                 image.DisplayOrder = order;
                 _productVariantFacade.UpdateImage(image);
 
-                return Json(new { success = true });
+                return Json(new { success = true, message = "Display order updated" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Update Variant Image Order Error: {ImageId}", imageId);
+                return Json(new { success = false, message = "Failed to update order: " + ex.Message });
             }
         }
 
-        // ============================================
-        // UPDATE MULTIPLE IMAGES ORDER (BULK)
-        // ============================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult UpdateProductImagesOrder([FromBody] ImageOrderUpdateModel model)
         {
+            if (!IsPermitted(Permission.Product.Edit))
+                return Json(new { success = false, message = "Access Denied" });
+
             try
             {
+                if (model?.Images == null || !model.Images.Any())
+                    return Json(new { success = false, message = "No images to update" });
+
                 foreach (var item in model.Images)
                 {
                     var image = _productFacade.GetImage(item.Id);
                     if (image != null)
                     {
                         image.SortOrder = item.Order;
+                        image.UpdatedAt = DateTime.UtcNow;
+                        image.UpdatedBy = User.Identity?.Name ?? "System";
                         _productFacade.UpdateImage(image);
                     }
                 }
 
-                return Json(new { success = true });
+                return Json(new { success = true, message = "Display order updated" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Update Product Images Order Error");
+                return Json(new { success = false, message = "Failed to update display order: " + ex.Message });
             }
         }
 
@@ -793,8 +1037,14 @@ namespace MDUA.Web.UI.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult UpdateVariantImagesOrder([FromBody] ImageOrderUpdateModel model)
         {
+            if (!IsPermitted(Permission.Product.Edit))
+                return Json(new { success = false, message = "Access Denied" });
+
             try
             {
+                if (model?.Images == null || !model.Images.Any())
+                    return Json(new { success = false, message = "No images to update" });
+
                 foreach (var item in model.Images)
                 {
                     var image = _productVariantFacade.GetImage(item.Id);
@@ -805,14 +1055,13 @@ namespace MDUA.Web.UI.Controllers
                     }
                 }
 
-                return Json(new { success = true });
+                return Json(new { success = true, message = "Display order updated" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Update Variant Images Order Error");
+                return Json(new { success = false, message = "Failed to update display order: " + ex.Message });
             }
-
-
         }
 
         #endregion

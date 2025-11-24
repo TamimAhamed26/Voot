@@ -70,8 +70,6 @@ C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Framework\bin\Debug\net9.0\MDUA
 C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Framework\obj\Debug\net9.0\ref\MDUA.Framework.dll
 C:\Voot-master\src\MDUA.Framework\obj\Debug\net9.0\MDUA.Framework.csproj.AssemblyReference.cache
 C:\Voot-master\src\MDUA.Framework\obj\Debug\net9.0\MDUA.Framework.GeneratedMSBuildEditorConfig.editorconfig
-C:\Voot-master\src\MDUA.Framework\obj\Debug\net9.0\MDUA.Framework.AssemblyInfoInputs.cache
-C:\Voot-master\src\MDUA.Framework\obj\Debug\net9.0\MDUA.Framework.AssemblyInfo.cs
 C:\Voot-master\src\MDUA.Framework\obj\Debug\net9.0\MDUA.Framework.csproj.CoreCompileInputs.cache
 C:\Voot-master\src\MDUA.Framework\obj\Debug\net9.0\MDUA.Framework.dll
 C:\Voot-master\src\MDUA.Framework\obj\Debug\net9.0\refint\MDUA.Framework.dll
@@ -80,3 +78,4 @@ C:\Voot-master\src\MDUA.Framework\bin\Debug\net9.0\MDUA.Framework.deps.json
 C:\Voot-master\src\MDUA.Framework\bin\Debug\net9.0\MDUA.Framework.dll
 C:\Voot-master\src\MDUA.Framework\bin\Debug\net9.0\MDUA.Framework.pdb
 C:\Voot-master\src\MDUA.Framework\obj\Debug\net9.0\ref\MDUA.Framework.dll
+F:\bd-mayer-dua\src\MDUA.Framework\obj\Debug\net9.0\MDUA.Framework.sourcelink.json

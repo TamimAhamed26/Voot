@@ -1,35 +1,23 @@
-﻿using System;
-using System.Data;
-using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
- 
+﻿// ICompanyDataAccess.cs
+using MDUA.DataAccess.Interface;
 using MDUA.Entities;
 using MDUA.Entities.Bases;
 using MDUA.Entities.List;
+using MDUA.Framework;
+using Microsoft.Extensions.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace MDUA.DataAccess.Interface
 {
-	/// <summary>
-	/// ICommonDataAccess Provides a generic contract for data access operations 
-	/// (CRUD and utility methods) that can be implemented for any entity type.
-	/// 
-	/// This interface defines common patterns such as:
-	/// - Creating new records (Insert)
-	/// - Reading single or multiple records (Get, GetAll, GetByQuery, GetPaged)
-	/// - Updating existing records (Update)
-	/// - Deleting records (Delete)
-	/// - Utility operations like retrieving maximum ID and row count
-	/// 
-	/// By using generics (<typeparamref name="T"/>, <typeparamref name="L"/>, <typeparamref name="B"/>),
-	/// it ensures reusability across multiple entities while maintaining 
-	/// type safety and consistency.
-	/// </summary>
-	/// <typeparam name="T">Represents the entity type for a single record.</typeparam>
-	/// <typeparam name="L">Represents the collection type for multiple records (e.g., a list).</typeparam>
-	/// <typeparam name="B">Represents the base type used for insert and update operations (e.g., DTO or base entity).</typeparam>
-
-
-	public interface ICompanyDataAccess : ICommonDataAccess<Company, CompanyList, CompanyBase>
-	{ 
-	}	
+    public interface ICompanyDataAccess
+    {
+        Company Get(int id);
+        long Delete(int id);
+        CompanyList GetAll();
+        CompanyList GetByQuery(string query);
+        CompanyList GetPaged(PagedRequest request);
+        long Insert(CompanyBase obj);
+        long Update(CompanyBase obj);
+    }
 }

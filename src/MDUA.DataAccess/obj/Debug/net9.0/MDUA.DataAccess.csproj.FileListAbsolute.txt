@@ -100,8 +100,6 @@ C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\MDU
 C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll
 C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.AssemblyReference.cache
 C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
-C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfoInputs.cache
-C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfo.cs
 C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.CoreCompileInputs.cache
 C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.dll
 C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\refint\MDUA.DataAccess.dll
@@ -115,3 +113,5 @@ C:\Voot-master\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.pdb
 C:\Voot-master\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.pdb
 C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.Dat.504AA89F.Up2Date
 C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.sourcelink.json
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.sourcelink.json

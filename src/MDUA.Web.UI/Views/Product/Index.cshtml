@@ -26,11 +26,13 @@
     <div class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</div>
 
     <header class="header">
-        <img src="~/images/products/logo.png" alt="Hoodie House Logo" class="logo">
+        <img src="@ViewBag.CompanyLogoPath"
+             alt="@(ViewBag.CompanyName ?? "Company") Logo"
+             class="logo"
+             onerror="this.onerror=null; this.src='~/images/products/logo.png';">
     </header>
 
     <main class="container">
-        <!-- Intro -->
         <section class="description-section">
             <div class="description-card">
                 <h2>
@@ -75,12 +77,8 @@
             </div>
         </section>
 
-
-
-        <!-- Product Details -->
         <section class="product-details">
             <h3>📋 প্রোডাক্ট ডিটেইলস</h3>
-
             <div class="details-box">
                 <h4>কেন Hoodie House এর হুডি বেছে নেবেন?</h4>
                 <ul>
@@ -89,7 +87,6 @@
                     <li>Stylish Design – Casual এবং Street Look উভয়ের জন্য পারফেক্ট।</li>
                 </ul>
             </div>
-
             <div class="details-box">
                 <h4>ম্যাটেরিয়াল ও সাইজ</h4>
                 <ul>
@@ -112,7 +109,6 @@
                     }
                 </ul>
             </div>
-
             <div class="details-box">
                 <h4>💯 গ্যারান্টি</h4>
                 <p class="guarantee-text">
@@ -121,7 +117,6 @@
             </div>
         </section>
 
-        <!-- Order Section -->
         <section class="order-section" id="orderSection">
             <h2>🛒 আপনার অর্ডার সম্পন্ন করুন</h2>
 
@@ -147,7 +142,14 @@
                     </div>
                 </div>
 
-                <!-- Dynamic Attribute Selection -->
+                <div id="variant-image-container" style="display:none; margin-bottom: 20px;">
+                    <label class="option-label" style="font-size: 14px; color: #666; margin-bottom: 5px; display:block;">নির্বাচিত কালার/স্টাইল:</label>
+                    <div class="variant-preview-box" onclick="openImageModal()" title="Click to expand">
+                        <img id="selected-variant-img" src="" alt="Selected Variant" />
+                        <span class="expand-icon">🔍</span>
+                    </div>
+                </div>
+
                 @foreach (var option in Model.Options)
                 {
                     <div class="form-floating">
@@ -162,30 +164,95 @@
                     </div>
                 }
 
-                <div class="form-floating">
-                    <input type="text" id="name" required placeholder=" ">
-                    <label for="name">নাম *</label>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" id="name" required placeholder=" ">
+                            <label for="name">আপনার নাম *</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="tel" id="phone" required placeholder=" ">
+                            <label for="phone">মোবাইল নাম্বার *</label>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-floating">
-                    <input type="tel" id="phone" required placeholder=" ">
-                    <label for="phone">মোবাইল নাম্বার *</label>
+                <div class="form-floating mt-2">
+                    <input type="email" id="email" placeholder=" ">
+                    <label for="email">ইমেইল *</label>
                 </div>
 
-                <div class="form-floating">
-                    <textarea id="address" rows="2" required placeholder=" "></textarea>
-                    <label for="address">ঠিকানা *</label>
+                <h5 class="mt-3 mb-2 text-muted" style="font-size: 0.9rem;">ডেলিভারি ঠিকানা</h5>
+
+                <div class="form-floating mb-2">
+                    <input type="text" id="street" required placeholder=" ">
+                    <label for="street">রাস্তা / বাসা নং (Street) *</label>
                 </div>
 
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="form-floating">
+                            <input type="text" id="city" required placeholder=" ">
+                            <label for="city">শহর (City) *</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-floating">
+                            <select id="division" required>
+                                <option value="">বিভাগ নির্বাচন করুন</option>
+                                <option value="Dhaka">Dhaka</option>
+                                <option value="Chattogram">Chattogram</option>
+                                <option value="Khulna">Khulna</option>
+                                <option value="Rajshahi">Rajshahi</option>
+                                <option value="Barishal">Barishal</option>
+                                <option value="Sylhet">Sylhet</option>
+                                <option value="Rangpur">Rangpur</option>
+                                <option value="Mymensingh">Mymensingh</option>
+                            </select>
+                            <label for="division">বিভাগ (Division) *</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-2 mt-0">
+                    <div class="col-6">
+                        <div class="form-floating">
+                            <input type="text" id="postalCode" required placeholder=" ">
+                            <label for="postalCode">পোস্ট কোড (Postal Code) *</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-floating">
+                            <input type="text" id="zipCode" required placeholder=" ">
+                            <label for="zipCode">জিপ কোড (Zip Code) *</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-2 mt-0">
+                     <div class="col-12">
+                        <div class="form-floating">
+                            <select id="addressType">
+                                <option value="Home">বাসা (Home)</option>
+                                <option value="Office">অফিস (Office)</option>
+                                <option value="Other">অন্যান্য (Other)</option>
+                            </select>
+                            <label for="addressType">ঠিকানার ধরণ (Address Type)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="country" value="Bangladesh">
                 <input type="hidden" id="selectedVariantId" value="">
                 <input type="hidden" id="selectedVariantPrice" value="@basePrice">
 
-                <button type="button" class="submit-order-btn" onclick="submitOrder()">
+                <button type="button" class="submit-order-btn mt-4" onclick="submitOrder()">
                     <span>অর্ডার কনফার্ম করুন</span> 📦
                 </button>
             </form>
 
-            <!-- Receipt Section -->
             <div class="receipt modern-card" id="receipt" style="display:none; margin-top: 30px; text-align: left;">
                 <h4>🧾 রশিদ</h4>
                 <div class="summary-item">
@@ -206,28 +273,35 @@
                 <p><strong>নাম:</strong> <span id="receipt-name"></span></p>
                 <p><strong>মোবাইল:</strong> <span id="receipt-phone"></span></p>
                 <p><strong>ঠিকানা:</strong> <span id="receipt-address"></span></p>
+                <p><strong>শহর/বিভাগ:</strong> <span id="receipt-location"></span></p>
                 <p><strong>পরিমাণ:</strong> <span id="receipt-quantity"></span></p>
             </div>
         </section>
     </main>
 
+    <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modal-img">
+        <div id="modal-caption"></div>
+    </div>
+
     <script>
         window.productData = {
             productName: '@Model.Product?.ProductName',
             variants: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Variants)),
-variantPriceStocks: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
-    Model.VariantPriceStocks.Values.Select(vps => new {
-        Id = vps.Id,
-        Price = vps.Price,
-        CompareAtPrice = vps.CompareAtPrice,
-        CostPrice = vps.CostPrice,
-        StockQty = vps.StockQty,
-        TrackInventory = vps.TrackInventory,
-        AllowBackorder = vps.AllowBackorder,
-        WeightGrams = vps.WeightGrams,
-        VariantId = Model.Variants.FirstOrDefault(v => v.Id == vps.Id)?.Id
-    })
-)),
+            variantPriceStocks: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+                Model.VariantPriceStocks.Values.Select(vps => new {
+                    Id = vps.Id,
+                    Price = vps.Price,
+                    CompareAtPrice = vps.CompareAtPrice,
+                    CostPrice = vps.CostPrice,
+                    StockQty = vps.StockQty,
+                    TrackInventory = vps.TrackInventory,
+                    AllowBackorder = vps.AllowBackorder,
+                    WeightGrams = vps.WeightGrams,
+                    VariantId = Model.Variants.FirstOrDefault(v => v.Id == vps.Id)?.Id
+                })
+            )),
             variantAttributeValues: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.VariantAttributeValues)),
             variantImages: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.VariantImages)),
             basePrice: @basePrice

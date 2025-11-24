@@ -36,35 +36,45 @@ namespace MDUA.DataAccess
 		public SalesOrderHeaderDataAccess(SqlTransaction transaction) : base(transaction) { }
 		public SalesOrderHeaderDataAccess(SqlTransaction transaction, ClientContext context) : base(transaction, context) { }
         #endregion
-				
-		#region AddCommonParams Method
+
+        #region AddCommonParams Method
         /// <summary>
         /// Add common parameters before calling a procedure
         /// </summary>
         /// <param name="cmd">command object, where parameters will be added</param>
         /// <param name="salesOrderHeaderObject"></param>
-		private void AddCommonParams(SqlCommand cmd, SalesOrderHeaderBase salesOrderHeaderObject)
-		{	
-			AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_CompanyCustomerId, salesOrderHeaderObject.CompanyCustomerId));
-			AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_AddressId, salesOrderHeaderObject.AddressId));
-			AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_SalesChannelId, salesOrderHeaderObject.SalesChannelId));
-			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_SalesOrderId, 10, salesOrderHeaderObject.SalesOrderId));
-			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_OnlineOrderId, 10, salesOrderHeaderObject.OnlineOrderId));
-			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_DirectOrderId, 10, salesOrderHeaderObject.DirectOrderId));
-			AddParameter(cmd, pDateTime(SalesOrderHeaderBase.Property_OrderDate, salesOrderHeaderObject.OrderDate));
-			AddParameter(cmd, pDecimal(SalesOrderHeaderBase.Property_TotalAmount, 9, salesOrderHeaderObject.TotalAmount));
-			AddParameter(cmd, pDecimal(SalesOrderHeaderBase.Property_DiscountAmount, 9, salesOrderHeaderObject.DiscountAmount));
-			AddParameter(cmd, pDecimal(SalesOrderHeaderBase.Property_NetAmount, 9, salesOrderHeaderObject.NetAmount));
-			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_SessionId, 100, salesOrderHeaderObject.SessionId));
-			AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_IPAddress, 45, salesOrderHeaderObject.IPAddress));
-			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_Status, 30, salesOrderHeaderObject.Status));
-			AddParameter(cmd, pBool(SalesOrderHeaderBase.Property_IsActive, salesOrderHeaderObject.IsActive));
-			AddParameter(cmd, pBool(SalesOrderHeaderBase.Property_Confirmed, salesOrderHeaderObject.Confirmed));
-			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_CreatedBy, 100, salesOrderHeaderObject.CreatedBy));
-			AddParameter(cmd, pDateTime(SalesOrderHeaderBase.Property_CreatedAt, salesOrderHeaderObject.CreatedAt));
-			AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_UpdatedBy, 100, salesOrderHeaderObject.UpdatedBy));
-			AddParameter(cmd, pDateTime(SalesOrderHeaderBase.Property_UpdatedAt, salesOrderHeaderObject.UpdatedAt));
-		}
+        // File: src/MDUA.DataAccess/Bases/SalesOrderHeaderDataAccess.cs
+
+        private void AddCommonParams(SqlCommand cmd, SalesOrderHeaderBase salesOrderHeaderObject)
+        {
+            AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_CompanyCustomerId, salesOrderHeaderObject.CompanyCustomerId));
+            AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_AddressId, salesOrderHeaderObject.AddressId));
+            AddParameter(cmd, pInt32(SalesOrderHeaderBase.Property_SalesChannelId, salesOrderHeaderObject.SalesChannelId));
+
+            // --- FIX: COMMENT OUT COMPUTED COLUMNS ---
+            // AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_SalesOrderId, 10, salesOrderHeaderObject.SalesOrderId));
+            // AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_OnlineOrderId, 10, salesOrderHeaderObject.OnlineOrderId));
+            // AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_DirectOrderId, 10, salesOrderHeaderObject.DirectOrderId));
+            // -----------------------------------------
+
+            AddParameter(cmd, pDateTime(SalesOrderHeaderBase.Property_OrderDate, salesOrderHeaderObject.OrderDate));
+            AddParameter(cmd, pDecimal(SalesOrderHeaderBase.Property_TotalAmount, 9, salesOrderHeaderObject.TotalAmount));
+            AddParameter(cmd, pDecimal(SalesOrderHeaderBase.Property_DiscountAmount, 9, salesOrderHeaderObject.DiscountAmount));
+
+            // --- FIX: COMMENT OUT NET AMOUNT ---
+            // AddParameter(cmd, pDecimal(SalesOrderHeaderBase.Property_NetAmount, 9, salesOrderHeaderObject.NetAmount));
+            // -----------------------------------
+
+            AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_SessionId, 100, salesOrderHeaderObject.SessionId));
+            AddParameter(cmd, pVarChar(SalesOrderHeaderBase.Property_IPAddress, 45, salesOrderHeaderObject.IPAddress));
+            AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_Status, 30, salesOrderHeaderObject.Status));
+            AddParameter(cmd, pBool(SalesOrderHeaderBase.Property_IsActive, salesOrderHeaderObject.IsActive));
+            AddParameter(cmd, pBool(SalesOrderHeaderBase.Property_Confirmed, salesOrderHeaderObject.Confirmed));
+            AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_CreatedBy, 100, salesOrderHeaderObject.CreatedBy));
+            AddParameter(cmd, pDateTime(SalesOrderHeaderBase.Property_CreatedAt, salesOrderHeaderObject.CreatedAt));
+            AddParameter(cmd, pNVarChar(SalesOrderHeaderBase.Property_UpdatedBy, 100, salesOrderHeaderObject.UpdatedBy));
+            AddParameter(cmd, pDateTime(SalesOrderHeaderBase.Property_UpdatedAt, salesOrderHeaderObject.UpdatedAt));
+        }		
 		#endregion
 		
 		#region Insert Method

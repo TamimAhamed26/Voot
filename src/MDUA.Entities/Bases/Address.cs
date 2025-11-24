@@ -53,6 +53,6 @@ namespace MDUA.Entities
         {
             return base.Id.GetHashCode();
         }
-		#endregion		
-	}
+        #endregion
+    }
 }
