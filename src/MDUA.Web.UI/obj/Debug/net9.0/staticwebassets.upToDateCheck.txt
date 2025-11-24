@@ -1,0 +1,186 @@
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation\dist\jquery.validate.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery\dist\jquery.slim.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\js\product-adminv1.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\js\dashboard.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery\dist\jquery.slim.min.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\js\site.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation\dist\additional-methods.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\css\product-admin.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\favicon.ico
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery\dist\jquery.min.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\css\product-page.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\css\site.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery\dist\jquery.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery\dist\jquery.slim.min.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation\LICENSE.md
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\js\product-page.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery\dist\jquery.min.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\jquery\LICENSE.txt
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\css\dashboard.css
+F:\bd-mayer-dua\src\MDUA.Web.UI\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
+wwwroot\css\dashboard.css
+wwwroot\css\product-admin.css
+wwwroot\css\product-page.css
+wwwroot\css\site.css
+wwwroot\favicon.ico
+wwwroot\images\products\0a1858fa-2483-405f-afe2-94c319f2807d_WhatsApp Image 2025-11-22 at 11.09.04 (2).jpeg
+wwwroot\images\products\0b726fe3-a04d-43d6-851b-9012a26b5650_WhatsApp Image 2025-..._imresizer.jpg
+wwwroot\images\products\0f5ddc4d-a7da-430d-9e1f-f0f415f6390c_61zxWgmwF0L.jpg
+wwwroot\images\products\19aa98e3-8c37-4339-a018-3d2b948b6da4_WhatsApp Image 2025-11-22 at 11.09.02 (2).jpeg
+wwwroot\images\products\1f17bb9d-2e06-40cf-a66e-12b3f78e3015_WhatsApp Image 2025-11-22 at 11.09.05.jpeg
+wwwroot\images\products\217f8fee-e6d0-4461-8656-e957237c5d8e_WhatsApp Image 2025-11-22 at 11.09.05.jpeg
+wwwroot\images\products\2ac13128-7ee4-494a-966d-b7c365125322_WhatsApp Image 2025-11-21 at 22.07.31.jpeg
+wwwroot\images\products\2ecddbf8-3a45-45b5-b92b-87215c9631b2_20251012015618.png
+wwwroot\images\products\3\b36e1709757543d68718cb9f7866f7e4.jpg
+wwwroot\images\products\367da34a-620a-410f-a645-1f5ce69d5149_rsz_whatsapp_image_2025-11-21_at_222236.jpg
+wwwroot\images\products\3c21fd38-1a82-407f-8ee5-e06ba7b54d2b_rsz_whatsapp_image_2025-11-21_at_222236.jpg
+wwwroot\images\products\497441d8-1115-49fa-9901-e5e81a93b936_20251012015618.png
+wwwroot\images\products\611d3322-d616-4234-829a-1e2a5a44d210_575495363_1545774139767422_6244666725719813065_n.jpg
+wwwroot\images\products\6243ef14-250a-4b3c-87d9-df995fccf586_WhatsApp Image 2025-..._imresizer (1).jpg
+wwwroot\images\products\64447428-d975-44b8-85fe-dfb714937db0_WhatsApp Image 2025-..._imresizer.jpg
+wwwroot\images\products\6b7e7aaa-d529-49f0-8693-b136a4831217_WhatsApp Image 2025-11-22 at 11.09.04 (1).jpeg
+wwwroot\images\products\6d49870d-e169-47df-9552-4004e12fc3a8_WhatsApp Image 2025-..._imresizer.jpg
+wwwroot\images\products\764abd6e-1692-4fab-8cec-a30742bd25cb_WhatsApp Image 2025-11-22 at 11.09.03 (1).jpeg
+wwwroot\images\products\7dd2f065-6486-4b21-b0e0-9003fc0cd2b1_hoodie2.webp
+wwwroot\images\products\8d79ded6-c35a-4e20-b4c9-67784b9d0f40_rsz_whatsapp_image_2025-11-21_at_222236.jpg
+wwwroot\images\products\af66c991-5403-40b7-8756-2729445428ff_WhatsApp Image 2025-11-22 at 11.09.05 (1).jpeg
+wwwroot\images\products\b152c365-8975-468c-9143-18f820674b06_WhatsApp Image 2025-..._imresizer.jpg
+wwwroot\images\products\b8b5bc60-cbce-4639-89d7-b8db89b686d6_WhatsApp Image 2025-11-22 at 11.09.04 (1).jpeg
+wwwroot\images\products\b91aaa75-d9df-434c-8801-24f0d7878299_cropped-image.jpg
+wwwroot\images\products\b9930cd2-e281-4d70-be39-eec145bd803f_WhatsApp Image 2025-..._imresizer (1).jpg
+wwwroot\images\products\bcb158d9-224e-436a-af77-2594dad9a7c6_WhatsApp Image 2025-..._imresizer (2).jpg
+wwwroot\images\products\c511d90e-7cc7-4570-b21a-c5ecdc903879_20251012015618.png
+wwwroot\images\products\c6fa31fb-6b30-405c-9e78-594a6b5aeee0_20251012015618.png
+wwwroot\images\products\cd04ee86-3e46-4d09-9408-f3d97739cb0e_WhatsApp Image 2025-11-22 at 11.09.04 (1).jpeg
+wwwroot\images\products\d7634776-6da4-4828-b5f7-58a499c021f8_WhatsApp Image 2025-11-21 at 22.07.31.jpeg
+wwwroot\images\products\dcaa3caa-8f0a-4b5c-baf4-00d346114ea3_WhatsApp Image 2025-11-22 at 11.09.05 (1).jpeg
+wwwroot\images\products\e2fbd92d-3e03-42d2-864c-240046f0e6f8_hoodie1.webp
+wwwroot\images\products\e7e82515-4632-4400-993f-ac3a747d6555_WhatsApp Image 2025-11-22 at 11.09.03.jpeg
+wwwroot\images\products\e9958dba-7fb3-4c6d-8847-05b2efb4da4b_GameXnews - WTF! Live BLAST At LAN💥 Mazy Explain MISTAKES😰 Serious ARGUMENT bw Players😱 Jonathan 1v3🔥 Punk GodL [g1rDXxTGn6Y - 951x535 - 1m50s] (1).png
+wwwroot\images\products\ed2b2ca2-6864-4c4a-b45b-8b596183d846_cropped-image.jpg
+wwwroot\images\products\eecb95ee-efe1-48eb-a7d6-782556600795_WhatsApp Image 2025-11-22 at 11.09.03 (2).jpeg
+wwwroot\images\products\f2bc9864-250c-47a4-b53b-4e0b9b664a5e_WhatsApp Image 2025-11-22 at 11.09.04.jpeg
+wwwroot\images\products\f486bd72-60c5-4a57-bdce-87172ea5565a_cropped-image.jpg
+wwwroot\images\products\f6924c3d-d9c3-47da-80f9-0cd4553ec868_20251012015618.png
+wwwroot\images\products\f7436ef3-b227-4f3f-9c47-98fca991e1c0_20251012015618.png
+wwwroot\images\products\hoodie1.jpg
+wwwroot\images\products\hoodie2.jpg
+wwwroot\images\products\hoodie3.jpg
+wwwroot\images\products\logo.png
+wwwroot\images\variants\1\327c4f26ca3640529ccc7d2f7438c742.jpg
+wwwroot\images\variants\1\4dbe1690a04442fcb95a01cf98cbb6f2.jpeg
+wwwroot\images\variants\1\5572c9d7186a49c08d77bfcf9a436e93.jpeg
+wwwroot\images\variants\1\b2dabd0a28e54e44ae4ae6d326c3949c.jpg
+wwwroot\images\variants\3\1918518361ce43df97785d10b49928ae.jpeg
+wwwroot\js\dashboard.js
+wwwroot\js\product-adminv1.js
+wwwroot\js\product-page.js
+wwwroot\js\site.js
+wwwroot\lib\bootstrap\dist\css\bootstrap.css
+wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
+wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
+wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
+wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
+wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
+wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
+wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
+wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
+wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
+wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
+wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
+wwwroot\lib\bootstrap\dist\js\bootstrap.js
+wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
+wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
+wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
+wwwroot\lib\bootstrap\LICENSE
+wwwroot\lib\jquery\dist\jquery.js
+wwwroot\lib\jquery\dist\jquery.min.js
+wwwroot\lib\jquery\dist\jquery.min.map
+wwwroot\lib\jquery\dist\jquery.slim.js
+wwwroot\lib\jquery\dist\jquery.slim.min.js
+wwwroot\lib\jquery\dist\jquery.slim.min.map
+wwwroot\lib\jquery\LICENSE.txt
+wwwroot\lib\jquery-validation\dist\additional-methods.js
+wwwroot\lib\jquery-validation\dist\additional-methods.min.js
+wwwroot\lib\jquery-validation\dist\jquery.validate.js
+wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
+wwwroot\lib\jquery-validation\LICENSE.md
+wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
+wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
+wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt

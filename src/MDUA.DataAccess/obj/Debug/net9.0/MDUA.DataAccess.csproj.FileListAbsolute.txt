@@ -1,0 +1,117 @@
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.deps.json
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.pdb
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfoInputs.cache
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfo.cs
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.CoreCompileInputs.cache
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\refint\MDUA.DataAccess.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.pdb
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.AssemblyReference.cache
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.pdb
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.pdb
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.DataAccess\obj\Debug\net9.0\MDUA.Dat.504AA89F.Up2Date
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.deps.json
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.pdb
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.pdb
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.pdb
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.AssemblyReference.cache
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfoInputs.cache
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfo.cs
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.CoreCompileInputs.cache
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.Dat.504AA89F.Up2Date
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\refint\MDUA.DataAccess.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.pdb
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.deps.json
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.AssemblyReference.cache
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfoInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfo.cs
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.CoreCompileInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.Dat.504AA89F.Up2Date
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\refint\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.AssemblyReference.cache
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfoInputs.cache
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfo.cs
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.CoreCompileInputs.cache
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\refint\MDUA.DataAccess.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.deps.json
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.Dat.504AA89F.Up2Date
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll
+F:\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.deps.json
+F:\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.dll
+F:\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.pdb
+F:\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.dll
+F:\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.dll
+F:\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.pdb
+F:\bd-mayer-dua\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.pdb
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.AssemblyReference.cache
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.CoreCompileInputs.cache
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.Dat.504AA89F.Up2Date
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.dll
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\refint\MDUA.DataAccess.dll
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.pdb
+F:\bd-mayer-dua\src\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.deps.json
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.pdb
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.pdb
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.pdb
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.AssemblyReference.cache
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfoInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfo.cs
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.CoreCompileInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.Dat.504AA89F.Up2Date
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\refint\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.pdb
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.AssemblyReference.cache
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfoInputs.cache
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.AssemblyInfo.cs
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.csproj.CoreCompileInputs.cache
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.dll
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\refint\MDUA.DataAccess.dll
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.DataAccess.pdb
+C:\Voot-master\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.deps.json
+C:\Voot-master\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.dll
+C:\Voot-master\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.DataAccess.pdb
+C:\Voot-master\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.dll
+C:\Voot-master\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.dll
+C:\Voot-master\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Entities.pdb
+C:\Voot-master\src\MDUA.DataAccess\bin\Debug\net9.0\MDUA.Framework.pdb
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\MDUA.Dat.504AA89F.Up2Date
+C:\Voot-master\src\MDUA.DataAccess\obj\Debug\net9.0\ref\MDUA.DataAccess.dll

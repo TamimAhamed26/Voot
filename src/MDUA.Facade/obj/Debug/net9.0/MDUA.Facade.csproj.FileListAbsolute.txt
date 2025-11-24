@@ -1,0 +1,131 @@
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.deps.json
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.pdb
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.GeneratedMSBuildEditorConfig.editorconfig
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfoInputs.cache
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfo.cs
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.CoreCompileInputs.cache
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\refint\MDUA.Facade.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.pdb
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.dll
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.pdb
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.pdb
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.pdb
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.AssemblyReference.cache
+D:\Development\Code\Local-Src\MDUA\MDUA\MDUA.Facade\obj\Debug\net9.0\MDUA.Fac.AC19CD99.Up2Date
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.deps.json
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.pdb
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.pdb
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.pdb
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.pdb
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.AssemblyReference.cache
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.GeneratedMSBuildEditorConfig.editorconfig
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfoInputs.cache
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfo.cs
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.CoreCompileInputs.cache
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Fac.AC19CD99.Up2Date
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\refint\MDUA.Facade.dll
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.pdb
+D:\Development\Code\Github-Src\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.deps.json
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.AssemblyReference.cache
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfoInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfo.cs
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.CoreCompileInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Fac.AC19CD99.Up2Date
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\refint\MDUA.Facade.dll
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.pdb
+C:\Users\Piistech\OneDrive\Desktop\New folder (2)\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.deps.json
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.AssemblyReference.cache
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.GeneratedMSBuildEditorConfig.editorconfig
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfoInputs.cache
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfo.cs
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.CoreCompileInputs.cache
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Fac.AC19CD99.Up2Date
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\refint\MDUA.Facade.dll
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.pdb
+F:\bd-mayer-dua 2\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.deps.json
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.dll
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.pdb
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.dll
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.dll
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.dll
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.pdb
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.pdb
+F:\bd-mayer-dua\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.pdb
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.AssemblyReference.cache
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.GeneratedMSBuildEditorConfig.editorconfig
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.CoreCompileInputs.cache
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Fac.AC19CD99.Up2Date
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.dll
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\refint\MDUA.Facade.dll
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.pdb
+F:\bd-mayer-dua\src\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.deps.json
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.pdb
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.pdb
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.pdb
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.pdb
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.AssemblyReference.cache
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfoInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfo.cs
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.CoreCompileInputs.cache
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Fac.AC19CD99.Up2Date
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\refint\MDUA.Facade.dll
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.pdb
+C:\Users\Piistech\OneDrive\Desktop\Voot\src\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.AssemblyReference.cache
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.GeneratedMSBuildEditorConfig.editorconfig
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfoInputs.cache
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.AssemblyInfo.cs
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.csproj.CoreCompileInputs.cache
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.dll
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\refint\MDUA.Facade.dll
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Facade.pdb
+C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.deps.json
+C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.dll
+C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Facade.pdb
+C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.dll
+C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.dll
+C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.dll
+C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.DataAccess.pdb
+C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Entities.pdb
+C:\Voot-master\src\MDUA.Facade\bin\Debug\net9.0\MDUA.Framework.pdb
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\MDUA.Fac.AC19CD99.Up2Date
+C:\Voot-master\src\MDUA.Facade\obj\Debug\net9.0\ref\MDUA.Facade.dll

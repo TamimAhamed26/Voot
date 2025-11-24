@@ -1,0 +1,153 @@
+﻿@* File: src/MDUA.Web.UI/Views/AdminProduct/_ImageUploadModal.cshtml *@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+
+<style>
+    #imageUploadModal {
+        z-index: 1065 !important; /* Bootstrap default is 1055 */
+    }
+
+    .image-card-container {
+        transition: all 0.3s ease;
+    }
+
+        .image-card-container:hover {
+            transform: translateY(-5px);
+        }
+
+    .primary-badge {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        z-index: 10;
+        background: rgba(25, 135, 84, 0.9);
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 0.7rem;
+    }
+</style>
+
+<div class="modal fade" id="imageUploadModal" tabindex="-1" aria-labelledby="imageUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="imageUploadModalLabel">
+                    <i class="bi bi-images"></i> <span id="imgModalTitle">Manage Images</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="uploadContainer">
+                    <div class="card mb-4 border-primary">
+                        <div class="card-body bg-light">
+                            <form id="imageUploadForm" enctype="multipart/form-data">
+                                <input type="hidden" id="img_ParentId" name="ParentId" />
+                                <input type="hidden" id="img_Type" name="Type" />
+
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-cloud-arrow-up"></i> Add New Images
+                                </label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="imageFiles" name="files" accept="image/*" multiple>
+                                    <button type="button" class="btn btn-outline-secondary" id="btnToggleCrop">
+                                        <i class="bi bi-crop"></i> Crop Mode: <span id="cropStatus">OFF</span>
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="btnDirectUpload">
+                                        <i class="bi bi-cloud-upload"></i> Upload
+                                    </button>
+                                </div>
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i> Toggle "Crop Mode" ON to zoom/crop images before uploading. Supports multiple files.
+                                </small>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">
+                            <i class="bi bi-collection"></i> Current Gallery
+                        </h6>
+                        <small class="text-muted">
+                            <i class="bi bi-arrows-move"></i> Use arrows or drag to reorder
+                        </small>
+                    </div>
+
+                    <div id="existingImagesLoader" class="text-center py-5 d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading images...</p>
+                    </div>
+
+                    <div class="row g-3" id="existingImagesContainer"></div>
+
+                    <div id="noImagesMessage" class="text-center text-muted py-5 d-none">
+                        <i class="bi bi-image display-1 mb-3 d-block opacity-25"></i>
+                        <p class="mb-0">No images found. Upload some images to get started!</p>
+                    </div>
+                </div>
+
+                <!-- Cropper Container -->
+                <div id="cropperContainer" class="d-none">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="img-container" style="max-height: 500px;">
+                                        <img id="cropperImage" src="" style="max-width: 100%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="bi bi-sliders"></i> Editor Controls</h6>
+                                </div>
+                                <div class="card-body">
+                                    <label class="form-label">Zoom & Rotate</label>
+                                    <div class="btn-group mb-3 w-100">
+                                        <button type="button" class="btn btn-outline-primary" onclick="cropper.zoom(0.1)" title="Zoom In">
+                                            <i class="bi bi-zoom-in"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary" onclick="cropper.zoom(-0.1)" title="Zoom Out">
+                                            <i class="bi bi-zoom-out"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="cropper.rotate(90)" title="Rotate">
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="cropper.rotate(-90)" title="Rotate Left">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </button>
+                                    </div>
+
+                                    <label class="form-label mt-2">Target Size (Optional)</label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">W</span>
+                                        <input type="number" class="form-control" id="cropWidth" placeholder="Auto">
+                                        <span class="input-group-text">×</span>
+                                        <span class="input-group-text">H</span>
+                                        <input type="number" class="form-control" id="cropHeight" placeholder="Auto">
+                                    </div>
+
+                                    <hr />
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-success" onclick="uploadCroppedImage()">
+                                            <i class="bi bi-check-lg"></i> Crop & Upload
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="cancelCrop()">
+                                            <i class="bi bi-x-lg"></i> Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>

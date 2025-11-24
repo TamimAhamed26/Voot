@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Access Denied</h4>
+                </div>
+                <div class="card-body text-center">
+                    <i class="bi bi-shield-x" style="font-size: 4rem; color: #dc3545;"></i>
+                    <h5 class="mt-3">You don't have permission to access this resource</h5>
+                    <p class="text-muted">Please contact your administrator if you believe this is an error.</p>
+
+                    <hr />
+
+                    <div class="text-start">
+                        <p><strong>Your Information:</strong></p>
+                        <ul>
+                            <li>Username: <strong>@User.Identity.Name</strong></li>
+                            <li>Authenticated: <strong>@User.Identity.IsAuthenticated</strong></li>
+                            <li>
+                                Permissions:
+                                @{
+                                    var perms = User.Claims.Where(c => c.Type == "Permission").ToList();
+                                }
+                                @if (perms.Any())
+                                {
+                                    <strong>@string.Join(", ", perms.Select(p => p.Value))</strong>
+                                }
+                                else
+                                {
+                                    <strong class="text-danger">None</strong>
+                                }
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Go to Dashboard</a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-secondary">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MDUA Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+    <div class="app-container" id="appContainer">
+
+        @* --- 1. Sidebar (Only for Logged In Users) --- *@
+        @if (User.Identity.IsAuthenticated)
+        {
+            <partial name="_Sidebar" />
+        }
+
+        @* --- 2. Main Content Wrapper --- *@
+        <div class="main-wrapper d-flex flex-column">
+
+            <header>
+                <nav class="navbar navbar-expand-lg navbar-dark modern-navbar mb-4 rounded-3">
+                    <div class="container-fluid">
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <button class="btn btn-link text-white me-3 p-0" type="button" id="sidebarToggle">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
+                                </svg>
+                            </button>
+                        }
+
+                        <span class="navbar-text text-white d-none d-md-block fw-bold">
+                            @ViewData["Title"]
+                        </span>
+
+                        <div class="ms-auto d-flex align-items-center">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <div class="user-info me-3">
+                                    <div class="user-avatar">
+                                        <span>@User.Identity?.Name?.Substring(0, 1).ToUpper()</span>
+                                    </div>
+                                    <span class="user-name d-none d-lg-inline">@User.Identity.Name</span>
+                                </div>
+                                <button type="button" class="btn btn-logout btn-sm" onclick="document.getElementById('logoutForm').submit();">
+                                    Logout
+                                </button>
+                            }
+                            else
+                            {
+                                <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-sm">Login</a>
+                            }
+                        </div>
+                    </div>
+                </nav>
+            </header>
+
+            <main role="main" class="flex-grow-1">
+                @RenderBody()
+            </main>
+
+            <footer class="modern-footer mt-auto">
+                <div class="container-fluid text-center">
+                    <small class="text-muted">© @DateTime.Now.Year - MDUA Admin Panel</small>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <form class="d-none" id="logoutForm" asp-controller="Account" asp-action="Logout" method="post">
+        @Html.AntiForgeryToken()
+    </form>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

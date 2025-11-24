@@ -1,0 +1,566 @@
+﻿@{
+    ViewData["Title"] = "Product Management";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="d-flex justify-content-between align-items-center page-header">
+    <h1><i class="bi bi-box-seam"></i> @ViewData["Title"]</h1>
+    <button class="btn btn-primary" onclick="showCreateModal()">
+        <i class="bi bi-plus-circle"></i> Add New Product
+    </button>
+</div>
+
+<div class="card product-table-card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover product-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product Name</th>
+                        <th>Slug</th>
+                        <th>Price</th>
+                        <th>Variant-Based</th>
+                        <th>Active</th>
+                        <th style="width: 280px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <tr>
+                        <td colspan="7" class="text-center loading-container">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <span class="ms-2">Loading products...</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<partial name="_ProductDiscountModal" />
+<partial name="_ImageUploadModal" />
+
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="productForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">
+                        <i class="bi bi-box"></i> <span id="modalTitleText"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" id="Id" name="Id" />
+
+                    <div id="modalErrorAlert" class="alert alert-danger d-none" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span class="ms-2"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <i class="bi bi-info-circle"></i> Product Details
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="ProductName" class="form-label">
+                                            Product Name <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="ProductName" name="ProductName"
+                                               class="form-control" placeholder="Enter product name" required />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="Slug" class="form-label">
+                                            Slug <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" id="Slug" name="Slug"
+                                               class="form-control" placeholder="product-slug" required />
+                                        <small class="text-muted">URL-friendly version of the name</small>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="Description" class="form-label">Description</label>
+                                        <textarea id="Description" name="Description"
+                                                  class="form-control" rows="5"
+                                                  placeholder="Enter product description"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card pricing-card">
+                                <div class="card-header">
+                                    <i class="bi bi-cash-stack"></i> Pricing & Inventory
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="BasePrice" class="form-label">Base Price</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" step="0.01" id="BasePrice" name="BasePrice"
+                                                       class="form-control" placeholder="0.00" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="Barcode" class="form-label">Barcode</label>
+                                            <input type="text" id="Barcode" name="Barcode"
+                                                   class="form-control" placeholder="Enter barcode" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="ReorderLevel" class="form-label">Reorder Level</label>
+                                            <input type="number" id="ReorderLevel" name="ReorderLevel"
+                                                   class="form-control" placeholder="0" />
+                                            <small class="text-muted">Alert when stock falls below this level</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card organization-card">
+                                <div class="card-header">
+                                    <i class="bi bi-gear"></i> Organization & Settings
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="CategoryId" class="form-label">
+                                            <i class="bi bi-folder"></i> Category
+                                        </label>
+                                        <div class="input-group">
+                                            <select id="CategoryId" name="CategoryId" class="form-select">
+                                                <option value="">-- Loading --</option>
+                                            </select>
+                                            <button class="btn btn-outline-secondary btn-icon-only" type="button"
+                                                    onclick="showCategoryModal()" title="Add new category">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <hr />
+
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input type="checkbox" id="IsVariantBased" name="IsVariantBased"
+                                                   value="true" class="form-check-input" />
+                                            <label for="IsVariantBased" class="form-check-label">
+                                                <i class="bi bi-layers"></i> Is Variant-Based
+                                            </label>
+                                        </div>
+                                        <small class="text-muted d-block ms-4">
+                                            Enable if product has variations (color, size, etc.)
+                                        </small>
+                                    </div>
+
+                                    <div class="mb-3 ps-3 border-start border-3 border-warning" id="manageAttributesContainer" style="display: none;">
+
+                                        <div id="editModeAttributes" class="d-none">
+                                            <button type="button" class="btn btn-warning w-100 text-dark" onclick="showAttributeModalFromProduct()">
+                                                <i class="bi bi-gear-fill"></i> Manage Attributes
+                                            </button>
+                                            <small class="text-muted d-block mt-2">
+                                                Configure product attributes (Color, Size, etc.)
+                                            </small>
+                                        </div>
+
+                                        <div id="createModeAttributes" class="d-none">
+                                            <label class="form-label small fw-bold">Assign Attributes Now:</label>
+                                            <div class="input-group input-group-sm mb-2">
+                                                <select id="createAttributeSelect" class="form-select">
+                                                    <option value="">Select Attribute</option>
+                                                </select>
+                                                <button type="button" class="btn btn-secondary" onclick="addTempAttribute()">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </div>
+
+                                            <div class="card bg-light border-0">
+                                                <ul class="list-group list-group-flush small bg-transparent" id="tempAttributeList">
+                                                </ul>
+                                            </div>
+                                            <small class="text-muted d-block mt-2">
+                                                Select attributes needed for variants (e.g. Color, Size).
+                                            </small>
+                                        </div>
+
+                                    </div>
+
+                                    <hr />
+
+                                    <div class="mb-0">
+                                        <div class="form-check">
+                                            <input type="checkbox" id="IsActive" name="IsActive"
+                                                   value="true" class="form-check-input" />
+                                            <label for="IsActive" class="form-check-label">
+                                                <i class="bi bi-check-circle"></i> Is Active
+                                            </label>
+                                        </div>
+                                        <small class="text-muted d-block ms-4">
+                                            Active products are visible in store
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Save Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <form id="categoryForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-folder-plus"></i> Add Category
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div id="categoryErrorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">
+                            Category Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="categoryName" class="form-control"
+                               placeholder="Enter category name" required />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="variantModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="variantModalLabel">
+                    <i class="bi bi-layers"></i> Manage Variants
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="variantErrorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-plus-square"></i> Add / Edit Variant
+                    </h5>
+                </div>
+
+                <div id="noAttributesWarning" class="alert alert-warning d-none" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>This product has no attributes configured.</strong>
+                </div>
+
+                <form id="variantForm">
+                    <input type="hidden" id="v_ProductId" name="ProductId" />
+                    <input type="hidden" id="v_VariantId" name="Id" />
+                    <input type="hidden" id="v_VariantName" name="VariantName" />
+
+                    <div class="d-flex justify-content-between align-items-end mb-2">
+                        <label class="form-label mb-0 text-muted">
+                            <i class="bi bi-tags"></i> Configured Attributes
+                        </label>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="showAttributeModal()">
+                            <i class="bi bi-gear"></i> Manage Attributes
+                        </button>
+                    </div>
+
+                    <div id="dynamic-variant-form-container" class="row gx-3 mb-3 p-3 bg-light rounded border">
+                    </div>
+
+                    <hr class="my-3" />
+
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <strong><i class="bi bi-info-circle"></i> Basic Information</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="row gx-3 gy-2">
+                                <div class="col-md-4">
+                                    <label for="v_SKU" class="form-label">
+                                        SKU <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" id="v_SKU" name="SKU"
+                                           class="form-control" placeholder="SKU-001" required />
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="v_VariantPrice" class="form-label">
+                                        Display Price <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" step="0.01" id="v_VariantPrice"
+                                               name="VariantPrice" class="form-control"
+                                               placeholder="0.00" required />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="v_IsActive" class="form-label">Status</label>
+                                    <select id="v_IsActive" name="IsActive" class="form-select">
+                                        <option value="true">Active</option>
+                                        <option value="false">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <strong><i class="bi bi-cash-stack"></i> Pricing & Stock</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="row gx-3 gy-3">
+                                <div class="col-md-4">
+                                    <label for="v_Price" class="form-label">
+                                        Actual Price <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" step="0.01" id="v_Price"
+                                               name="Price" class="form-control"
+                                               placeholder="0.00" required />
+                                    </div>
+                                    <small class="text-muted">Price used for calculations</small>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="v_CompareAtPrice" class="form-label">
+                                        Compare at Price
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" step="0.01" id="v_CompareAtPrice"
+                                               name="CompareAtPrice" class="form-control"
+                                               placeholder="0.00" />
+                                    </div>
+                                    <small class="text-muted">Original price (for discounts)</small>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="v_CostPrice" class="form-label">Cost Price</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" step="0.01" id="v_CostPrice"
+                                               name="CostPrice" class="form-control"
+                                               placeholder="0.00" />
+                                    </div>
+                                    <small class="text-muted">Your cost (for profit calculation)</small>
+                                </div>
+                            </div>
+
+                            <div class="row gx-3 gy-3 mt-2">
+                                <div class="col-md-3">
+                                    <label for="v_StockQty" class="form-label">
+                                        Stock Quantity <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" id="v_StockQty" name="StockQty"
+                                           class="form-control" value="0" placeholder="0" required />
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="v_WeightGrams" class="form-label">Weight (grams)</label>
+                                    <input type="number" id="v_WeightGrams" name="WeightGrams"
+                                           class="form-control" placeholder="0" />
+                                    <small class="text-muted">For shipping calculation</small>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label d-block">&nbsp;</label>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="v_TrackInventory"
+                                               name="TrackInventory" class="form-check-input" checked />
+                                        <label for="v_TrackInventory" class="form-check-label">
+                                            Track Inventory
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label d-block">&nbsp;</label>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="v_AllowBackorder"
+                                               name="AllowBackorder" class="form-check-input" />
+                                        <label for="v_AllowBackorder" class="form-check-label">
+                                            Allow Backorder
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-save"></i> Save Variant
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-lg px-5 d-none"
+                                id="btnCancelEditVariant" onclick="clearVariantForm()">
+                            <i class="bi bi-x-circle"></i> Cancel Edit
+                        </button>
+                    </div>
+                </form>
+
+                <hr class="my-4" />
+
+                <h5><i class="bi bi-list-ul"></i> Existing Variants</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>SKU</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Active</th>
+                                <th style="width: 150px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="variantTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="attributeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attributeModalLabel">
+                    <i class="bi bi-tags"></i> Manage Product Attributes
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="attr_ProductId" />
+
+                <div id="attributeErrorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+                <h6><i class="bi bi-check2-square"></i> Current Attributes</h6>
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-bordered attribute-table">
+                        <tbody id="productAttributeTableBody">
+                            <tr><td class="text-center">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <form id="attributeAddForm">
+                    <label class="form-label">
+                        <i class="bi bi-plus-circle"></i> Add New Attribute
+                    </label>
+                    <div class="input-group">
+                        <select id="availableAttributesDropdown" class="form-select" required>
+                            <option value="">-- Select attribute to add --</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-plus"></i> Add
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="deleteErrorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+                <p>Are you sure you want to delete the product:</p>
+                <p class="fs-5"><strong id="deleteProductName"></strong>?</p>
+                <p class="text-danger">
+                    <i class="bi bi-exclamation-circle"></i>
+                    This action cannot be undone.
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-danger" id="btnConfirmDelete">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="appToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle"></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/product-admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="~/js/product-adminv1.js" asp-append-version="true"></script>
+}

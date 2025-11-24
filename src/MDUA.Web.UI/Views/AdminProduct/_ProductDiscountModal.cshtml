@@ -1,0 +1,117 @@
+﻿<div class="modal fade" id="discountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">
+                    <i class="bi bi-tag-fill"></i> Manage Discounts
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="disc_ProductId" name="ProductId" />
+
+                <div id="discountErrorAlert" class="alert alert-danger d-none" role="alert"></div>
+
+                <!-- Add New Discount Form -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <strong><i class="bi bi-plus-circle"></i> Add New Discount</strong>
+                    </div>
+                    <div class="card-body">
+                        <form id="discountForm">
+                            <input type="hidden" id="ProductId" name="ProductId" />
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="DiscountType" class="form-label">
+                                        Discount Type <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="DiscountType" name="DiscountType" class="form-select" required>
+                                        <option value="Percentage">Percentage (%)</option>
+                                        <option value="Fixed">Fixed Amount ($)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label for="DiscountValue" class="form-label">
+                                        Discount Value <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" step="0.01" id="DiscountValue" name="DiscountValue"
+                                           class="form-control" placeholder="Enter value" required />
+                                    <small class="text-muted">Enter percentage (e.g., 20) or fixed amount (e.g., 5.00)</small>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="MinQuantity" class="form-label">
+                                        Minimum Quantity
+                                    </label>
+                                    <input type="number" id="MinQuantity" name="MinQuantity"
+                                           class="form-control" value="1" min="1" />
+                                    <small class="text-muted">Minimum items to qualify</small>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="EffectiveFrom" class="form-label">
+                                        Start Date <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="datetime-local" id="EffectiveFrom" name="EffectiveFrom"
+                                           class="form-control" required />
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <label for="EffectiveTo" class="form-label">
+                                        End Date (Optional)
+                                    </label>
+                                    <input type="datetime-local" id="EffectiveTo" name="EffectiveTo"
+                                           class="form-control" />
+                                    <small class="text-muted">Leave blank for no expiry</small>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-check-circle"></i> Apply Discount
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Active Discounts List -->
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <strong><i class="bi bi-list-check"></i> Active Discounts</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Value</th>
+                                        <th>Start Date</th>
+                                        <th class="text-center" style="width: 100px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="discountTableBody">
+                                    <tr>
+                                        <td colspan="3" class="text-center">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="~/css/product-admin.css" asp-append-version="true" />
